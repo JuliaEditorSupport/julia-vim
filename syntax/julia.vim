@@ -9,7 +9,7 @@ elseif exists("b:current_syntax")
   finish
 endif
 
-syntax cluster juliaExpressions		contains=@juliaParItems,@juliaStringItems,@juliaKeywordItems,@juliaBlocksItems,@juliaTypesItems,@juliaConstItems,@juliaMacroItems,@juliaOperatorItems,@juliaNumberItems,@juliaCommentItems,@juliaErrorItems
+syntax cluster juliaExpressions		contains=@juliaParItems,@juliaStringItems,@juliaKeywordItems,@juliaBlocksItems,@juliaTypesItems,@juliaConstItems,@juliaMacroItems,@juliaOperatorItems,@juliaNumberItems,@juliaQuotedItems,@juliaCommentItems,@juliaErrorItems
 
 syntax cluster juliaParItems		contains=juliaParBlock,juliaSqBraBlock,juliaCurBraBlock
 syntax cluster juliaKeywordItems	contains=juliaKeyword,juliaTypedef
@@ -20,6 +20,7 @@ syntax cluster juliaMacroItems		contains=juliaMacro
 syntax cluster juliaNumberItems		contains=juliaNumbers
 syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliaEString,juliaIString,juliaLString,juliabString,juliaShellString,juliaRegEx
 syntax cluster juliaOperatorItems	contains=juliaArithOperator,juliaBitOperator,juliaBoolOperator,juliaCompOperator,juliaAssignOperator,juliaRangeOperator,juliaTypeOperator,juliaFuncOperator,juliaCTransOperator,juliaVarargOperator,juliaTernaryRegion
+syntax cluster juliaQuotedItems		contains=juliaQuotedBlockKeyword
 syntax cluster juliaCommentItems	contains=juliaCommentL
 syntax cluster juliaErrorItems		contains=juliaErrorPar,juliaErrorEnd,juliaErrorElse
 
@@ -134,6 +135,8 @@ syntax match   juliaHexEscapeChar	contained "\\x\x\{2\}"
 syntax match   juliaUniCharSmall	contained "\\u\x\{1,4\}"
 syntax match   juliaUniCharLarge	contained "\\U\x\{1,8\}"
 
+syntax match   juliaQuotedBlockKeyword	display ":\s*\(if\|elseif\|else\|while\|for\|begin\|function\|macro\|quote\|type\|try\|catch\|let\|module\)"he=s+1
+
 syntax region  juliaCommentL		matchgroup=juliaCommentDelim start="#" end="$" keepend contains=@juliaCommentSpace
 syntax cluster juliaCommentSpace	contains=juliaTodo
 syntax keyword juliaTodo		contained TODO FIXME XXX
@@ -211,6 +214,8 @@ hi def link juliaFuncOperator		juliaOperator
 hi def link juliaCTransOperator		juliaOperator
 hi def link juliaVarargOperator		juliaOperator
 hi def link juliaTernaryOperator	juliaOperator
+
+hi def link juliaQuotedBlockKeyword	juliaOperator
 
 hi def link juliaCommentL		Comment
 hi def link juliaCommentDelim		Comment
