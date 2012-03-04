@@ -18,7 +18,7 @@ syntax cluster juliaTypesItems		contains=juliaBuiltinTypeBasic,juliaBuiltinTypeN
 syntax cluster juliaConstItems		contains=juliaConstNum,juliaConstBool,juliaConstIO,juliaConstLimits,juliaConstErrno,juliaConstPcre,juliaConstGeneric
 syntax cluster juliaMacroItems		contains=juliaMacro
 syntax cluster juliaNumberItems		contains=juliaNumbers
-syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliaEString,juliaIString,juliaLString,juliabString,juliaShellString,juliaRegEx
+syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliaEString,juliaIString,juliaLString,juliabString,juliafString,juliaShellString,juliaRegEx
 syntax cluster juliaOperatorItems	contains=juliaArithOperator,juliaBitOperator,juliaBoolOperator,juliaCompOperator,juliaAssignOperator,juliaRangeOperator,juliaTypeOperator,juliaFuncOperator,juliaCTransOperator,juliaVarargOperator,juliaTernaryRegion
 syntax cluster juliaQuotedItems		contains=juliaQuotedBlockKeyword
 syntax cluster juliaCommentItems	contains=juliaCommentL
@@ -116,6 +116,7 @@ syntax region  juliaEString		matchgroup=juliaStringDelim start=+E"+ skip=+\(\\\\
 syntax region  juliaIString		matchgroup=juliaStringDelim start=+I"+ skip=+\(\\\\\)*\\"+ end=+"+ contains=@juliaStringVars
 syntax region  juliaLString		matchgroup=juliaStringDelim start=+L"+ skip=+\(\\\\\)*\\"+ end=+"+
 syntax region  juliabString		matchgroup=juliaStringDelim start=+b"+ skip=+\(\\\\\)*\\"+ end=+"+ contains=@juliaSpecialChars
+syntax region  juliafString		matchgroup=juliaStringDelim start=+f"+ skip=+\(\\\\\)*\\"+ end=+"+ contains=@juliaSpecialChars,@juliaPrintfChars
 
 syntax region  juliaShellString		matchgroup=juliaStringDelim start=+`+ skip=+\(\\\\\)*\\`+ end=+`+ contains=@juliaStringVars,juliaSpecialChar
 
@@ -134,6 +135,13 @@ syntax match   juliaOctalEscapeChar	contained "\\\o\{3\}"
 syntax match   juliaHexEscapeChar	contained "\\x\x\{2\}"
 syntax match   juliaUniCharSmall	contained "\\u\x\{1,4\}"
 syntax match   juliaUniCharLarge	contained "\\U\x\{1,8\}"
+
+syntax cluster juliaPrintfChars		contains=juliaErrorPrintfFmt,juliaPrintfFmt
+syntax match   juliaErrorPrintfFmt	display contained "\\\?%."
+syntax match   juliaPrintfFmt		display contained "%\(\d\+\$\)\=[-+' #0]*\(\d*\|\*\|\*\d\+\$\)\(\.\(\d*\|\*\|\*\d\+\$\)\)\=\([hlLjqzt]\|ll\|hh\)\=[aAbdiuoxXDOUfFeEgGcCsSpn]"
+syntax match   juliaPrintfFmt		display contained "%%"
+syntax match   juliaPrintfFmt		display contained "\\%\(\d\+\$\)\=[-+' #0]*\(\d*\|\*\|\*\d\+\$\)\(\.\(\d*\|\*\|\*\d\+\$\)\)\=\([hlLjqzt]\|ll\|hh\)\=[aAbdiuoxXDOUfFeEgGcCsSpn]"hs=s+1
+syntax match   juliaPrintfFmt		display contained "\\%%"hs=s+1
 
 syntax match   juliaQuotedBlockKeyword	display ":\s*\(if\|elseif\|else\|while\|for\|begin\|function\|macro\|quote\|type\|try\|catch\|let\|module\)"he=s+1
 
@@ -185,6 +193,7 @@ hi def link juliaEString		String
 hi def link juliaIString		String
 hi def link juliaLString		String
 hi def link juliabString		String
+hi def link juliafString		String
 hi def link juliaShellString		String
 hi def link juliaStringDelim		String
 hi def link juliaStringVarsPla		Identifier
@@ -197,6 +206,8 @@ hi def link juliaOctalEscapeChar	SpecialChar
 hi def link juliaHexEscapeChar		SpecialChar
 hi def link juliaUniCharSmall		SpecialChar
 hi def link juliaUniCharLarge		SpecialChar
+
+hi def link juliaPrintfFmt		SpecialChar
 
 if exists("julia_highlight_operators")
   hi def link juliaOperator		Operator
@@ -226,6 +237,7 @@ hi def link juliaErrorEnd		juliaError
 hi def link juliaErrorElse		juliaError
 hi def link juliaErrorCatch		juliaError
 hi def link juliaErrorSemicol		juliaError
+hi def link juliaErrorPrintfFmt		juliaError
 
 hi def link juliaError			Error
 
