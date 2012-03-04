@@ -14,8 +14,8 @@ syntax cluster juliaExpressions		contains=@juliaParItems,@juliaStringItems,@juli
 syntax cluster juliaParItems		contains=juliaParBlock,juliaSqBraBlock,juliaCurBraBlock
 syntax cluster juliaKeywordItems	contains=juliaKeyword,juliaTypedef
 syntax cluster juliaBlocksItems		contains=juliaConditionalBlock,juliaRepeatBlock,juliaBeginBlock,juliaFunctionBlock,juliaMacroBlock,juliaQuoteBlock,juliaTypeBlock,juliaExceptionBlock,juliaLetBlock
-syntax cluster juliaTypesItems		contains=juliaBuiltinType
-syntax cluster juliaConstItems		contains=juliaConstNum,juliaConstBool,juliaConstIO,juliaConstLimits,juliaConstErrno,juliaConstGeneric
+syntax cluster juliaTypesItems		contains=juliaBuiltinTypeBasic,juliaBuiltinTypeNum,juliaBuiltinTypeError,juliaBuiltinTypeString,juliaBuiltinTypeArray,juliaBuiltinTypeTable,juliaBuiltinTypeSet,juliaBuiltinTypeIO,juliaBuiltinTypeProcess,juliaBuiltinTypeRange,juliaBuiltinTypeRegex,juliaBuiltinTypeSpecial,juliaBuiltinTypeOther
+syntax cluster juliaConstItems		contains=juliaConstNum,juliaConstBool,juliaConstIO,juliaConstLimits,juliaConstErrno,juliaConstPcre,juliaConstGeneric
 syntax cluster juliaMacroItems		contains=juliaMacro
 syntax cluster juliaNumberItems		contains=juliaNumbers
 syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliaEString,juliaIString,juliaLString,juliabString,juliaShellString,juliaRegEx
@@ -51,14 +51,28 @@ syntax region  juliaCatchBlock		matchgroup=juliaException transparent contained 
 syntax region  juliaLetBlock		matchgroup=juliaKeyword start="\<let\>" end="\<end\>" contains=@juliaExpressions fold
 syntax match   juliaTypedef		"\<\(abstract\|typealias\|bitstype\)\>"
 
-syntax match   juliaBuiltinType		display "\<\(Uint\(\|8\|16\|32\|64\)\|Int\(\|8\|16\|32\|64\)\|Float\(\|32\|64\)\|Complex\(\|64\|128\)\|ComplexNum\|Bool\|Char\|Number\|Scalar\|Real\|Integer\|Array\|DArray\|AbstractArray\|AbstractVector\|AbstractMatrix\|StridedVector\|StridedMatrix\|VecOrMat\|StridedVecOrMat\|Range\|Range1\|SparseMatrixCSC\|Tuple\|NTuple\|Buffer\|Size\|Index\|Symbol\|Function\|Vector\|Matrix\|Union\|Type\|Any\|Complex\|None\|String\|Ptr\|Void\|Exception\|PtrInt\|Type\)\>"
-syntax match   juliaConstNum		display "\<\(pi\|NaN\(32\)\?\|Inf\(32\)\?\)\>"
+syntax match   juliaBuiltinTypeBasic	display "\<\(Tuple\|NTuple\|Symbol\|Function\|Union\|Type\(\|Name\|Constructor\|Var\)\|Any\|None\|Nothing\|Ptr\|Void\|Exception\|Module\|Box\|Expr\|LambdaStaticData\|\(Abstract\|Composite\|Bits\|Func\|Union\)Kind\|\(LineNumber\|Label\|Goto\|Quote\|Top\|Symbol\)Node\|WeakRef\|Associative\|Long\(Symbol\|Tuple\|Expr\)\)\>"
+syntax match   juliaBuiltinTypeNum	display "\<\(Uint\(\|8\|16\|32\|64\)\|Int\(\|8\|16\|32\|64\)\|Float\(\|32\|64\)\|Complex\(\|64\|128\|Pair\)\|Bool\|Char\|Number\|Real\|Integer\|Rational\|BigInt\|\)\>"
+syntax match   juliaBuiltinTypeError	display "\<\(\(Bounds\|DivideByZero\|Memory\|IO\|StackOverflow\|EOF\|UndefRef\|System\|Type\|Parse\|Argument\|Unbound\|Key\|Load\|Method\)Error\|\(Interrupt\|Error\|MatrixIllConditioned\|Disconnect\)Exception\|BackTrace\)\>"
+syntax match   juliaBuiltinTypeString	display "\<\(\(\|DirectIndex\|ASCII\|UTF\(8\|32\)\|Byte\|Sub\|Latin1\|Generic\|Char\|Rep\|Rev\|Rope\|Transformed\)String\)\>"
+syntax match   juliaBuiltinTypeArray	display "\<\(Array\|DArray\|Abstract\(Array\|Vector\|Matrix\)\|Strided\(Array\|Vector\|Matrix\|VecOrMat\)\|VecOrMat\|Sparse\(MatrixCSC\|Accumulator\)\|Vector\|Matrix\|Sub\(Array\|DArray\|OrDArray\)\)\>"
+syntax match   juliaBuiltinTypeTable	display "\<\(\(\(\|WeakKey\)Hash\|Var\|Id\)Table\)\>"
+syntax match   juliaBuiltinTypeSet	display "\<\(\(\|Int\)Set\)\>"
+syntax match   juliaBuiltinTypeIO	display "\<\(IOStream\|IOTally\|FDSet\|LineIterator\)\>"
+syntax match   juliaBuiltinTypeProcess	display "\<\(Process\(Status\|NotRun\|Running\|Exited\|Signaled\|Stopped\)\|FileDes\|Pipe\(\|In\|Out\|End\)\|Executable\|Cmds\?\|Ports\?\)\>"
+syntax match   juliaBuiltinTypeRange	display "\<\(Dims\|Range\(\|s\|1\|Index\)\|Indices\|Region\)\>"
+syntax match   juliaBuiltinTypeRegex	display "\<\(Regex\(\|Match\(\|Iterator\)\)\)\>"
+syntax match   juliaBuiltinTypeSpecial	display "\<\(NotFound\|EmptyCallStack\|LocalProcess\|EnvHash\|ImaginaryUnit\)\>"
+syntax match   juliaBuiltinTypeOther	display "\<\(UniqueNames\|CallStack\|StaticVarInfo\|StateUpdate\|ShivaIterator\|Worker\|Location\|ProcessGroup\|RemoteRef\|GORef\|WorkItem\|WaitFor\|GlobalObject\|VersionNumber\)\>"
+
+syntax match   juliaConstNum		display "\<\(pi\|e\|NaN\(32\)\?\|Inf\(32\)\?\)\>"
 syntax match   juliaConstBool		display "\<\(true\|false\)\>"
-syntax match   juliaConstIO		display "\<\(std\(out\|in\|err\)_stream\|STD\(OUT\|IN\|ERR\)\|sizeof_\(ios_t\|fd_set\)\)\>"
+syntax match   juliaConstIO		display "\<\(std\(out\|in\|err\)_stream\|STD\(OUT\|IN\|ERR\)\|sizeof_\(ios_t\|fd_set\)\|ENV\)\>"
 syntax match   juliaConstPtr		display "\<\(WORD_SIZE\|C_NULL\)\>"
-syntax match   juliaConstLimits		display "\<\(MAX_\(TYPEUNION_\(LEN\|DEPTH\)\|TUPLE\(_DEPTH\|TYPE_LEN\)\)\)\>"
+syntax match   juliaConstLimits		display "\<\(MAX_\(TYPEUNION_\(LEN\|DEPTH\)\|TUPLE\(_DEPTH\|TYPE_LEN\)\)\|GRISU_\(SHORTEST\(\|_SINGLE\)\|FIXED\|PRECISION\)\)\>"
 syntax match   juliaConstErrno		display "\<E\(2BIG\|ACCES\|ADDRINUSE\|ADDRNOTAVAIL\|ADV\|AFNOSUPPORT\|AGAIN\|ALREADY\|BADE\|BADFD\|BADF\|BADMSG\|BADR\|BADRQC\|BADSLT\|BFONT\|BUSY\|CANCELED\|CHILD\|CHRNG\|COMM\|CONNABORTED\|CONNREFUSED\|CONNRESET\|DEADLK\|DESTADDRREQ\|DOM\|DOTDOT\|DQUOT\|EXIST\|FAULT\|FBIG\|HOSTDOWN\|HOSTUNREACH\|HWPOISON\|IDRM\|ILSEQ\|INPROGRESS\|INTR\|INVAL\|IO\|ISCONN\|ISDIR\|ISNAM\|KEYEXPIRED\|KEYREJECTED\|KEYREVOKED\|L2HLT\|L2NSYNC\|L3HLT\|L3RST\|LIBACC\|LIBBAD\|LIBEXEC\|LIBMAX\|LIBSCN\|LNRNG\|LOOP\|MEDIUMTYPE\|MFILE\|MLINK\|MSGSIZE\|MULTIHOP\|NAMETOOLONG\|NAVAIL\|NETDOWN\|NETRESET\|NETUNREACH\|NFILE\|NOANO\|NOBUFS\|NOCSI\|NODATA\|NODEV\|NOENT\|NOEXEC\|NOKEY\|NOLCK\|NOLINK\|NOMEDIUM\|NOMEM\|NOMSG\|NONET\|NOPKG\|NOPROTOOPT\|NOSPC\|NOSR\|NOSTR\|NOSYS\|NOTBLK\|NOTCONN\|NOTDIR\|NOTEMPTY\|NOTNAM\|NOTRECOVERABLE\|NOTSOCK\|NOTTY\|NOTUNIQ\|NXIO\|OPNOTSUPP\|OVERFLOW\|OWNERDEAD\|PERM\|PFNOSUPPORT\|PIPE\|PROTO\|PROTONOSUPPORT\|PROTOTYPE\|RANGE\|REMCHG\|REMOTE\|REMOTEIO\|RESTART\|RFKILL\|ROFS\|SHUTDOWN\|SOCKTNOSUPPORT\|SPIPE\|SRCH\|SRMNT\|STALE\|STRPIPE\|TIMEDOUT\|TIME\|TOOMANYREFS\|TXTBSY\|UCLEAN\|UNATCH\|USERS\|XDEV\|XFULL\)\>"
-syntax match   juliaConstGeneric	display "\<\(nothing\)\>"
+syntax match   juliaConstPcre		display "\<PCRE_\(ANCHORED\|AUTO_CALLOUT\|BSR_ANYCRLF\|BSR_UNICODE\|CASELESS\|CONFIG_BSR\|CONFIG_JIT\|CONFIG_LINK_SIZE\|CONFIG_MATCH_LIMIT\|CONFIG_MATCH_LIMIT_RECURSION\|CONFIG_NEWLINE\|CONFIG_POSIX_MALLOC_THRESHOLD\|CONFIG_STACKRECURSE\|CONFIG_UNICODE_PROPERTIES\|CONFIG_UTF8\|DFA_RESTART\|DFA_SHORTEST\|DOLLAR_ENDONLY\|DOTALL\|DUPNAMES\|ERROR_BADCOUNT\|ERROR_BADMAGIC\|ERROR_BADNEWLINE\|ERROR_BADOFFSET\|ERROR_BADOPTION\|ERROR_BADPARTIAL\|ERROR_BADUTF8\|ERROR_BADUTF8_OFFSET\|ERROR_CALLOUT\|ERROR_DFA_RECURSE\|ERROR_DFA_UCOND\|ERROR_DFA_UITEM\|ERROR_DFA_UMLIMIT\|ERROR_DFA_WSSIZE\|ERROR_INTERNAL\|ERROR_JIT_STACKLIMIT\|ERROR_MATCHLIMIT\|ERROR_NOMATCH\|ERROR_NOMEMORY\|ERROR_NOSUBSTRING\|ERROR_NULL\|ERROR_NULLWSLIMIT\|ERROR_PARTIAL\|ERROR_RECURSELOOP\|ERROR_RECURSIONLIMIT\|ERROR_SHORTUTF8\|ERROR_UNKNOWN_NODE\|ERROR_UNKNOWN_OPCODE\|EXTENDED\|EXTRA\|EXTRA_CALLOUT_DATA\|EXTRA_EXECUTABLE_JIT\|EXTRA_MARK\|EXTRA_MATCH_LIMIT\|EXTRA_MATCH_LIMIT_RECURSION\|EXTRA_STUDY_DATA\|EXTRA_TABLES\|FIRSTLINE\|INFO_BACKREFMAX\|INFO_CAPTURECOUNT\|INFO_DEFAULT_TABLES\|INFO_FIRSTBYTE\|INFO_FIRSTCHAR\|INFO_FIRSTTABLE\|INFO_HASCRORLF\|INFO_JCHANGED\|INFO_JIT\|INFO_JITSIZE\|INFO_LASTLITERAL\|INFO_MINLENGTH\|INFO_NAMECOUNT\|INFO_NAMEENTRYSIZE\|INFO_NAMETABLE\|INFO_OKPARTIAL\|INFO_OPTIONS\|INFO_SIZE\|INFO_STUDYSIZE\|JAVASCRIPT_COMPAT\|MAJOR\|MINOR\|MULTILINE\|NEWLINE_ANY\|NEWLINE_ANYCRLF\|NEWLINE_CR\|NEWLINE_CRLF\|NEWLINE_LF\|NO_AUTO_CAPTURE\|NO_START_OPTIMISE\|NO_START_OPTIMIZE\|NOTBOL\|NOTEMPTY\|NOTEMPTY_ATSTART\|NOTEOL\|NO_UTF8_CHECK\|PARTIAL\|PARTIAL_HARD\|PARTIAL_SOFT\|STUDY_JIT_COMPILE\|UCP\|UNGREEDY\|UTF8\|UTF8_ERR0\|UTF8_ERR1\|UTF8_ERR10\|UTF8_ERR11\|UTF8_ERR12\|UTF8_ERR13\|UTF8_ERR14\|UTF8_ERR15\|UTF8_ERR16\|UTF8_ERR17\|UTF8_ERR18\|UTF8_ERR19\|UTF8_ERR2\|UTF8_ERR20\|UTF8_ERR21\|UTF8_ERR3\|UTF8_ERR4\|UTF8_ERR5\|UTF8_ERR6\|UTF8_ERR7\|UTF8_ERR8\|UTF8_ERR9\|\(COMPILE\|EXECUTE\|OPTIONS\)_MASK\)\>"
+syntax match   juliaConstGeneric	display "\<\(nothing\|NF\)\>"
 
 syntax match   juliaMacro		display "@[_[:alpha:]][_[:alnum:]]*"
 
@@ -131,12 +145,25 @@ hi def link juliaConditional		Conditional
 hi def link juliaRepeat			Repeat
 hi def link juliaException		Exception
 hi def link juliaTypedef		Typedef
-hi def link juliaBuiltinType		Type
+hi def link juliaBuiltinTypeBasic	Type
+hi def link juliaBuiltinTypeNum		Type
+hi def link juliaBuiltinTypeError	Type
+hi def link juliaBuiltinTypeString	Type
+hi def link juliaBuiltinTypeArray	Type
+hi def link juliaBuiltinTypeTable	Type
+hi def link juliaBuiltinTypeSet		Type
+hi def link juliaBuiltinTypeIO		Type
+hi def link juliaBuiltinTypeProcess	Type
+hi def link juliaBuiltinTypeRange	Type
+hi def link juliaBuiltinTypeRegex	Type
+hi def link juliaBuiltinTypeSpecial	Type
+hi def link juliaBuiltinTypeOther	Type
 hi def link juliaConstNum		Constant
 hi def link juliaConstIO		Constant
 hi def link juliaConstPtr		Constant
 hi def link juliaConstLimits		Constant
 hi def link juliaConstErrno		Constant
+hi def link juliaConstPcre		Constant
 hi def link juliaConstGeneric		Constant
 hi def link juliaConstBool		Boolean
 hi def link juliaRangeEnd		Constant
