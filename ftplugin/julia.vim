@@ -10,7 +10,7 @@ endif
 let b:did_ftplugin = 1
 
 setlocal include="^\s*load\>"
-setlocal suffixesadd=.j
+setlocal suffixesadd=.jl
 setlocal comments=:#
 setlocal commentstring=#%s
 setlocal define="^\s*macro\>"
@@ -24,5 +24,5 @@ set shiftwidth=4
 set expandtab
 
 if has("gui_win32")
-	let b:browsefilter = "Julia Source Files (*.j)\t*.j\n"
+	let b:browsefilter = "Julia Source Files (*.jl)\t*.jl\n"
 endif
