@@ -10,7 +10,7 @@ endif
 let b:did_ftplugin = 1
 
 setlocal include="^\s*load\>"
-setlocal suffixesadd=.j
+setlocal suffixesadd=.jl
 setlocal comments=:#
 setlocal commentstring=#%s
 setlocal define="^\s*macro\>"
