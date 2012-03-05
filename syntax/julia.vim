@@ -209,7 +209,7 @@ hi def link juliaUniCharLarge		SpecialChar
 
 hi def link juliaPrintfFmt		SpecialChar
 
-if exists("julia_highlight_operators")
+if exists("g:julia_highlight_operators")
   hi def link juliaOperator		Operator
 else
   hi def link juliaOperator		juliaNone
