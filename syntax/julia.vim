@@ -37,7 +37,7 @@ syntax region  juliaParBlockInRange	matchgroup=juliaParDelim contained start="("
 syntax region  juliaSqBraBlock		matchgroup=juliaParDelim start="\[" end="\]" contains=@juliaExpressions,juliaParBlockInRange,juliaRangeEnd
 syntax region  juliaCurBraBlock		matchgroup=juliaParDelim start="{" end="}" contains=@juliaExpressions
 
-syntax match   juliaKeyword		"\<\%(return\|local\|global\|import\|export\|const\)\>"
+syntax match   juliaKeyword		"\<\%(return\|local\|global\|import\|export\|const\|in\)\>"
 syntax match   juliaRepKeyword		"\<\%(break\|continue\)\>"
 syntax region  juliaConditionalBlock	matchgroup=juliaConditional start="\<if\>" end="\<end\>" contains=@juliaExpressions,juliaConditionalEIBlock,juliaConditionalEBlock fold
 syntax region  juliaConditionalEIBlock	matchgroup=juliaConditional transparent contained start="\<elseif\>" end="\<\%(end\|else\|elseif\)\>"me=s-1 contains=@juliaExpressions,juliaConditionalEIBlock,juliaConditionalEBlock
