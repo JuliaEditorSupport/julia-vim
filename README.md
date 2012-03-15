@@ -32,4 +32,4 @@ cd julia-vim
 cp -R * ~/.vim
 ```
 
-Julia should appear as a file type and be automatically detected for files with the `.j` extension.
+Julia should appear as a file type and be automatically detected for files with the `.jl` extension.
