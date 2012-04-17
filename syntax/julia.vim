@@ -103,7 +103,7 @@ syntax match   juliaRangeOperator	":"
 syntax match   juliaTypeOperator	"\%(<:\|::\)"
 syntax match   juliaFuncOperator	"->"
 syntax match   juliaVarargOperator	"\.\{3\}"
-syntax match   juliaCTransOperator	"'"
+syntax match   juliaCTransOperator	"\.\?'"
 syntax region  juliaTernaryRegion	matchgroup=juliaTernaryOperator start="?" skip="::" end=":" contains=@juliaExpressions,juliaErrorSemicol
 
 " TODO: this is very greedy. Improve?
