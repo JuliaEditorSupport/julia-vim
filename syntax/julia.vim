@@ -14,7 +14,7 @@ syntax cluster juliaExpressions		contains=@juliaParItems,@juliaStringItems,@juli
 syntax cluster juliaParItems		contains=juliaParBlock,juliaSqBraBlock,juliaCurBraBlock
 syntax cluster juliaKeywordItems	contains=juliaKeyword,juliaRepKeyword,juliaTypedef
 syntax cluster juliaBlocksItems		contains=juliaConditionalBlock,juliaRepeatBlock,juliaBeginBlock,juliaFunctionBlock,juliaMacroBlock,juliaQuoteBlock,juliaTypeBlock,juliaExceptionBlock,juliaLetBlock,juliaModuleBlock
-syntax cluster juliaTypesItems		contains=juliaBuiltinTypeBasic,juliaBuiltinTypeNum,juliaBuiltinTypeError,juliaBuiltinTypeString,juliaBuiltinTypeArray,juliaBuiltinTypeTable,juliaBuiltinTypeSet,juliaBuiltinTypeIO,juliaBuiltinTypeProcess,juliaBuiltinTypeRange,juliaBuiltinTypeRegex,juliaBuiltinTypeSpecial,juliaBuiltinTypeOther
+syntax cluster juliaTypesItems		contains=juliaBuiltinTypeBasic,juliaBuiltinTypeNum,juliaBuiltinTypeError,juliaBuiltinTypeString,juliaBuiltinTypeArray,juliaBuiltinTypeTable,juliaBuiltinTypeSet,juliaBuiltinTypeIO,juliaBuiltinTypeProcess,juliaBuiltinTypeRange,juliaBuiltinTypeRegex,juliaBuiltinTypeOptions,juliaBuiltinTypeSpecial,juliaBuiltinTypeOther
 syntax cluster juliaConstItems		contains=juliaConstNum,juliaConstBool,juliaConstIO,juliaConstPtr,juliaConstLimits,juliaConstErrno,juliaConstPcre,juliaConstGeneric
 syntax cluster juliaMacroItems		contains=juliaMacro,juliaDollarVar
 syntax cluster juliaNumberItems		contains=juliaNumbers
@@ -58,13 +58,14 @@ syntax match   juliaBuiltinTypeBasic	display "\<\%(Tuple\|NTuple\|Symbol\|Functi
 syntax match   juliaBuiltinTypeNum	display "\<\%(Uint\%(\|8\|16\|32\|64\)\|Int\%(\|8\|16\|32\|64\)\|Float\%(\|32\|64\)\|Complex\%(\|64\|128\|Pair\)\|Bool\|Char\|Number\|Real\|Integer\|Rational\|BigInt\|\)\>"
 syntax match   juliaBuiltinTypeError	display "\<\%(\%(Bounds\|DivideByZero\|Memory\|IO\|StackOverflow\|EOF\|UndefRef\|System\|Type\|Parse\|Argument\|Unbound\|Key\|Load\|Method\)Error\|\%(Interrupt\|Error\|MatrixIllConditioned\|Disconnect\)Exception\|BackTrace\)\>"
 syntax match   juliaBuiltinTypeString	display "\<\%(\%(\|DirectIndex\|ASCII\|UTF\%(8\|32\)\|Byte\|Sub\|Latin1\|Generic\|Char\|Rep\|Rev\|Rope\|Transformed\)String\)\>"
-syntax match   juliaBuiltinTypeArray	display "\<\%(Array\|DArray\|Abstract\%(Array\|Vector\|Matrix\)\|Strided\%(Array\|Vector\|Matrix\|VecOrMat\)\|VecOrMat\|Sparse\%(MatrixCSC\|Accumulator\)\|Vector\|Matrix\|Sub\%(Array\|DArray\|OrDArray\)\)\>"
+syntax match   juliaBuiltinTypeArray	display "\<\%(Array\|DArray\|Abstract\%(Array\|Vector\|Matrix\)\|Strided\%(Array\|Vector\|Matrix\|VecOrMat\)\|VecOrMat\|Sparse\%(MatrixCSC\|Accumulator\)\|Vector\|Matrix\|Sub\%(Array\|DArray\|OrDArray\)\|Bit\%(Array\|Vector\|Matrix\)\)\>"
 syntax match   juliaBuiltinTypeTable	display "\<\%(\%(\%(\|WeakKey\)Hash\|Var\|Id\)Table\)\>"
 syntax match   juliaBuiltinTypeSet	display "\<\%(\%(\|Int\)Set\)\>"
 syntax match   juliaBuiltinTypeIO	display "\<\%(IOStream\|IOTally\|FDSet\|LineIterator\)\>"
 syntax match   juliaBuiltinTypeProcess	display "\<\%(Process\%(Status\|NotRun\|Running\|Exited\|Signaled\|Stopped\)\|FileDes\|Pipe\%(\|In\|Out\|End\)\|Executable\|Cmds\?\|Ports\?\)\>"
 syntax match   juliaBuiltinTypeRange	display "\<\%(Dims\|Range\%(\|s\|1\|Index\)\|Indices\|Region\)\>"
 syntax match   juliaBuiltinTypeRegex	display "\<\%(Regex\%(\|Match\%(\|Iterator\)\)\)\>"
+syntax match   juliaBuiltinTypeOptions	display "\<\%(Options\%(Checking\)\?\|Check\%(Warn\|None\|Error\)\)\>"
 syntax match   juliaBuiltinTypeSpecial	display "\<\%(NotFound\|EmptyCallStack\|LocalProcess\|EnvHash\|ImaginaryUnit\)\>"
 syntax match   juliaBuiltinTypeOther	display "\<\%(UniqueNames\|CallStack\|StaticVarInfo\|StateUpdate\|ShivaIterator\|Worker\|Location\|ProcessGroup\|RemoteRef\|GORef\|WorkItem\|WaitFor\|GlobalObject\|VersionNumber\)\>"
 
@@ -174,6 +175,7 @@ hi def link juliaBuiltinTypeIO		Type
 hi def link juliaBuiltinTypeProcess	Type
 hi def link juliaBuiltinTypeRange	Type
 hi def link juliaBuiltinTypeRegex	Type
+hi def link juliaBuiltinTypeOptions	Type
 hi def link juliaBuiltinTypeSpecial	Type
 hi def link juliaBuiltinTypeOther	Type
 hi def link juliaConstNum		Constant
