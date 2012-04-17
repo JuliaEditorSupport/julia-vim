@@ -62,7 +62,8 @@ if has("gui_win32")
 	let b:browsefilter = "Julia Source Files (*.jl)\t*.jl\n"
 endif
 
-let b:undo_ftplugin = "setlocal include< suffixesadd< comments< commentstring< define< shiftwidth< expandtab<"
+let b:undo_ftplugin = "setlocal include< suffixesadd< comments< commentstring<"
+	\ . " define< shiftwidth< expandtab< indentexpr< indentkeys<"
 	\ . " | unlet! b:browsefiler b:match_words b:match_skip"
 	\ . " | delfunction JuliaGetMatchWords"
 

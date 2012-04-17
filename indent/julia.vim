@@ -10,6 +10,7 @@ set autoindent
 
 setlocal indentexpr=GetJuliaIndent()
 setlocal indentkeys+==end,=else,=catch
+setlocal indentkeys-=0#
 
 " Only define the function once.
 if exists("*GetJuliaIndent")
