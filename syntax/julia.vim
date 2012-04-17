@@ -16,7 +16,7 @@ syntax cluster juliaKeywordItems	contains=juliaKeyword,juliaRepKeyword,juliaType
 syntax cluster juliaBlocksItems		contains=juliaConditionalBlock,juliaRepeatBlock,juliaBeginBlock,juliaFunctionBlock,juliaMacroBlock,juliaQuoteBlock,juliaTypeBlock,juliaExceptionBlock,juliaLetBlock,juliaModuleBlock
 syntax cluster juliaTypesItems		contains=juliaBuiltinTypeBasic,juliaBuiltinTypeNum,juliaBuiltinTypeError,juliaBuiltinTypeString,juliaBuiltinTypeArray,juliaBuiltinTypeTable,juliaBuiltinTypeSet,juliaBuiltinTypeIO,juliaBuiltinTypeProcess,juliaBuiltinTypeRange,juliaBuiltinTypeRegex,juliaBuiltinTypeSpecial,juliaBuiltinTypeOther
 syntax cluster juliaConstItems		contains=juliaConstNum,juliaConstBool,juliaConstIO,juliaConstPtr,juliaConstLimits,juliaConstErrno,juliaConstPcre,juliaConstGeneric
-syntax cluster juliaMacroItems		contains=juliaMacro
+syntax cluster juliaMacroItems		contains=juliaMacro,juliaDollarVar
 syntax cluster juliaNumberItems		contains=juliaNumbers
 syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliaEString,juliaIString,juliaLString,juliabString,juliafString,juliaShellString,juliaRegEx
 syntax cluster juliaOperatorItems	contains=juliaArithOperator,juliaBitOperator,juliaBoolOperator,juliaCompOperator,juliaAssignOperator,juliaRangeOperator,juliaTypeOperator,juliaFuncOperator,juliaCTransOperator,juliaVarargOperator,juliaTernaryRegion
@@ -77,7 +77,7 @@ syntax match   juliaConstErrno		display "\<E\%(A\%(CCES\|LREADY\|D\%(DR\%(INUSE\
 syntax match   juliaConstPcre		display "\<PCRE_\%(A\%(UTO_CALLOUT\|NCHORED\)\|C\%(ASELESS\|O\%(MPILE_MASK\|NFIG_\%(BSR\|JIT\|MATCH_LIMIT\%(\|_RECURSION\)\|LINK_SIZE\|NEWLINE\|POSIX_MALLOC_THRESHOLD\|STACKRECURSE\|U\%(TF8\|NICODE_PROPERTIES\)\)\)\)\|BSR_\%(ANYCRLF\|UNICODE\)\|E\%(X\%(ECUTE_MASK\|T\%(RA\%(\|_\%(MA\%(RK\|TCH_LIMIT\%(\|_RECURSION\)\)\|CALLOUT_DATA\|EXECUTABLE_JIT\|STUDY_DATA\|TABLES\)\)\|ENDED\)\)\|RROR_\%(CALLOUT\|BAD\%(COUNT\|MAGIC\|O\%(PTION\|FFSET\)\|NEWLINE\|PARTIAL\|UTF8\%(\|_OFFSET\)\)\|DFA_\%(RECURSE\|U\%(ITEM\|COND\|MLIMIT\)\|WSSIZE\)\|INTERNAL\|JIT_STACKLIMIT\|MATCHLIMIT\|N\%(ULL\%(\|WSLIMIT\)\|O\%(SUBSTRING\|M\%(ATCH\|EMORY\)\)\)\|PARTIAL\|SHORTUTF8\|RECURS\%(IONLIMIT\|ELOOP\)\|UNKNOWN_\%(OPCODE\|NODE\)\)\)\|D\%(UPNAMES\|O\%(LLAR_ENDONLY\|TALL\)\|FA_\%(SHORTEST\|RESTART\)\)\|FIRSTLINE\|INFO_\%(CAPTURECOUNT\|BACKREFMAX\|DEFAULT_TABLES\|FIRST\%(CHAR\|BYTE\|TABLE\)\|HASCRORLF\|J\%(IT\%(\|SIZE\)\|CHANGED\)\|MINLENGTH\|LASTLITERAL\|O\%(PTIONS\|KPARTIAL\)\|NAME\%(COUNT\|ENTRYSIZE\|TABLE\)\|S\%(IZE\|TUDYSIZE\)\)\|JAVASCRIPT_COMPAT\|M\%(AJOR\|INOR\|ULTILINE\)\|OPTIONS_MASK\|N\%(EWLINE_\%(ANY\%(\|CRLF\)\|CR\%(\|LF\)\|LF\)\|O\%(T\%(BOL\|E\%(MPTY\%(\|_ATSTART\)\|OL\)\)\|_\%(AUTO_CAPTURE\|START_OPTIMI\%(SE\|ZE\)\|UTF8_CHECK\)\)\)\|PARTIAL\%(\|_\%(HARD\|SOFT\)\)\|STUDY_JIT_COMPILE\|U\%(CP\|TF8\%(\|_ERR\%(1\%(\|1\|0\|3\|2\|5\|4\|7\|6\|9\|8\)\|0\|3\|2\%(1\|0\|\)\|5\|4\|7\|6\|9\|8\)\)\|NGREEDY\)\|VERSION\)\>"
 syntax match   juliaConstGeneric	display "\<\%(nothing\|NF\)\>"
 
-syntax match   juliaMacro		display "@[_[:alpha:]][_[:alnum:]]*"
+syntax match   juliaMacro		display "@[_[:alpha:]][_[:alnum:]!]*"
 
 syntax match   juliaNumbers		display transparent "\<\d\|\.\d\|\<im\>" contains=juliaNumber,juliaFloat,juliaComplexUnit
 
@@ -95,16 +95,19 @@ syntax match   juliaComplexUnit		display	contained "\<im\>"
 
 syntax match   juliaArithOperator	"\%(+\|-\|//\|%\|\.\?\%(\*\|/\|\\\|\^\)\)"
 syntax match   juliaCompOperator	"[<>]"
-syntax match   juliaBitOperator		"\%(<<\|>>>\|>>\|&\||\|\~\)"
+syntax match   juliaBitOperator		"\%(<<\|>>>\|>>\|&\||\|\~\|\$\)"
 syntax match   juliaBoolOperator	"\%(&&\|||\|!\)"
 syntax match   juliaCompOperator	"\%([<>]=\|!=\|==\)"
-syntax match   juliaAssignOperator	"\%([|\&*/\\%+-]\|<<\|>>>\|>>\)\?="
+syntax match   juliaAssignOperator	"\%([$|\&*/\\%+-]\|<<\|>>>\|>>\)\?="
 syntax match   juliaRangeOperator	":"
 syntax match   juliaTypeOperator	"\%(<:\|::\)"
 syntax match   juliaFuncOperator	"->"
 syntax match   juliaVarargOperator	"\.\{3\}"
 syntax match   juliaCTransOperator	"'"
 syntax region  juliaTernaryRegion	matchgroup=juliaTernaryOperator start="?" skip="::" end=":" contains=@juliaExpressions,juliaErrorSemicol
+
+" TODO: this is very greedy. Improve?
+syntax match   juliaDollarVar		contained "[[:alnum:]_]\@<!$[_[:alpha:]][_[:alnum:]!]*"
 
 syntax match   juliaChar		display "'\\\?.'" contains=juliaSpecialChar
 syntax match   juliaChar		display "'\\\o\{3\}'" contains=juliaOctalEscapeChar
@@ -182,6 +185,8 @@ hi def link juliaConstPcre		Constant
 hi def link juliaConstGeneric		Constant
 hi def link juliaConstBool		Boolean
 hi def link juliaRangeEnd		Constant
+
+hi def link juliaDollarVar		Identifier
 
 hi def link juliaMacro			Macro
 
