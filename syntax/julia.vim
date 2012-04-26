@@ -14,7 +14,7 @@ syntax cluster juliaExpressions		contains=@juliaParItems,@juliaStringItems,@juli
 syntax cluster juliaParItems		contains=juliaParBlock,juliaSqBraBlock,juliaCurBraBlock
 syntax cluster juliaKeywordItems	contains=juliaKeyword,juliaRepKeyword,juliaTypedef
 syntax cluster juliaBlocksItems		contains=juliaConditionalBlock,juliaRepeatBlock,juliaBeginBlock,juliaFunctionBlock,juliaMacroBlock,juliaQuoteBlock,juliaTypeBlock,juliaExceptionBlock,juliaLetBlock,juliaModuleBlock
-syntax cluster juliaTypesItems		contains=juliaBuiltinTypeBasic,juliaBuiltinTypeNum,juliaBuiltinTypeError,juliaBuiltinTypeString,juliaBuiltinTypeArray,juliaBuiltinTypeTable,juliaBuiltinTypeSet,juliaBuiltinTypeIO,juliaBuiltinTypeProcess,juliaBuiltinTypeRange,juliaBuiltinTypeRegex,juliaBuiltinTypeOptions,juliaBuiltinTypeSpecial,juliaBuiltinTypeOther
+syntax cluster juliaTypesItems		contains=juliaBuiltinTypeBasic,juliaBuiltinTypeNum,juliaBuiltinTypeError,juliaBuiltinTypeString,juliaBuiltinTypeArray,juliaBuiltinTypeDict,juliaBuiltinTypeSet,juliaBuiltinTypeIO,juliaBuiltinTypeProcess,juliaBuiltinTypeRange,juliaBuiltinTypeRegex,juliaBuiltinTypeOptions,juliaBuiltinTypeSpecial,juliaBuiltinTypeOther
 syntax cluster juliaConstItems		contains=juliaConstNum,juliaConstBool,juliaConstIO,juliaConstPtr,juliaConstLimits,juliaConstErrno,juliaConstPcre,juliaConstGeneric
 syntax cluster juliaMacroItems		contains=juliaMacro,juliaDollarVar
 syntax cluster juliaNumberItems		contains=juliaNumbers
@@ -59,7 +59,7 @@ syntax match   juliaBuiltinTypeNum	display "\<\%(Uint\%(\|8\|16\|32\|64\)\|Int\%
 syntax match   juliaBuiltinTypeError	display "\<\%(\%(Bounds\|DivideByZero\|Memory\|IO\|StackOverflow\|EOF\|UndefRef\|System\|Type\|Parse\|Argument\|Unbound\|Key\|Load\|Method\)Error\|\%(Interrupt\|Error\|MatrixIllConditioned\|Disconnect\)Exception\|BackTrace\)\>"
 syntax match   juliaBuiltinTypeString	display "\<\%(\%(\|DirectIndex\|ASCII\|UTF\%(8\|32\)\|Byte\|Sub\|Latin1\|Generic\|Char\|Rep\|Rev\|Rope\|Transformed\)String\)\>"
 syntax match   juliaBuiltinTypeArray	display "\<\%(Array\|DArray\|Abstract\%(Array\|Vector\|Matrix\)\|Strided\%(Array\|Vector\|Matrix\|VecOrMat\)\|VecOrMat\|Sparse\%(MatrixCSC\|Accumulator\)\|Vector\|Matrix\|Sub\%(Array\|DArray\|OrDArray\)\|Bit\%(Array\|Vector\|Matrix\)\)\>"
-syntax match   juliaBuiltinTypeTable	display "\<\%(\%(\%(\|WeakKey\)Hash\|Var\|Id\)Table\)\>"
+syntax match   juliaBuiltinTypeDict	display "\<\%(\%(\|WeakKey\|ObjectId\)Dict\|VarTable\)\>"
 syntax match   juliaBuiltinTypeSet	display "\<\%(\%(\|Int\)Set\)\>"
 syntax match   juliaBuiltinTypeIO	display "\<\%(IOStream\|IOTally\|FDSet\|LineIterator\)\>"
 syntax match   juliaBuiltinTypeProcess	display "\<\%(Process\%(Status\|NotRun\|Running\|Exited\|Signaled\|Stopped\)\|FileDes\|Pipe\%(\|In\|Out\|End\)\|Executable\|Cmds\?\|Ports\?\)\>"
@@ -169,7 +169,7 @@ hi def link juliaBuiltinTypeNum		Type
 hi def link juliaBuiltinTypeError	Type
 hi def link juliaBuiltinTypeString	Type
 hi def link juliaBuiltinTypeArray	Type
-hi def link juliaBuiltinTypeTable	Type
+hi def link juliaBuiltinTypeDict	Type
 hi def link juliaBuiltinTypeSet		Type
 hi def link juliaBuiltinTypeIO		Type
 hi def link juliaBuiltinTypeProcess	Type
