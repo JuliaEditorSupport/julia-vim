@@ -35,7 +35,7 @@ syntax match   juliaRangeEnd		display contained "\<end\>"
 syntax region  juliaParBlock		matchgroup=juliaParDelim start="(" end=")" contains=@juliaExpressions
 syntax region  juliaParBlockInRange	matchgroup=juliaParDelim contained start="(" end=")" contains=@juliaExpressions,juliaParBlockInRange,juliaRangeEnd
 syntax region  juliaSqBraBlock		matchgroup=juliaParDelim start="\[" end="\]" contains=@juliaExpressions,juliaParBlockInRange,juliaRangeEnd,juliaComprehensionFor
-syntax region  juliaCurBraBlock		matchgroup=juliaParDelim start="{" end="}" contains=@juliaExpressions
+syntax region  juliaCurBraBlock		matchgroup=juliaParDelim start="{" end="}" contains=@juliaExpressions,juliaComprehensionFor
 
 syntax match   juliaKeyword		"\<\%(return\|local\|global\|import\|export\|const\|in\)\>"
 syntax match   juliaRepKeyword		"\<\%(break\|continue\)\>"
