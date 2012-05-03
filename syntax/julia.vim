@@ -34,7 +34,7 @@ syntax match   juliaRangeEnd		display contained "\<end\>"
 
 syntax region  juliaParBlock		matchgroup=juliaParDelim start="(" end=")" contains=@juliaExpressions
 syntax region  juliaParBlockInRange	matchgroup=juliaParDelim contained start="(" end=")" contains=@juliaExpressions,juliaParBlockInRange,juliaRangeEnd
-syntax region  juliaSqBraBlock		matchgroup=juliaParDelim start="\[" end="\]" contains=@juliaExpressions,juliaParBlockInRange,juliaRangeEnd
+syntax region  juliaSqBraBlock		matchgroup=juliaParDelim start="\[" end="\]" contains=@juliaExpressions,juliaParBlockInRange,juliaRangeEnd,juliaComprehensionFor
 syntax region  juliaCurBraBlock		matchgroup=juliaParDelim start="{" end="}" contains=@juliaExpressions
 
 syntax match   juliaKeyword		"\<\%(return\|local\|global\|import\|export\|const\|in\)\>"
@@ -53,6 +53,8 @@ syntax region  juliaModuleBlock		matchgroup=juliaBlKeyword start="\<module\>" en
 syntax region  juliaExceptionBlock	matchgroup=juliaException start="\<try\>" end="\<end\>" contains=@juliaExpressions,juliaCatchBlock fold
 syntax region  juliaCatchBlock		matchgroup=juliaException transparent contained start="\<catch\>" end="\<end\>"me=s-1 contains=@juliaExpressions
 syntax match   juliaTypedef		"\<\%(abstract\|typealias\|bitstype\)\>"
+
+syntax match   juliaComprehensionFor    display contained "\<for\>"
 
 syntax match   juliaBuiltinTypeBasic	display "\<\%(Tuple\|NTuple\|Symbol\|Function\|Union\|Type\%(\|Name\|Constructor\|Var\)\|Any\|None\|Nothing\|Ptr\|Void\|Exception\|Module\|Box\|Expr\|LambdaStaticData\|\%(Abstract\|Composite\|Bits\|Func\|Union\)Kind\|\%(LineNumber\|Label\|Goto\|Quote\|Top\|Symbol\)Node\|WeakRef\|Associative\|Long\%(Symbol\|Tuple\|Expr\)\)\>"
 syntax match   juliaBuiltinTypeNum	display "\<\%(Uint\%(\|8\|16\|32\|64\)\|Int\%(\|8\|16\|32\|64\)\|Float\%(\|32\|64\)\|Complex\%(\|64\|128\|Pair\)\|Bool\|Char\|Number\|Real\|Integer\|Rational\|BigInt\|\)\>"
@@ -187,6 +189,8 @@ hi def link juliaConstPcre		Constant
 hi def link juliaConstGeneric		Constant
 hi def link juliaConstBool		Boolean
 hi def link juliaRangeEnd		Constant
+
+hi def link juliaComprehensionFor	Keyword
 
 hi def link juliaDollarVar		Identifier
 
