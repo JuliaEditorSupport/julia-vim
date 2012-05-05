@@ -255,13 +255,6 @@ hi def link juliaErrorPrintfFmt		juliaError
 
 hi def link juliaError			Error
 
-if exists("julia_minlines")
-  let b:julia_minlines = julia_minlines
-else
-  let b:julia_minlines = 50
-endif
-
-syn sync fromstart
-" exec "syn sync match juliaSyncBlock grouphere juliaParBlock /(/"
+syntax sync fromstart
 
 let b:current_syntax = "julia"
