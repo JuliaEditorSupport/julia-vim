@@ -97,10 +97,10 @@ syntax match   juliaFloat		display contained "\d\+[eE][-+]\?\d\+\%(\>\|im\>\|\ze
 syntax match   juliaComplexUnit		display	contained "\<im\>"
 
 syntax match   juliaArithOperator	"\%(+\|-\|//\|%\|\.\?\%(\*\|/\|\\\|\^\)\)"
-syntax match   juliaCompOperator	"[<>]"
+syntax match   juliaCompOperator	"\.\?[<>]"
 syntax match   juliaBitOperator		"\%(<<\|>>>\|>>\|&\||\|\~\|\$\)"
 syntax match   juliaBoolOperator	"\%(&&\|||\|!\)"
-syntax match   juliaCompOperator	"\%([<>]=\|!=\|==\)"
+syntax match   juliaCompOperator	"\.\?\%([<>]=\|!=\|==\)"
 syntax match   juliaAssignOperator	"\%([$|\&*/\\%+-]\|<<\|>>>\|>>\)\?="
 syntax match   juliaRangeOperator	":"
 syntax match   juliaTypeOperator	"\%(<:\|::\)"
