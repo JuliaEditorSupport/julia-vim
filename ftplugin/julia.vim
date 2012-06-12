@@ -16,6 +16,7 @@ setlocal include="^\s*load\>"
 setlocal suffixesadd=.jl
 setlocal comments=:#
 setlocal commentstring=#%s
+setlocal cinoptions+=#1
 setlocal define="^\s*macro\>"
 
 " Comment the following line if you don't want operators to be
@@ -30,7 +31,7 @@ setlocal expandtab
 if exists("loaded_matchit")
 	" note: beginKeywords must contain all blocks in order
 	" for nested-structures-skipping to work properly
-	let s:beginKeywords = '\<\%(function\|macro\|begin\|type\|let\|module\|quote\|if\|for\|while\|try\)\>'
+	let s:beginKeywords = '\<\%(function\|macro\|begin\|type\|let\|do\|module\|quote\|if\|for\|while\|try\)\>'
 	let s:endKeyowrds = '\<end\>'
 
 	" note: this function relies heavily on the syntax file
@@ -63,7 +64,7 @@ if has("gui_win32")
 endif
 
 let b:undo_ftplugin = "setlocal include< suffixesadd< comments< commentstring<"
-	\ . " define< shiftwidth< expandtab< indentexpr< indentkeys<"
+	\ . " define< shiftwidth< expandtab< indentexpr< indentkeys< cinoptions<"
 	\ . " | unlet! b:browsefiler b:match_words b:match_skip"
 	\ . " | delfunction JuliaGetMatchWords"
 
