@@ -27,10 +27,10 @@ function GetJuliaIndent()
   endif
 
   " Add a 'shiftwidth' after if, else, elseif, for, while, try, catch, function, macro
-  " begin, type, let, module and quote.
+  " begin, type, let, module, @ and quote.
   let ind = indent(lnum)
   let line = getline(lnum)
-  let i = match(line, '^\s*\(if\|while\|for\|try\|catch\|function\|else\%[if]\|macro\|begin\|type\|let\|module\|quote\)\>')
+  let i = match(line, '^\s*\(if\|while\|for\|try\|catch\|function\|else\%[if]\|macro\|begin\|type\|let\|module\|@.*\|quote\)\>')
   if i >= 0
     let ind += &sw
   endif
