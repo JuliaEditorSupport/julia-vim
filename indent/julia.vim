@@ -36,19 +36,24 @@ function JuliaMatch(lnum, str, regex, st)
 endfunction
 
 function GetJuliaNestingStruct(lnum)
+  " Auxiliary function to inspect the block structure of a line
   let line = getline(a:lnum)
   let s = 0
   let blocks_stack = []
   let num_closed_blocks = 0
   while 1
-    let fb = JuliaMatch(a:lnum, line, '@\@<!\<\%(if\|else\%[if]\|while\|for\|try\|catch\|function\|macro\|begin\|type\|let\|module\|quote\|do\)\>', s)
+    let fb = JuliaMatch(a:lnum, line, '@\@<!\<\%(if\|else\%(if\)\=\|while\|for\|try\|catch\|function\|macro\|begin\|type\|let\|module\|quote\|do\)\>', s)
     let fe = JuliaMatch(a:lnum, line, '@\@<!\<end\>', s)
 
     if fb < 0 && fe < 0
+      " No blocks found
       break
     end
 
     if fb >= 0 && (fb < fe || fe < 0)
+      " The first occurrence is an opening block keyword
+      " Note: some keywords (elseif,else,catch) are both closing
+      "       blocks and opening new ones
 
       let i = JuliaMatch(a:lnum, line, '@\@<!\<if\>', s)
       if i >= 0 && i == fb
@@ -70,9 +75,7 @@ function GetJuliaNestingStruct(lnum)
       let i = JuliaMatch(a:lnum, line, '@\@<!\<else\>', s)
       if i >= 0 && i == fb
         let s = i+1
-        if len(blocks_stack) > 0 && blocks_stack[-1] == 'if'
-          let blocks_stack[-1] = 'else'
-        elseif len(blocks_stack) > 0 && blocks_stack[-1] == 'elseif'
+        if len(blocks_stack) > 0 && blocks_stack[-1] =~ '\<\%(else\)\=if\>'
           let blocks_stack[-1] = 'else'
         else
           call add(blocks_stack, 'else')
@@ -106,51 +109,27 @@ function GetJuliaNestingStruct(lnum)
         continue
       endif
 
+      " Note: it should be impossible to get here
+      break
+
     else
+      " The first occurrence is an 'end'
 
-      let i = fe
+      let s = fe+1
       if len(blocks_stack) == 0
-        let s = i+1
         let num_closed_blocks += 1
-        continue
-      end
+      else
+        call remove(blocks_stack, -1)
+      endif
+      continue
 
-      if blocks_stack[-1] == 'if'
-        call remove(blocks_stack, -1)
-        let s = i+1
-        continue
-      end
-      if blocks_stack[-1] == 'elseif'
-        call remove(blocks_stack, -1)
-        let s = i+1
-        continue
-      end
-      if blocks_stack[-1] == 'else'
-        call remove(blocks_stack, -1)
-        let s = i+1
-        continue
-      end
-      if blocks_stack[-1] == 'try'
-        call remove(blocks_stack, -1)
-        let s = i+1
-        continue
-      end
-      if blocks_stack[-1] == 'catch'
-        call remove(blocks_stack, -1)
-        let s = i+1
-        continue
-      end
-      if blocks_stack[-1] == 'other'
-        call remove(blocks_stack, -1)
-        let s = i+1
-        continue
-      end
-    end
+    endif
 
-    " note: we shouldn't get here (?)
+    " Note: it should be impossible to get here
     break
   endwhile
-  return [blocks_stack, num_closed_blocks]
+  let num_open_blocks = len(blocks_stack)
+  return [num_open_blocks, num_closed_blocks]
 endfunction
 
 function GetJuliaIndent()
@@ -164,16 +143,21 @@ function GetJuliaIndent()
 
   let ind = indent(lnum)
 
-  let [blocks_stack, num_closed_blocks] = GetJuliaNestingStruct(lnum)
+  " Analyse previous line
+  let [num_open_blocks, num_closed_blocks] = GetJuliaNestingStruct(lnum)
 
-  let num_open_blocks = len(blocks_stack)
+  " Increase indentation for each newly opened block
+  " in the previous line
   while num_open_blocks > 0
     let ind += &sw
     let num_open_blocks -= 1
   endwhile
 
-  let [blocks_stack, num_closed_blocks] = GetJuliaNestingStruct(v:lnum)
+  " Analyse current line
+  let [num_open_blocks, num_closed_blocks] = GetJuliaNestingStruct(v:lnum)
 
+  " Decrease indentation for each closed block
+  " in the current line
   while num_closed_blocks > 0
     let ind -= &sw
     let num_closed_blocks -= 1
