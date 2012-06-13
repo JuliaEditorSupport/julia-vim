@@ -23,7 +23,7 @@ function JuliaMatch(lnum, str, regex, st)
   let s = a:st
   while 1
     let f = match(a:str, a:regex, s)
-    if f > 0
+    if f >= 0
       let attr = synIDattr(synID(a:lnum,f+1,1),"name")
       if attr =~ s:skipPatterns
         let s = f+1
