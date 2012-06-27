@@ -66,7 +66,7 @@ function GetJuliaNestingStruct(lnum)
         let s = i+1
         if len(blocks_stack) > 0 && blocks_stack[-1] == 'if'
           let blocks_stack[-1] = 'elseif'
-        elseif len(blocks_stack) > 0 && blocks_stack[-1] != 'elseif'
+        elseif (len(blocks_stack) > 0 && blocks_stack[-1] != 'elseif') || len(blocks_stack) == 0
           call add(blocks_stack, 'elseif')
           let num_closed_blocks += 1
         endif
