@@ -85,15 +85,18 @@ syntax match   juliaMacro		display "@[_[:alpha:]][_[:alnum:]!]*"
 
 syntax match   juliaNumbers		display transparent "\<\d\|\.\d\|\<im\>" contains=juliaNumber,juliaFloat,juliaComplexUnit
 
-syntax match   juliaNumber		display contained "\d\+\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
+"decimal number
+syntax match   juliaNumber		display contained "\d\%(_\d\|\d\)*\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
 "hex number
-syntax match   juliaNumber		display contained "0x\x\+\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
-"floating point number, with dot, optional exponent
-syntax match   juliaFloat		display contained "\d\+\.\d*\%([eE][-+]\?\d\+\)\?\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
+syntax match   juliaNumber		display contained "0x\x\%(_\x\|\x\)*\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
+"floating point number, ending with a dot, optional exponent
+syntax match   juliaFloat		display contained "\d\%(_\d\|\d\)*\.\%([eE][-+]\?\d\+\>\)\?\%(im\>\|\ze[_[:alpha:]]\)\?" contains=juliaComplexUnit
 "floating point number, starting with a dot, optional exponent
-syntax match   juliaFloat		display contained "\.\d\+\%([eE][-+]\?\d\+\)\?\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
+syntax match   juliaFloat		display contained "\.\d\%(_\d\|\d\)*\%([eE][-+]\?\d\+\)\?\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
+"floating point number, with dot, optional exponent
+syntax match   juliaFloat		display contained "\d\%(_\d\|\d\)*\.\d\%(_\d\|\d\)*\%([eE][-+]\?\d\+\)\?\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
 "floating point number, without dot, with exponent
-syntax match   juliaFloat		display contained "\d\+[eE][-+]\?\d\+\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
+syntax match   juliaFloat		display contained "\d\%(_\d\|\d\)*[eE][-+]\?\d\+\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
 
 syntax match   juliaComplexUnit		display	contained "\<im\>"
 
