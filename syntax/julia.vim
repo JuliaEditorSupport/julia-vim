@@ -135,7 +135,7 @@ syntax region  juliaStringVarsCurBra	contained matchgroup=juliaStringVarDelim st
 syntax match   juliaStringVarsPla	contained "$[_[:alpha:]][_[:alnum:]]*"
 
 " TODO improve RegEx
-syntax region  juliaRegEx		matchgroup=juliaStringDelim start=+ri\?m\?s\?"+ skip=+\%(\\\\\)*\\"+ end=+"+
+syntax region  juliaRegEx		matchgroup=juliaStringDelim start=+r"+ skip=+\%(\\\\\)*\\"+ end=+"[imsx]*+
 
 syntax cluster juliaSpecialChars	contains=juliaSpecialChar,juliaOctalEscapeChar,juliaHexEscapeChar,juliaUniCharSmall,juliaUniCharLarge
 syntax match   juliaSpecialChar		contained "\\."
