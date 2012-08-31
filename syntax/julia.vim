@@ -14,8 +14,8 @@ syntax cluster juliaExpressions		contains=@juliaParItems,@juliaStringItems,@juli
 syntax cluster juliaParItems		contains=juliaParBlock,juliaSqBraBlock,juliaCurBraBlock
 syntax cluster juliaKeywordItems	contains=juliaKeyword,juliaRepKeyword,juliaTypedef
 syntax cluster juliaBlocksItems		contains=juliaConditionalBlock,juliaRepeatBlock,juliaBeginBlock,juliaFunctionBlock,juliaMacroBlock,juliaQuoteBlock,juliaTypeBlock,juliaExceptionBlock,juliaLetBlock,juliaDoBlock,juliaModuleBlock
-syntax cluster juliaTypesItems		contains=juliaBuiltinTypeBasic,juliaBuiltinTypeNum,juliaBuiltinTypeError,juliaBuiltinTypeString,juliaBuiltinTypeArray,juliaBuiltinTypeDict,juliaBuiltinTypeSet,juliaBuiltinTypeIO,juliaBuiltinTypeProcess,juliaBuiltinTypeRange,juliaBuiltinTypeRegex,juliaBuiltinTypeOptions,juliaBuiltinTypeSpecial,juliaBuiltinTypeOther
-syntax cluster juliaConstItems		contains=juliaConstNum,juliaConstBool,juliaConstIO,juliaConstPtr,juliaConstLimits,juliaConstErrno,juliaConstPcre,juliaConstGeneric
+syntax cluster juliaTypesItems		contains=juliaBuiltinTypeBasic,juliaBuiltinTypeNum,juliaBuiltinTypeError,juliaBuiltinTypeIter,juliaBuiltinTypeString,juliaBuiltinTypeArray,juliaBuiltinTypeDict,juliaBuiltinTypeSet,juliaBuiltinTypeIO,juliaBuiltinTypeProcess,juliaBuiltinTypeRange,juliaBuiltinTypeRegex,juliaBuiltinTypeOptions,juliaBuitinTypeFact,juliaBuiltinTypeSpecial,juliaBuiltinTypeOther
+syntax cluster juliaConstItems		contains=juliaConstNum,juliaConstBool,juliaConstEnv,juliaConstIO,juliaConstMMap,juliaConstPtr,juliaConstErrno,juliaConstMulti,juliaConstGeneric
 syntax cluster juliaMacroItems		contains=juliaMacro,juliaDollarVar
 syntax cluster juliaNumberItems		contains=juliaNumbers
 syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliaEString,juliaIString,juliaLString,juliabString,juliafString,juliaShellString,juliaRegEx
@@ -57,29 +57,32 @@ syntax match   juliaTypedef		"\<\%(abstract\|typealias\|bitstype\)\>"
 
 syntax match   juliaComprehensionFor    display contained "\<for\>"
 
-syntax match   juliaBuiltinTypeBasic	display "\<\%(Tuple\|NTuple\|Symbol\|Function\|Union\|Type\%(\|Name\|Constructor\|Var\)\|Any\|None\|Nothing\|Ptr\|Void\|Exception\|Module\|Box\|Expr\|LambdaStaticData\|\%(Abstract\|Composite\|Bits\|Func\|Union\)Kind\|\%(LineNumber\|Label\|Goto\|Quote\|Top\|Symbol\)Node\|WeakRef\|Associative\|Long\%(Symbol\|Tuple\|Expr\)\)\>"
-syntax match   juliaBuiltinTypeNum	display "\<\%(Uint\%(\|8\|16\|32\|64\|128\)\|Int\%(\|8\|16\|32\|64\|128\)\|Float\%(\|32\|64\)\|Complex\%(\|64\|128\|Pair\)\|Bool\|Char\|Number\|Real\|Integer\|Rational\|BigInt\|FileOffset\)\>"
-syntax match   juliaBuiltinTypeError	display "\<\%(\%(Bounds\|DivideByZero\|Memory\|IO\|StackOverflow\|EOF\|UndefRef\|System\|Type\|Parse\|Argument\|Unbound\|Key\|Load\|Method\)Error\|\%(Interrupt\|Error\|MatrixIllConditioned\|Disconnect\)Exception\|BackTrace\)\>"
-syntax match   juliaBuiltinTypeString	display "\<\%(\%(\|DirectIndex\|ASCII\|UTF\%(8\|32\)\|Byte\|Sub\|Latin1\|Generic\|Char\|Rep\|Rev\|Rope\|Transformed\)String\)\>"
-syntax match   juliaBuiltinTypeArray	display "\<\%(Array\|DArray\|Abstract\%(Array\|Vector\|Matrix\)\|Strided\%(Array\|Vector\|Matrix\|VecOrMat\)\|VecOrMat\|Sparse\%(MatrixCSC\|Accumulator\)\|Vector\|Matrix\|Sub\%(Array\|DArray\|OrDArray\)\|Bit\%(Array\|Vector\|Matrix\)\)\>"
-syntax match   juliaBuiltinTypeDict	display "\<\%(\%(\|WeakKey\|ObjectId\)Dict\|VarTable\)\>"
-syntax match   juliaBuiltinTypeSet	display "\<\%(\%(\|Int\)Set\)\>"
-syntax match   juliaBuiltinTypeIO	display "\<\%(IOStream\|IOTally\|FDSet\|LineIterator\)\>"
-syntax match   juliaBuiltinTypeProcess	display "\<\%(Process\%(Status\|NotRun\|Running\|Exited\|Signaled\|Stopped\)\|FileDes\|Pipe\%(\|In\|Out\|End\)\|Executable\|Cmds\?\|Ports\?\)\>"
-syntax match   juliaBuiltinTypeRange	display "\<\%(Dims\|Range\%(\|s\|1\|Index\)\|Indices\|Region\)\>"
-syntax match   juliaBuiltinTypeRegex	display "\<\%(Regex\%(\|Match\%(\|Iterator\)\)\)\>"
-syntax match   juliaBuiltinTypeOptions	display "\<\%(Options\%(Checking\)\?\|Check\%(Warn\|None\|Error\)\)\>"
-syntax match   juliaBuiltinTypeSpecial	display "\<\%(NotFound\|EmptyCallStack\|LocalProcess\|EnvHash\|ImaginaryUnit\)\>"
-syntax match   juliaBuiltinTypeOther	display "\<\%(UniqueNames\|CallStack\|StaticVarInfo\|StateUpdate\|ShivaIterator\|Worker\|Location\|ProcessGroup\|RemoteRef\|GORef\|WorkItem\|WaitFor\|GlobalObject\|VersionNumber\)\>"
+syntax match   juliaBuiltinTypeBasic	display "\<\%(Tuple\|NTuple\|Symbol\|\%(Intrinsic\)\?Function\|Union\|Type\%(Name\|Constructor\|Error\|Var\)\?\|Any\|Top\|None\|Nothing\|Ptr\|Void\|Undef\|Exception\|Module\|Box\|Expr\|LambdaStaticData\|\%(Abstract\|Composite\|Bits\|Union\)Kind\|\%(LineNumber\|Label\|Goto\|Quote\|Top\|Symbol\|Getfield\)Node\|WeakRef\|Associative\|Method\(Table\)\?\)\>"
+syntax match   juliaBuiltinTypeNum	display "\<\%(Uint\%(\|8\|16\|32\|64\|128\)\|Int\%(eger\|8\|16\|32\|64\|128\)\?\|Float\%(ingPoint\|32\|64\)\|Complex\%(64\|128\|Pair\)\?\|Bool\|Chars\?\|Number\|Signed\|Unsigned\|Real\|Rational\|BigInt\|FileOffset\)\>"
+syntax match   juliaBuiltinTypeError	display "\<\%(\%(Bounds\|DivideByZero\|Domain\|Memory\|IO\|\%(Stack\)\?Overflow\|EOF\|UndefRef\|System\|Type\|Parse\|Argument\|Key\|Load\|Method\|Inexact\)Error\|\%(Interrupt\|Error\|Disconnect\)Exception\|BackTrace\)\>"
+syntax match   juliaBuiltinTypeIter	display "\<\%(Each\%(Line\|Search\)\|Enumerate\|Filter\)\>"
+syntax match   juliaBuiltinTypeString	display "\<\%(DirectIndex\|ASCII\|UTF8\|Byte\|Sub\|Generic\|Char\|Rep\|Rev\|Rope\|Transformed\)\?String\>"
+syntax match   juliaBuiltinTypeArray	display "\<\%(Array\|DArray\|Abstract\%(Array\|Vector\|Matrix\)\|Strided\%(Array\|Vector\|Matrix\|VecOrMat\)\|VecOrMat\|Sparse\%(MatrixCSC\|Accumulator\)\|Vector\|Matrix\|Sub\%(Array\|DArray\|OrDArray\)\|Bit\%(Array\|Vector\|Matrix\)\|Tridiagonal\)\>"
+syntax match   juliaBuiltinTypeDict	display "\<\%(WeakKey\|ObjectId\)\?Dict\>"
+syntax match   juliaBuiltinTypeSet	display "\<\%(Int\)\?Set\>"
+syntax match   juliaBuiltinTypeIO	display "\<\%(IO\(Stream\)\?\|FDSet\|Stat\)\>"
+syntax match   juliaBuiltinTypeProcess	display "\<\%(Process\%(Status\|NotRun\|Running\|Exited\|Signaled\|Stopped\)\|FileDes\|Pipe\%(In\|Out\|End\)\?\|Executable\|Cmds\?\|Ports\?\)\>"
+syntax match   juliaBuiltinTypeRange	display "\<\%(Dims\(pec\)\?\|Range\%(s\|1\|Index\)\?\|Indices\|Colon\|Reverse\|Zip\)\>"
+syntax match   juliaBuiltinTypeRegex	display "\<Regex\%(Match\%(Iterator\)\?\)\?\>"
+syntax match   juliaBuiltinTypeOptions	display "\<\%(Options\|Check\%(Warn\|None\|Error\)\)\>"
+syntax match   juliaBuiltinTypeFact	display "\<\%(Factorization\|Cholesky\|LU\|QRP\?\)\>"
+syntax match   juliaBuiltinTypeSpecial	display "\<\%(LocalProcess\|EnvHash\|ImaginaryUnit\)\>"
+syntax match   juliaBuiltinTypeOther	display "\<\%(Location\|ProcessGroup\|RemoteRef\|Task\|GlobalObject\|VersionNumber\)\>"
 
 syntax match   juliaConstNum		display "\<\%(pi\|e\|NaN\%(32\)\?\|Inf\%(32\)\?\)\>"
 syntax match   juliaConstBool		display "\<\%(true\|false\)\>"
-syntax match   juliaConstIO		display "\<\%(std\%(out\|in\|err\)_stream\|STD\%(OUT\|IN\|ERR\)\|sizeof_\%(off_t\|ios_t\|fd_set\)\|ENV\)\>"
+syntax match   juliaConstEnv		display "\<\%(ARGS\|ENV\|CPU_CORES\|CURRENT_OS\|ENDIAN_BOM\|LOAD_PATH\|RANDOM_SEED\|VERSION\)\>"
+syntax match   juliaConstIO		display "\<\%(std\%(out\|in\|err\)_stream\|STD\%(OUT\|IN\|ERR\)\|OUTPUT_STREAM\)\>"
+syntax match   juliaConstMMap		display "\<\%(MS_\%(A\?SYNC\|INVALIDATE\)\)\>"
 syntax match   juliaConstPtr		display "\<\%(WORD_SIZE\|C_NULL\)\>"
-syntax match   juliaConstLimits		display "\<\%(MAX_\%(TYPEUNION_\%(LEN\|DEPTH\)\|TUPLE\%(_DEPTH\|TYPE_LEN\)\)\|GRISU_\%(SHORTEST\%(\|_SINGLE\)\|FIXED\|PRECISION\)\)\>"
 syntax match   juliaConstErrno		display "\<E\%(A\%(CCES\|LREADY\|D\%(DR\%(INUSE\|NOTAVAIL\)\|V\)\|GAIN\|FNOSUPPORT\)\|C\%(ANCELED\|H\%(ILD\|RNG\)\|O\%(MM\|NN\%(ABORTED\|RE\%(SET\|FUSED\)\)\)\)\|B\%(AD\%(MSG\|SLT\|R\%(\|QC\)\|E\|F\%(\|D\)\)\|USY\|FONT\)\|EXIST\|D\%(QUOT\|E\%(ADLK\|STADDRREQ\)\|O\%(M\|TDOT\)\)\|F\%(AULT\|BIG\)\|I\%(S\%(CONN\|DIR\|NAM\)\|N\%(PROGRESS\|TR\|VAL\)\|DRM\|O\|LSEQ\)\|H\%(WPOISON\|OST\%(UNREACH\|DOWN\)\)\|KEY\%(RE\%(JECTED\|VOKED\)\|EXPIRED\)\|M\%(ULTIHOP\|SGSIZE\|EDIUMTYPE\|LINK\|FILE\)\|L\%(IB\%(ACC\|MAX\|SCN\|BAD\|EXEC\)\|3\%(HLT\|RST\)\|2\%(HLT\|NSYNC\)\|OOP\|NRNG\)\|O\%(PNOTSUPP\|WNERDEAD\|VERFLOW\)\|N\%(A\%(METOOLONG\|VAIL\)\|XIO\|ET\%(RESET\|UNREACH\|DOWN\)\|O\%(ANO\|CSI\|BUFS\|E\%(XEC\|NT\)\|D\%(ATA\|EV\)\|KEY\|M\%(SG\|E\%(M\|DIUM\)\)\|L\%(INK\|CK\)\|NET\|P\%(KG\|ROTOOPT\)\|S\%(YS\|PC\|R\|TR\)\|T\%(CONN\|BLK\|EMPTY\|DIR\|NAM\|SOCK\|RECOVERABLE\|UNIQ\|TY\)\)\|FILE\)\|P\%(IPE\|ROTO\%(\|TYPE\|NOSUPPORT\)\|ERM\|FNOSUPPORT\)\|S\%(HUTDOWN\|R\%(CH\|MNT\)\|T\%(ALE\|RPIPE\)\|OCKTNOSUPPORT\|PIPE\)\|2BIG\|U\%(CLEAN\|SERS\|NATCH\)\|T\%(IME\%(\|DOUT\)\|XTBSY\|OOMANYREFS\)\|X\%(DEV\|FULL\)\|R\%(ANGE\|E\%(START\|M\%(CHG\|OTE\%(\|IO\)\)\)\|OFS\|FKILL\)\)\>"
-syntax match   juliaConstPcre		display "\<PCRE_\%(A\%(UTO_CALLOUT\|NCHORED\)\|C\%(ASELESS\|O\%(MPILE_MASK\|NFIG_\%(BSR\|JIT\|MATCH_LIMIT\%(\|_RECURSION\)\|LINK_SIZE\|NEWLINE\|POSIX_MALLOC_THRESHOLD\|STACKRECURSE\|U\%(TF8\|NICODE_PROPERTIES\)\)\)\)\|BSR_\%(ANYCRLF\|UNICODE\)\|E\%(X\%(ECUTE_MASK\|T\%(RA\%(\|_\%(MA\%(RK\|TCH_LIMIT\%(\|_RECURSION\)\)\|CALLOUT_DATA\|EXECUTABLE_JIT\|STUDY_DATA\|TABLES\)\)\|ENDED\)\)\|RROR_\%(CALLOUT\|BAD\%(COUNT\|MAGIC\|O\%(PTION\|FFSET\)\|NEWLINE\|PARTIAL\|UTF8\%(\|_OFFSET\)\)\|DFA_\%(RECURSE\|U\%(ITEM\|COND\|MLIMIT\)\|WSSIZE\)\|INTERNAL\|JIT_STACKLIMIT\|MATCHLIMIT\|N\%(ULL\%(\|WSLIMIT\)\|O\%(SUBSTRING\|M\%(ATCH\|EMORY\)\)\)\|PARTIAL\|SHORTUTF8\|RECURS\%(IONLIMIT\|ELOOP\)\|UNKNOWN_\%(OPCODE\|NODE\)\)\)\|D\%(UPNAMES\|O\%(LLAR_ENDONLY\|TALL\)\|FA_\%(SHORTEST\|RESTART\)\)\|FIRSTLINE\|INFO_\%(CAPTURECOUNT\|BACKREFMAX\|DEFAULT_TABLES\|FIRST\%(CHAR\|BYTE\|TABLE\)\|HASCRORLF\|J\%(IT\%(\|SIZE\)\|CHANGED\)\|MINLENGTH\|LASTLITERAL\|O\%(PTIONS\|KPARTIAL\)\|NAME\%(COUNT\|ENTRYSIZE\|TABLE\)\|S\%(IZE\|TUDYSIZE\)\)\|JAVASCRIPT_COMPAT\|M\%(AJOR\|INOR\|ULTILINE\)\|OPTIONS_MASK\|N\%(EWLINE_\%(ANY\%(\|CRLF\)\|CR\%(\|LF\)\|LF\)\|O\%(T\%(BOL\|E\%(MPTY\%(\|_ATSTART\)\|OL\)\)\|_\%(AUTO_CAPTURE\|START_OPTIMI\%(SE\|ZE\)\|UTF8_CHECK\)\)\)\|PARTIAL\%(\|_\%(HARD\|SOFT\)\)\|STUDY_JIT_COMPILE\|U\%(CP\|TF8\%(\|_ERR\%(1\%(\|1\|0\|3\|2\|5\|4\|7\|6\|9\|8\)\|0\|3\|2\%(1\|0\|\)\|5\|4\|7\|6\|9\|8\)\)\|NGREEDY\)\|VERSION\)\>"
-syntax match   juliaConstGeneric	display "\<\%(nothing\|NF\)\>"
+syntax match   juliaConstMulti		display "\<Scheduler\>"
+syntax match   juliaConstGeneric	display "\<nothing\>"
 
 syntax match   juliaMacro		display "@[_[:alpha:]][_[:alnum:]!]*"
 
@@ -173,6 +176,7 @@ hi def link juliaTypedef		Typedef
 hi def link juliaBuiltinTypeBasic	Type
 hi def link juliaBuiltinTypeNum		Type
 hi def link juliaBuiltinTypeError	Type
+hi def link juliaBuiltinTypeIter	Type
 hi def link juliaBuiltinTypeString	Type
 hi def link juliaBuiltinTypeArray	Type
 hi def link juliaBuiltinTypeDict	Type
@@ -182,17 +186,20 @@ hi def link juliaBuiltinTypeProcess	Type
 hi def link juliaBuiltinTypeRange	Type
 hi def link juliaBuiltinTypeRegex	Type
 hi def link juliaBuiltinTypeOptions	Type
+hi def link juliaBuiltinTypeFact	Type
 hi def link juliaBuiltinTypeSpecial	Type
 hi def link juliaBuiltinTypeOther	Type
 hi def link juliaConstNum		Constant
+hi def link juliaConstEnv		Constant
 hi def link juliaConstIO		Constant
+hi def link juliaConstMMap		Constant
 hi def link juliaConstPtr		Constant
 hi def link juliaConstLimits		Constant
 hi def link juliaConstErrno		Constant
-hi def link juliaConstPcre		Constant
+hi def link juliaConstMulti		Constant
 hi def link juliaConstGeneric		Constant
-hi def link juliaConstBool		Boolean
 hi def link juliaRangeEnd		Constant
+hi def link juliaConstBool		Boolean
 
 hi def link juliaComprehensionFor	Keyword
 
