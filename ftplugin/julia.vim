@@ -56,7 +56,7 @@ if exists("loaded_matchit")
 	" the 'end' keyword when it is used as a range rather than as
 	" the end of a block
 	let b:match_skip = 'synIDattr(synID(line("."),col("."),1),"name") =~ '
-		\ . '"\\<julia\\%(ComprehensionFor\\|RangeEnd\\|CommentL\\|\\%(\\|[EILbf]\\|Shell\\)String\\|RegEx\\)\\>"'
+		\ . '"\\<julia\\%(ComprehensionFor\\|RangeEnd\\|QuotedBlockKeyword\\|CommentL\\|\\%(\\|[EILbB]\\|Shell\\)String\\|RegEx\\)\\>"'
 endif
 
 if has("gui_win32")
