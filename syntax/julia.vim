@@ -91,17 +91,17 @@ syntax match   juliaMacro		display "@[_[:alpha:]][_[:alnum:]!]*"
 syntax match   juliaNumbers		display transparent "\<\d\|\.\d\|\<im\>" contains=juliaNumber,juliaFloat,juliaComplexUnit
 
 "decimal number
-syntax match   juliaNumber		display contained "\d\%(_\d\|\d\)*\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
+syntax match   juliaNumber		display contained "\d\%(_\?\d\)*\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
 "hex number
-syntax match   juliaNumber		display contained "0x\x\%(_\x\|\x\)*\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
+syntax match   juliaNumber		display contained "0x\x\%(_\?\x\)*\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
 "floating point number, ending with a dot, optional exponent
-syntax match   juliaFloat		display contained "\d\%(_\d\|\d\)*\.\%([eE][-+]\?\d\+\>\)\?\%(im\>\|\ze[_[:alpha:]]\)\?" contains=juliaComplexUnit
+"syntax match   juliaFloat		display contained "\d\%(_\?\d\)*\.\%([eE][-+]\?\d\+\>\)\?\%(im\>\|\ze[_[:alpha:]]\)\?" contains=juliaComplexUnit
 "floating point number, starting with a dot, optional exponent
-syntax match   juliaFloat		display contained "\.\d\%(_\d\|\d\)*\%([eE][-+]\?\d\+\)\?\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
+syntax match   juliaFloat		display contained "\.\d\%(_\?\d\)*\%([eE][-+]\?\d\+\)\?\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
 "floating point number, with dot, optional exponent
-syntax match   juliaFloat		display contained "\d\%(_\d\|\d\)*\.\d\%(_\d\|\d\)*\%([eE][-+]\?\d\+\)\?\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
+syntax match   juliaFloat		display contained "\d\%(_\?\d\)*\.\%(\d\%(_\?\d\)*\)\?\%([eE][-+]\?\d\+\)\?\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
 "floating point number, without dot, with exponent
-syntax match   juliaFloat		display contained "\d\%(_\d\|\d\)*[eE][-+]\?\d\+\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
+syntax match   juliaFloat		display contained "\d\%(_\?\d\)*[eE][-+]\?\d\+\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
 
 syntax match   juliaComplexUnit		display	contained "\<im\>"
 
@@ -163,7 +163,7 @@ syntax match   juliaPrintfFmt		display contained "%%"
 syntax match   juliaPrintfFmt		display contained "\\%\%(\d\+\$\)\=[-+' #0]*\%(\d*\|\*\|\*\d\+\$\)\%(\.\%(\d*\|\*\|\*\d\+\$\)\)\=\%([hlLjqzt]\|ll\|hh\)\=[aAbdiuoxXDOUfFeEgGcCsSpn]"hs=s+1
 syntax match   juliaPrintfFmt		display contained "\\%%"hs=s+1
 
-syntax match   juliaQuotedBlockKeyword	display ":\s*\%(if\|elseif\|else\|while\|for\|begin\|function\|macro\|quote\|type\|try\|catch\|let\|module\|do\)"he=s+1
+syntax match   juliaQuotedBlockKeyword	display ":\s*\%(if\|elseif\|else\|while\|for\|begin\|function\|macro\|quote\|type\|try\|catch\|let\|module\|do\)\>"
 
 syntax region  juliaCommentL		matchgroup=juliaCommentDelim start="#" end="$" keepend contains=@juliaCommentSpace
 syntax cluster juliaCommentSpace	contains=juliaTodo
