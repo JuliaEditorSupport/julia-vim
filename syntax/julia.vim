@@ -78,7 +78,7 @@ syntax match   juliaBuiltinTypeOther	display "\<\%(Location\|ProcessGroup\|Remot
 
 syntax match   juliaConstNum		display "\<\%(pi\|e\|NaN\%(32\)\?\|Inf\%(32\)\?\)\>"
 syntax match   juliaConstBool		display "\<\%(true\|false\)\>"
-syntax match   juliaConstEnv		display "\<\%(ARGS\|ENV\|CPU_CORES\|CURRENT_OS\|ENDIAN_BOM\|LOAD_PATH\|RANDOM_SEED\|VERSION\)\>"
+syntax match   juliaConstEnv		display "\<\%(ARGS\|ENV\|CPU_CORES\|OS_NAME\|ENDIAN_BOM\|LOAD_PATH\|RANDOM_SEED\|VERSION\)\>"
 syntax match   juliaConstIO		display "\<\%(std\%(out\|in\|err\)_stream\|STD\%(OUT\|IN\|ERR\)\|OUTPUT_STREAM\)\>"
 syntax match   juliaConstMMap		display "\<\%(MS_\%(A\?SYNC\|INVALIDATE\)\)\>"
 syntax match   juliaConstPtr		display "\<\%(WORD_SIZE\|C_NULL\)\>"
