@@ -86,7 +86,7 @@ syntax match   juliaConstErrno		display "\<E\%(A\%(CCES\|LREADY\|D\%(DR\%(INUSE\
 syntax match   juliaConstMulti		display "\<Scheduler\>"
 syntax match   juliaConstGeneric	display "\<nothing\>"
 
-syntax match   juliaMacro		display "@[_[:alpha:]][_[:alnum:]!]*"
+syntax match   juliaMacro		display "@[_[:alpha:]][_[:alnum:]!.]*"
 
 syntax match   juliaNumbers		display transparent "\<\d\|\.\d\|\<im\>" contains=juliaNumber,juliaFloat,juliaComplexUnit
 
