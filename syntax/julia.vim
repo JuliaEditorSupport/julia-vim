@@ -94,6 +94,10 @@ syntax match   juliaNumbers		display transparent "\<\d\|\.\d\|\<im\>" contains=j
 syntax match   juliaNumber		display contained "\d\%(_\?\d\)*\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
 "hex number
 syntax match   juliaNumber		display contained "0x\x\%(_\?\x\)*\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
+"bin number
+syntax match   juliaNumber		display contained "0b[01]\%(_\?[01]\)*\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
+"oct number
+syntax match   juliaNumber		display contained "0o\o\%(_\?\o\)*\%(\>\|im\>\|\ze[_[:alpha:]]\)" contains=juliaComplexUnit
 "floating point number, ending with a dot, optional exponent
 "syntax match   juliaFloat		display contained "\d\%(_\?\d\)*\.\%([eE][-+]\?\d\+\>\)\?\%(im\>\|\ze[_[:alpha:]]\)\?" contains=juliaComplexUnit
 "floating point number, starting with a dot, optional exponent
