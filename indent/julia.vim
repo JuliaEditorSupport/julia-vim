@@ -9,7 +9,7 @@
 set autoindent
 
 setlocal indentexpr=GetJuliaIndent()
-setlocal indentkeys+==end,=else,=catch
+setlocal indentkeys+==end,=else,=catch,=finally
 setlocal indentkeys-=0#
 setlocal indentkeys-=:
 setlocal indentkeys-=0{
@@ -45,7 +45,7 @@ function GetJuliaNestingStruct(lnum)
   let blocks_stack = []
   let num_closed_blocks = 0
   while 1
-    let fb = JuliaMatch(a:lnum, line, '@\@<!\<\%(if\|else\%(if\)\=\|while\|for\|try\|catch\|function\|macro\|begin\|type\|let\|\%(bare\)\?module\|quote\|do\)\>', s)
+      let fb = JuliaMatch(a:lnum, line, '@\@<!\<\%(if\|else\%(if\)\=\|while\|for\|try\|catch\|finally\|function\|macro\|begin\|type\|let\|\%(bare\)\?module\|quote\|do\)\>', s)
     let fe = JuliaMatch(a:lnum, line, '@\@<!\<end\>', s)
 
     if fb < 0 && fe < 0
@@ -55,8 +55,8 @@ function GetJuliaNestingStruct(lnum)
 
     if fb >= 0 && (fb < fe || fe < 0)
       " The first occurrence is an opening block keyword
-      " Note: some keywords (elseif,else,catch) are both closing
-      "       blocks and opening new ones
+      " Note: some keywords (elseif,else,catch,finally) are both
+      "       closing blocks and opening new ones
 
       let i = JuliaMatch(a:lnum, line, '@\@<!\<if\>', s)
       if i >= 0 && i == fb
@@ -100,6 +100,17 @@ function GetJuliaNestingStruct(lnum)
           let blocks_stack[-1] = 'catch'
         else
           call add(blocks_stack, 'catch')
+          let num_closed_blocks += 1
+        endif
+        continue
+      endif
+      let i = JuliaMatch(a:lnum, line, '@\@<!\<finally\>', s)
+      if i >= 0 && i == fb
+        let s = i+1
+        if len(blocks_stack) > 0 && (blocks_stack[-1] == 'try' || blocks_stack[-1] == 'catch')
+          let blocks_stack[-1] = 'finally'
+        else
+          call add(blocks_stack, 'finally')
           let num_closed_blocks += 1
         endif
         continue

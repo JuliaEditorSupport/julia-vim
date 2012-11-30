@@ -47,7 +47,7 @@ if exists("loaded_matchit")
 		elseif s:attr == 'juliaBlKeyword'
 			return s:beginKeywords . ':' . s:endKeyowrds
 		elseif s:attr == 'juliaException'
-			return s:beginKeywords . ':\<catch\>:' . s:endKeyowrds
+			return s:beginKeywords . ':\<\%(catch\|finally\)\>:' . s:endKeyowrds
 		endif
 		return ''
 	endfunction
@@ -67,7 +67,7 @@ endif
 
 let b:undo_ftplugin = "setlocal include< suffixesadd< comments< commentstring<"
 	\ . " define< shiftwidth< expandtab< indentexpr< indentkeys< cinoptions<"
-	\ . " | unlet! b:browsefiler b:match_words b:match_skip"
+	\ . " | unlet! b:browsefiler b:match_words b:match_skip b:match_ignorecase"
 	\ . " | delfunction JuliaGetMatchWords"
 
 let &cpo = s:save_cpo
