@@ -29,6 +29,8 @@ setlocal shiftwidth=4
 setlocal expandtab
 
 if exists("loaded_matchit")
+	let b:match_ignorecase=0
+
 	" note: beginKeywords must contain all blocks in order
 	" for nested-structures-skipping to work properly
 	let s:beginKeywords = '\<\%(function\|macro\|begin\|type\|let\|do\|\%(bare\)\?module\|quote\|if\|for\|while\|try\)\>'
