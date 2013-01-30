@@ -4,9 +4,7 @@
 " Last Change:	2011 dec 11
 " Notes:        based on Bram Moneaar's indent file for vim
 
-"set nocindent
-"set smartindent
-set autoindent
+setlocal autoindent
 
 setlocal indentexpr=GetJuliaIndent()
 setlocal indentkeys+==end,=else,=catch,=finally
@@ -14,6 +12,7 @@ setlocal indentkeys-=0#
 setlocal indentkeys-=:
 setlocal indentkeys-=0{
 setlocal indentkeys-=0}
+setlocal nosmartindent
 
 " Only define the function once.
 if exists("*GetJuliaIndent")
