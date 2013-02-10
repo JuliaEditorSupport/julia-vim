@@ -22,7 +22,7 @@ syntax cluster juliaNumberItems		contains=juliaNumbers
 syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliaEString,juliaIString,juliaLString,juliabString,juliaShellString,juliaRegEx
 syntax cluster juliaPrintfItems		contains=juliaPrintfParBlock,juliaPrintfString
 syntax cluster juliaOperatorItems	contains=juliaArithOperator,juliaBitOperator,juliaBoolOperator,juliaCompOperator,juliaAssignOperator,juliaRangeOperator,juliaTypeOperator,juliaFuncOperator,juliaCTransOperator,juliaVarargOperator,juliaTernaryRegion
-syntax cluster juliaQuotedItems		contains=juliaQuotedBlockKeyword
+syntax cluster juliaQuotedItems		contains=juliaQuotedEnd,juliaQuotedBlockKeyword
 syntax cluster juliaCommentItems	contains=juliaCommentL
 syntax cluster juliaErrorItems		contains=juliaErrorPar,juliaErrorEnd,juliaErrorElse
 
@@ -32,6 +32,7 @@ syntax match   juliaErrorElse		display "\<\%(else\|elseif\)\>"
 syntax match   juliaErrorCatch		display "\<catch\>"
 syntax match   juliaErrorSemicol	display contained ";"
 
+syntax match   juliaQuotedEnd		display ":\@<=end\>"
 syntax match   juliaRangeEnd		display contained "\<end\>"
 
 syntax region  juliaParBlock		matchgroup=juliaParDelim start="(" end=")" contains=@juliaExpressions
@@ -166,7 +167,7 @@ syntax match   juliaPrintfFmt		display contained "%%"
 syntax match   juliaPrintfFmt		display contained "\\%\%(\d\+\$\)\=[-+' #0]*\%(\d*\|\*\|\*\d\+\$\)\%(\.\%(\d*\|\*\|\*\d\+\$\)\)\=\%([hlLjqzt]\|ll\|hh\)\=[aAbdiuoxXDOUfFeEgGcCsSpn]"hs=s+1
 syntax match   juliaPrintfFmt		display contained "\\%%"hs=s+1
 
-syntax match   juliaQuotedBlockKeyword	display ":\s*\%(end\|if\|elseif\|else\|while\|for\|begin\|function\|macro\|quote\|type\|try\|catch\|let\|\(%bare\)\?module\|do\)\>"
+syntax match   juliaQuotedBlockKeyword	display ":\s*\%(if\|elseif\|else\|while\|for\|begin\|function\|macro\|quote\|type\|try\|catch\|let\|\(%bare\)\?module\|do\)\>"
 
 syntax region  juliaCommentL		matchgroup=juliaCommentDelim start="#" end="$" keepend contains=@juliaCommentSpace
 syntax cluster juliaCommentSpace	contains=juliaTodo
@@ -260,7 +261,8 @@ hi def link juliaCTransOperator		juliaOperator
 hi def link juliaVarargOperator		juliaOperator
 hi def link juliaTernaryOperator	juliaOperator
 
-hi def link juliaQuotedBlockKeyword	juliaOperator
+"hi def link juliaQuotedEnd              juliaOperator
+"hi def link juliaQuotedBlockKeyword	juliaOperator
 
 hi def link juliaCommentL		Comment
 hi def link juliaCommentDelim		Comment
