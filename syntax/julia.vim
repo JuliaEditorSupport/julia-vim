@@ -1,7 +1,7 @@
 " Vim syntax file
 " Language:	julia
 " Maintainer:	Carlo Baldassi <carlobaldassi@gmail.com>
-" Last Change:	2011 dec 11
+" Last Change:	2013 feb 11
 
 if version < 600
   syntax clear
@@ -62,19 +62,20 @@ syntax match   juliaTypedef		"\<\%(abstract\|typealias\|bitstype\)\>"
 syntax match   juliaComprehensionFor    display contained "\<for\>"
 
 syntax match   juliaBuiltinTypeBasic	display "\<\%(Tuple\|NTuple\|Symbol\|\%(Intrinsic\)\?Function\|Union\|Type\%(Name\|Constructor\|Error\|Var\)\?\|Any\|Top\|None\|Nothing\|Ptr\|Void\|Undef\|Exception\|Module\|Box\|Expr\|LambdaStaticData\|\%(Abstract\|Composite\|Bits\|Union\)Kind\|\%(LineNumber\|Label\|Goto\|Quote\|Top\|Symbol\|Getfield\)Node\|WeakRef\|Associative\|Method\(Table\)\?\|Long\(Symbol\|Tuple\|Expr\)\)\>"
-syntax match   juliaBuiltinTypeNum	display "\<\%(Uint\%(\|8\|16\|32\|64\|128\)\|Int\%(eger\|8\|16\|32\|64\|128\)\?\|Float\%(ingPoint\|32\|64\)\|Complex\%(64\|128\|Pair\)\?\|Bool\|Chars\?\|Number\|Signed\|Unsigned\|Real\|Rational\|BigInt\|FileOffset\)\>"
-syntax match   juliaBuiltinTypeError	display "\<\%(\%(Bounds\|DivideByZero\|Domain\|Memory\|IO\|\%(Stack\)\?Overflow\|EOF\|UndefRef\|System\|Type\|Parse\|Argument\|Key\|Load\|Method\|Inexact\)Error\|\%(Interrupt\|Error\|Disconnect\)Exception\|BackTrace\)\>"
+syntax match   juliaBuiltinTypeNum	display "\<\%(Uint\%(\|8\|16\|32\|64\|128\)\|Int\%(eger\|8\|16\|32\|64\|128\)\?\|Float\%(ingPoint\|32\|64\)\|Complex\%(64\|128\|Pair\)\?\|Bool\|Chars\?\|Number\|Signed\|Unsigned\|Real\|Rational\|BigInt\|BigFloat\|FileOffset\)\>"
+syntax match   juliaBuiltinTypeError	display "\<\%(\%(Bounds\|DivideByZero\|Domain\|Memory\|IO\|\%(Stack\)\?Overflow\|EOF\|UndefRef\|System\|Type\|Parse\|Argument\|Key\|Load\|Method\|Inexact\|UV\)Error\|\%(Interrupt\|Error\|Disconnect\)Exception\|BackTrace\)\>"
 syntax match   juliaBuiltinTypeIter	display "\<\%(Each\%(Line\|Search\)\|Enumerate\|Filter\)\>"
 syntax match   juliaBuiltinTypeString	display "\<\%(DirectIndex\|ASCII\|UTF8\|Byte\|Sub\|Generic\|Char\|Rep\|Rev\|Rope\|Transformed\)\?String\>"
-syntax match   juliaBuiltinTypeArray	display "\<\%(Array\|DArray\|Abstract\%(Array\|Vector\|\%(Sparse\)\?Matrix\)\|Strided\%(Array\|Vector\|Matrix\|VecOrMat\)\|VecOrMat\|Sparse\%(MatrixCSC\|Accumulator\)\|Vector\|Matrix\|Sub\%(Array\|DArray\|OrDArray\)\|Bit\%(Array\|Vector\|Matrix\)\|\%(Sym\|LU\|LDLT\)\?Tridiagonal\|Woodbury\|BunchKaufman\|\(Cholesky\|LU\|QRP\?\)Dense\)\>"
+syntax match   juliaBuiltinTypeArray	display "\<\%(Array\|DArray\|Abstract\%(Array\|Vector\|\%(Sparse\)\?Matrix\)\|Strided\%(Array\|Vector\|Matrix\|VecOrMat\)\|VecOrMat\|Sparse\%(MatrixCSC\|Accumulator\)\|Vector\|Matrix\|Sub\%(Array\|DArray\|OrDArray\)\|Bit\%(Array\|Vector\|Matrix\)\|\%(Sym\|LU\|LDLT\)\?Tridiagonal\|Woodbury\|BunchKaufman\|\(Cholesky\%(Pivoted\)\|LU\|QR\%(Pivoted\)\?\|SVD\|GSVD\)Dense\)\>"
 syntax match   juliaBuiltinTypeDict	display "\<\%(WeakKey\|ObjectId\)\?Dict\>"
 syntax match   juliaBuiltinTypeSet	display "\<\%(Int\)\?Set\>"
-syntax match   juliaBuiltinTypeIO	display "\<\%(IO\(Stream\)\?\|FDSet\|Stat\)\>"
-syntax match   juliaBuiltinTypeProcess	display "\<\%(Process\%(Status\|NotRun\|Running\|Exited\|Signaled\|Stopped\)\|FileDes\|Pipe\%(In\|Out\|End\)\?\|Executable\|Cmds\?\|Ports\?\)\>"
-syntax match   juliaBuiltinTypeRange	display "\<\%(Dims\(pec\)\?\|Range\%(s\|1\|Index\)\?\|Indices\|Colon\|Reverse\|Zip\)\>"
+syntax match   juliaBuiltinTypeIO	display "\<\%(AsyncStream\|IO\%(Stream\|Buffer\)\?\|FDSet\|Stat\|SpawnNullStream\|TcpSocket\)\>"
+syntax match   juliaBuiltinTypeProcess	display "\<\%(ProcessGroup\|PipeBuffer\|Executable\|Cmds\?\)\>"
+syntax match   juliaBuiltinTypeRange	display "\<\%(Dims\|OrdinalRange\|Range\%(s\|1\|Index\)\?\|Indices\|Colon\|Reverse\|Zip\)\>"
 syntax match   juliaBuiltinTypeRegex	display "\<Regex\%(Match\%(Iterator\)\?\)\?\>"
 syntax match   juliaBuiltinTypeOptions	display "\<\%(Options\|Check\%(Warn\|None\|Error\)\)\>"
-syntax match   juliaBuiltinTypeFact	display "\<\%(Factorization\|Cholesky\|LU\|QRP\?\)\>"
+syntax match   juliaBuiltinTypeFact	display "\<\%(Factorization\)\>"
+syntax match   juliaBuiltinTypeSort	display "\<\%(\(Insertion\|Quick\|Merge\|Tim\)Sort\)\>"
 syntax match   juliaBuiltinTypeSpecial	display "\<\%(LocalProcess\|EnvHash\|ImaginaryUnit\)\>"
 syntax match   juliaBuiltinTypeOther	display "\<\%(Location\|ProcessGroup\|RemoteRef\|Task\|GlobalObject\|VersionNumber\)\>"
 
@@ -197,6 +198,7 @@ hi def link juliaBuiltinTypeRange	Type
 hi def link juliaBuiltinTypeRegex	Type
 hi def link juliaBuiltinTypeOptions	Type
 hi def link juliaBuiltinTypeFact	Type
+hi def link juliaBuiltinTypeSort	Type
 hi def link juliaBuiltinTypeSpecial	Type
 hi def link juliaBuiltinTypeOther	Type
 hi def link juliaConstNum		Constant
