@@ -19,7 +19,7 @@ syntax cluster juliaTypesItems		contains=juliaBuiltinTypeBasic,juliaBuiltinTypeN
 syntax cluster juliaConstItems		contains=juliaConstNum,juliaConstBool,juliaConstEnv,juliaConstIO,juliaConstMMap,juliaConstPtr,juliaConstErrno,juliaConstMulti,juliaConstGeneric
 syntax cluster juliaMacroItems		contains=juliaMacro,juliaDollarVar,juliaPrintfMacro
 syntax cluster juliaNumberItems		contains=juliaNumbers
-syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliaEString,juliaIString,juliaLString,juliabString,juliaShellString,juliaRegEx
+syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliaEString,juliaIString,juliaLString,juliabString,juliatriString,juliaTriLString,juliaShellString,juliaRegEx
 syntax cluster juliaPrintfItems		contains=juliaPrintfParBlock,juliaPrintfString
 syntax cluster juliaOperatorItems	contains=juliaArithOperator,juliaBitOperator,juliaBoolOperator,juliaCompOperator,juliaAssignOperator,juliaRangeOperator,juliaTypeOperator,juliaFuncOperator,juliaCTransOperator,juliaVarargOperator,juliaTernaryRegion
 syntax cluster juliaQuotedItems		contains=juliaQuotedEnd,juliaQuotedBlockKeyword
@@ -132,11 +132,14 @@ syntax match   juliaChar		display "'\\x\x\{2\}'" contains=juliaHexEscapeChar
 syntax match   juliaChar		display "'\\u\x\{1,4\}'" contains=juliaUniCharSmall
 syntax match   juliaChar		display "'\\U\x\{1,8\}'" contains=juliaUniCharLarge
 
-syntax region  juliaString		matchgroup=juliaStringDelim start=+S\?"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaStringVars,@juliaSpecialChars
+syntax region  juliaString		matchgroup=juliaStringDelim start=+"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaStringVars,@juliaSpecialChars
 syntax region  juliaEString		matchgroup=juliaStringDelim start=+E"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaSpecialChars
 syntax region  juliaIString		matchgroup=juliaStringDelim start=+I"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaStringVars
 syntax region  juliaLString		matchgroup=juliaStringDelim start=+L"+ skip=+\%(\\\\\)*\\"+ end=+"+
 syntax region  juliabString		matchgroup=juliaStringDelim start=+[bB]"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaSpecialChars
+
+syntax region  juliaTriString		matchgroup=juliaStringDelim start=+"""+ skip=+\%(\\\\\)*\\"+ end=+"""+ contains=@juliaStringVars,@juliaSpecialChars
+syntax region  juliaTriLString		matchgroup=juliaStringDelim start=+L"""+ skip=+\%(\\\\\)*\\"+ end=+"""+
 
 syntax region  juliaPrintfMacro		transparent start="@s\?printf(" end=")\@<=" contains=juliaMacro,juliaPrintfParBlock
 syntax region  juliaPrintfMacro		transparent start="@s\?printf\s\+" end="\n" contains=@juliaExprsPrintf
@@ -230,6 +233,8 @@ hi def link juliaEString		String
 hi def link juliaIString		String
 hi def link juliaLString		String
 hi def link juliabString		String
+hi def link juliaTriString		String
+hi def link juliaTriLString		String
 hi def link juliaPrintfString		String
 hi def link juliaShellString		String
 hi def link juliaStringDelim		String
