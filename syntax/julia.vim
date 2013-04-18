@@ -174,7 +174,7 @@ syntax match   juliaPrintfFmt		display contained "\\%%"hs=s+1
 
 syntax match   juliaQuotedBlockKeyword	display ":\s*\%(if\|elseif\|else\|while\|for\|begin\|function\|macro\|quote\|type\|immutable\|try\|catch\|let\|\(%bare\)\?module\|do\)\>"
 
-syntax region  juliaCommentL		matchgroup=juliaCommentDelim start="#" end="$" keepend contains=@juliaCommentSpace
+syntax region  juliaCommentL		matchgroup=juliaCommentDelim start="#" end="$" keepend contains=@juliaCommentSpace,@spell
 syntax cluster juliaCommentSpace	contains=juliaTodo
 syntax keyword juliaTodo		contained TODO FIXME XXX
 
