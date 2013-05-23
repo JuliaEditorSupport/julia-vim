@@ -115,7 +115,18 @@ function GetJuliaNestingStruct(lnum)
         continue
       endif
 
-      let i = JuliaMatch(a:lnum, line, '@\@<!\<\%(while\|for\|function\|macro\|begin\|type\|immutable\|let\|\%(bare\)\?module\|quote\|do\)\>', s)
+      let i = JuliaMatch(a:lnum, line, '@\@<!\<\%(bare\)\?module\>', s)
+      if i >= 0 && i == fb
+        let s = i+1
+        if i == 0
+          call add(blocks_stack, 'col1module')
+        else
+          call add(blocks_stack, 'other')
+        endif
+        continue
+      endif
+
+      let i = JuliaMatch(a:lnum, line, '@\@<!\<\%(while\|for\|function\|macro\|begin\|type\|immutable\|let\|quote\|do\)\>', s)
       if i >= 0 && i == fb
         let s = i+1
         call add(blocks_stack, 'other')
@@ -141,7 +152,7 @@ function GetJuliaNestingStruct(lnum)
     " Note: it should be impossible to get here
     break
   endwhile
-  let num_open_blocks = len(blocks_stack)
+  let num_open_blocks = len(blocks_stack) - count(blocks_stack, 'col1module')
   return [num_open_blocks, num_closed_blocks]
 endfunction
 
