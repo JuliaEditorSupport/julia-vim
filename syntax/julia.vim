@@ -21,7 +21,7 @@ syntax cluster juliaMacroItems		contains=juliaMacro,juliaDollarVar,juliaPrintfMa
 syntax cluster juliaNumberItems		contains=juliaNumbers
 syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliaEString,juliaIString,juliaLString,juliabString,juliatriString,juliaTriLString,juliaShellString,juliaRegEx
 syntax cluster juliaPrintfItems		contains=juliaPrintfParBlock,juliaPrintfString
-syntax cluster juliaOperatorItems	contains=juliaArithOperator,juliaBitOperator,juliaBoolOperator,juliaCompOperator,juliaAssignOperator,juliaRangeOperator,juliaTypeOperator,juliaFuncOperator,juliaCTransOperator,juliaVarargOperator,juliaTernaryRegion
+syntax cluster juliaOperatorItems	contains=juliaArithOperator,juliaBitOperator,juliaRedirOperator,juliaBoolOperator,juliaCompOperator,juliaAssignOperator,juliaRangeOperator,juliaTypeOperator,juliaFuncOperator,juliaCTransOperator,juliaVarargOperator,juliaTernaryRegion
 syntax cluster juliaQuotedItems		contains=juliaQuotedEnd,juliaQuotedBlockKeyword
 syntax cluster juliaCommentItems	contains=juliaCommentL
 syntax cluster juliaErrorItems		contains=juliaErrorPar,juliaErrorEnd,juliaErrorElse
@@ -84,7 +84,7 @@ syntax match   juliaBuiltinTypeOther	display "\<\%(RemoteRef\|Task\|VersionNumbe
 syntax match   juliaConstNum		display "\<\%(NaN\%(32\)\?\|Inf\%(32\)\?\|eu\?\|pi\|π\|eulergamma\|γ\|catalan\|φ\|golden\)\>"
 syntax match   juliaConstBool		display "\<\%(true\|false\)\>"
 syntax match   juliaConstEnv		display "\<\%(ARGS\|ENV\|CPU_CORES\|OS_NAME\|ENDIAN_BOM\|LOAD_PATH\|VERSION\)\>"
-syntax match   juliaConstIO		display "\<\%(STD\%(OUT\|IN\|ERR\)\|OUTPUT_STREAM\|UV_\%(READABLE\|WRITEABLE\)\)\>"
+syntax match   juliaConstIO		display "\<\%(STD\%(OUT\|IN\|ERR\)\|UV_\%(READABLE\|WRITEABLE\)\)\>"
 syntax match   juliaConstMMap		display "\<\%(MS_\%(A\?SYNC\|INVALIDATE\)\)\>"
 syntax match   juliaConstC		display "\<\%(WORD_SIZE\|C_NULL\|RTLD_\%(LOCAL\|GLOBAL\|LAZY\|NOW\|NOLOAD\|NODELETE\|DEEPBIND\|FIRST\)\)\>"
 syntax match   juliaConstGeneric	display "\<nothing\>"
@@ -118,6 +118,7 @@ syntax match   juliaComplexUnit		display	contained "\<im\>"
 syntax match   juliaArithOperator	"\%(+\|-\|//\|%\|\.\?\%(\*\|/\|\\\|\^\)\)"
 syntax match   juliaCompOperator	"\.\?[<>]"
 syntax match   juliaBitOperator		"\%(<<\|>>>\|>>\|&\||\|\~\|\$\)"
+syntax match   juliaRedirOperator	"\%(|>\|<|\)"
 syntax match   juliaBoolOperator	"\%(&&\|||\|!\)"
 syntax match   juliaCompOperator	"\.\?\%([<>]=\|!=\|==\)"
 syntax match   juliaAssignOperator	"\%([$|\&*/\\%+-]\|<<\|>>>\|>>\)\?="
@@ -262,6 +263,7 @@ else
 endif
 hi def link juliaArithOperator		juliaOperator
 hi def link juliaBitOperator		juliaOperator
+hi def link juliaRedirOperator		juliaOperator
 hi def link juliaBoolOperator		juliaOperator
 hi def link juliaCompOperator		juliaOperator
 hi def link juliaAssignOperator		juliaOperator
