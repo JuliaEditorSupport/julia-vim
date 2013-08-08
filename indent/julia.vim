@@ -157,11 +157,16 @@ function GetJuliaNestingStruct(lnum)
 endfunction
 
 function GetJuliaIndent()
+  let s:save_ignorecase = &ignorecase
+  set noignorecase
+
   " Find a non-blank line above the current line.
   let lnum = prevnonblank(v:lnum - 1)
 
   " At the start of the file use zero indent.
   if lnum == 0
+    let &ignorecase = s:save_ignorecase
+    unlet s:save_ignorecase
     return 0
   endif
 
@@ -187,5 +192,7 @@ function GetJuliaIndent()
     let num_closed_blocks -= 1
   endwhile
 
+  let &ignorecase = s:save_ignorecase
+  unlet s:save_ignorecase
   return ind
 endfunction
