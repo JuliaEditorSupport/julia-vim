@@ -28,8 +28,11 @@ let g:julia_highlight_operators=1
 setlocal shiftwidth=4
 setlocal expandtab
 
+let b:undo_ftplugin = "setlocal include< suffixesadd< comments< commentstring<"
+	\ . " define< shiftwidth< expandtab< indentexpr< indentkeys< cinoptions<"
+
 if exists("loaded_matchit")
-	let b:match_ignorecase=0
+	let b:match_ignorecase = 0
 
 	" note: beginKeywords must contain all blocks in order
 	" for nested-structures-skipping to work properly
@@ -59,16 +62,16 @@ if exists("loaded_matchit")
 	" the end of a block
 	let b:match_skip = 'synIDattr(synID(line("."),col("."),1),"name") =~ '
 		\ . '"\\<julia\\%(ComprehensionFor\\|RangeEnd\\|QuotedBlockKeyword\\|CommentL\\|\\%(\\|[EILbB]\\|Shell\\)String\\|RegEx\\)\\>"'
+
+	let b:undo_ftplugin = b:undo_ftplugin
+            \ . " | unlet! b:match_words b:match_skip b:match_ignorecase"
+            \ . " | delfunction JuliaGetMatchWords"
 endif
 
 if has("gui_win32")
 	let b:browsefilter = "Julia Source Files (*.jl)\t*.jl\n"
+        let b:undo_ftplugin = b:undo_ftplugin . " | unlet! b:browsefilter"
 endif
-
-let b:undo_ftplugin = "setlocal include< suffixesadd< comments< commentstring<"
-	\ . " define< shiftwidth< expandtab< indentexpr< indentkeys< cinoptions<"
-	\ . " | unlet! b:browsefiler b:match_words b:match_skip b:match_ignorecase"
-	\ . " | delfunction JuliaGetMatchWords"
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
