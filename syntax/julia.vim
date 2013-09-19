@@ -19,7 +19,7 @@ syntax cluster juliaTypesItems		contains=juliaBuiltinTypeBasic,juliaBuiltinTypeN
 syntax cluster juliaConstItems		contains=juliaConstNum,juliaConstBool,juliaConstEnv,juliaConstIO,juliaConstMMap,juliaConstC,juliaConstGeneric
 syntax cluster juliaMacroItems		contains=juliaMacro,juliaDollarVar,juliaPrintfMacro
 syntax cluster juliaNumberItems		contains=juliaNumbers
-syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliaEString,juliaIString,juliaLString,juliabString,juliatriString,juliaTriLString,juliaShellString,juliaRegEx
+syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliabString,juliavString,juliarString,juliaipString,juliaMIMEString,juliatriString,juliaShellString,juliaRegEx
 syntax cluster juliaPrintfItems		contains=juliaPrintfParBlock,juliaPrintfString
 syntax cluster juliaOperatorItems	contains=juliaArithOperator,juliaBitOperator,juliaRedirOperator,juliaBoolOperator,juliaCompOperator,juliaAssignOperator,juliaRangeOperator,juliaTypeOperator,juliaFuncOperator,juliaCTransOperator,juliaVarargOperator,juliaTernaryRegion
 syntax cluster juliaQuotedItems		contains=juliaQuotedEnd,juliaQuotedBlockKeyword
@@ -75,8 +75,9 @@ syntax match   juliaBuiltinTypeIO	display "\<\%(AsyncStream\|IO\%(Stream\|Buffer
 syntax match   juliaBuiltinTypeProcess	display "\<\%(ProcessGroup\|PipeBuffer\|Cmd\)\>"
 syntax match   juliaBuiltinTypeRange	display "\<\%(Dims\|Range\%(s\|1\|Index\)\?\|Colon\)\>"
 syntax match   juliaBuiltinTypeRegex	display "\<Regex\%(Match\%(Iterator\)\?\)\?\>"
-syntax match   juliaBuiltinTypeFact	display "\<\%(Factorization\)\>"
-syntax match   juliaBuiltinTypeSort	display "\<\%(\(Insertion\|Quick\|Merge\|Tim\|Heap\|Radix\)Sort\)\>"
+syntax match   juliaBuiltinTypeFact	display "\<Factorization\>"
+syntax match   juliaBuiltinTypeSort	display "\<\%(Insertion\|Quick\|Merge\)Sort\>"
+syntax match   juliaBuiltinTypeRound	display "\<Round\%(ingMode\|FromZero\|Down\|Nearest\|ToZero\|Up\)\>"
 syntax match   juliaBuiltinTypeSpecial	display "\<\%(LocalProcess\|EnvHash\|ImaginaryUnit\)\>"
 syntax match   juliaBuiltinTypeRandom	display "\<\%(AbstractRNG\|MersenneTwister\)\>"
 syntax match   juliaBuiltinTypeOther	display "\<\%(RemoteRef\|Task\|VersionNumber\|TmStruct\)\>"
@@ -84,7 +85,7 @@ syntax match   juliaBuiltinTypeOther	display "\<\%(RemoteRef\|Task\|VersionNumbe
 syntax match   juliaConstNum		display "\<\%(NaN\%(16\|32\)\?\|Inf\%(16\|32\)\?\|eu\?\|pi\|π\|eulergamma\|γ\|catalan\|φ\|golden\)\>"
 syntax match   juliaConstBool		display "\<\%(true\|false\)\>"
 syntax match   juliaConstEnv		display "\<\%(ARGS\|ENV\|CPU_CORES\|OS_NAME\|ENDIAN_BOM\|\%(DL_\)\?LOAD_PATH\|VERSION\|JULIA_HOME\)\>"
-syntax match   juliaConstIO		display "\<\%(STD\%(OUT\|IN\|ERR\)\|UV_\%(READABLE\|WRITEABLE\)\)\>"
+syntax match   juliaConstIO		display "\<\%(STD\%(OUT\|IN\|ERR\)\)\>"
 syntax match   juliaConstMMap		display "\<\%(MS_\%(A\?SYNC\|INVALIDATE\)\)\>"
 syntax match   juliaConstC		display "\<\%(WORD_SIZE\|C_NULL\|RTLD_\%(LOCAL\|GLOBAL\|LAZY\|NOW\|NOLOAD\|NODELETE\|DEEPBIND\|FIRST\)\)\>"
 syntax match   juliaConstGeneric	display "\<\%(nothing\|Main\)\>"
@@ -139,13 +140,13 @@ syntax match   juliaChar		display "'\\u\x\{1,4\}'" contains=juliaUniCharSmall
 syntax match   juliaChar		display "'\\U\x\{1,8\}'" contains=juliaUniCharLarge
 
 syntax region  juliaString		matchgroup=juliaStringDelim start=+"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaStringVars,@juliaSpecialChars
-syntax region  juliaEString		matchgroup=juliaStringDelim start=+E"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaSpecialChars
-syntax region  juliaIString		matchgroup=juliaStringDelim start=+I"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaStringVars
-syntax region  juliaLString		matchgroup=juliaStringDelim start=+L"+ skip=+\%(\\\\\)*\\"+ end=+"+
-syntax region  juliabString		matchgroup=juliaStringDelim start=+[bB]"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaSpecialChars
+syntax region  juliabString		matchgroup=juliaStringDelim start=+\<b"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaSpecialChars
+syntax region  juliavString		matchgroup=juliaStringDelim start=+\<v"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaSpecialChars
+syntax region  juliarString		matchgroup=juliaStringDelim start=+\<r"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaSpecialChars
+syntax region  juliaipString		matchgroup=juliaStringDelim start=+\<ip"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaSpecialChars
+syntax region  juliaMIMEString		matchgroup=juliaStringDelim start=+\<MIME"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaSpecialChars
 
 syntax region  juliaTriString		matchgroup=juliaStringDelim start=+"""+ skip=+\%(\\\\\)*\\"+ end=+"""+ contains=@juliaStringVars,@juliaSpecialChars
-syntax region  juliaTriLString		matchgroup=juliaStringDelim start=+L"""+ skip=+\%(\\\\\)*\\"+ end=+"""+
 
 syntax region  juliaPrintfMacro		transparent start="@s\?printf(" end=")\@<=" contains=juliaMacro,juliaPrintfParBlock
 syntax region  juliaPrintfMacro		transparent start="@s\?printf\s\+" end="\n" contains=@juliaExprsPrintf
@@ -208,6 +209,7 @@ hi def link juliaBuiltinTypeRange	Type
 hi def link juliaBuiltinTypeRegex	Type
 hi def link juliaBuiltinTypeFact	Type
 hi def link juliaBuiltinTypeSort	Type
+hi def link juliaBuiltinTypeRound	Type
 hi def link juliaBuiltinTypeSpecial	Type
 hi def link juliaBuiltinTypeRandom	Type
 hi def link juliaBuiltinTypeOther	Type
@@ -234,12 +236,12 @@ hi def link juliaComplexUnit		Constant
 hi def link juliaChar			Character
 
 hi def link juliaString			String
-hi def link juliaEString		String
-hi def link juliaIString		String
-hi def link juliaLString		String
 hi def link juliabString		String
+hi def link juliavString		String
+hi def link juliarString		String
+hi def link juliaipString		String
+hi def link juliaMIMEString		String
 hi def link juliaTriString		String
-hi def link juliaTriLString		String
 hi def link juliaPrintfString		String
 hi def link juliaShellString		String
 hi def link juliaStringDelim		String
