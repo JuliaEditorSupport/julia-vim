@@ -22,7 +22,7 @@ syntax cluster juliaNumberItems		contains=juliaNumbers
 syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliabString,juliavString,juliarString,juliaipString,juliaMIMEString,juliatriString,juliaShellString,juliaRegEx
 syntax cluster juliaPrintfItems		contains=juliaPrintfParBlock,juliaPrintfString
 syntax cluster juliaOperatorItems	contains=juliaArithOperator,juliaBitOperator,juliaRedirOperator,juliaBoolOperator,juliaCompOperator,juliaAssignOperator,juliaRangeOperator,juliaTypeOperator,juliaFuncOperator,juliaCTransOperator,juliaVarargOperator,juliaTernaryRegion
-syntax cluster juliaQuotedItems		contains=juliaQuotedEnd,juliaQuotedBlockKeyword
+syntax cluster juliaQuotedItems		contains=juliaQuotedEnd,juliaQuotedBlockKeyword,juliaQuotedQuestion
 syntax cluster juliaCommentItems	contains=juliaCommentL
 syntax cluster juliaErrorItems		contains=juliaErrorPar,juliaErrorEnd,juliaErrorElse
 
@@ -178,7 +178,9 @@ syntax match   juliaPrintfFmt		display contained "%%"
 syntax match   juliaPrintfFmt		display contained "\\%\%(\d\+\$\)\=[-+' #0]*\%(\d*\|\*\|\*\d\+\$\)\%(\.\%(\d*\|\*\|\*\d\+\$\)\)\=\%([hlLjqzt]\|ll\|hh\)\=[aAbdiuoxXDOUfFeEgGcCsSpn]"hs=s+1
 syntax match   juliaPrintfFmt		display contained "\\%%"hs=s+1
 
-syntax match   juliaQuotedBlockKeyword	display ":\s*\%(if\|elseif\|else\|while\|for\|begin\|function\|macro\|quote\|type\|immutable\|try\|catch\|let\|\(%bare\)\?module\|do\)\>"
+syntax match   juliaQuotedBlockKeyword	display ":\s*\%(if\|elseif\|else\|while\|for\|begin\|function\|macro\|quote\|type\|immutable\|try\|catch\|let\|\(%bare\)\?module\|do\)\>"he=s+1 contains=juliaInQuote
+syntax match   juliaQuotedQuestion      display ":\s*\%(?\|(\s*?\s*)\)"he=s+1 contains=juliaInQuote
+syntax match   juliaInQuote             display contained ":\zs."
 
 syntax region  juliaCommentL		matchgroup=juliaCommentDelim start="#" end="$" keepend contains=@juliaCommentSpace,@spell
 syntax cluster juliaCommentSpace	contains=juliaTodo
@@ -277,7 +279,8 @@ hi def link juliaVarargOperator		juliaOperator
 hi def link juliaTernaryOperator	juliaOperator
 
 "hi def link juliaQuotedEnd              juliaOperator
-"hi def link juliaQuotedBlockKeyword	juliaOperator
+hi def link juliaQuotedBlockKeyword	juliaOperator
+hi def link juliaQuotedQuestion 	juliaOperator
 
 hi def link juliaCommentL		Comment
 hi def link juliaCommentDelim		Comment
