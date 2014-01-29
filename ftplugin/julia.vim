@@ -61,7 +61,7 @@ if exists("loaded_matchit")
 	" the 'end' keyword when it is used as a range rather than as
 	" the end of a block
 	let b:match_skip = 'synIDattr(synID(line("."),col("."),1),"name") =~ '
-		\ . '"\\<julia\\%(ComprehensionFor\\|RangeEnd\\|QuotedBlockKeyword\\|CommentL\\|\\%(\\|[EILbB]\\|Shell\\)String\\|RegEx\\)\\>"'
+		\ . '"\\<julia\\%(ComprehensionFor\\|RangeEnd\\|QuotedBlockKeyword\\|InQuote\\|CommentL\\|\\%(\\|[EILbB]\\|Shell\\)String\\|RegEx\\)\\>"'
 
 	let b:undo_ftplugin = b:undo_ftplugin
             \ . " | unlet! b:match_words b:match_skip b:match_ignorecase"
