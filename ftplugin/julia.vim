@@ -23,11 +23,6 @@ setlocal define="^\s*macro\>"
 " syntax-highlightened
 let g:julia_highlight_operators=1
 
-" Comment the following two lines if you don't want julia source-code
-" style being enforced
-setlocal shiftwidth=4
-setlocal expandtab
-
 let b:undo_ftplugin = "setlocal include< suffixesadd< comments< commentstring<"
 	\ . " define< shiftwidth< expandtab< indentexpr< indentkeys< cinoptions<"
 
