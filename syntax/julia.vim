@@ -117,7 +117,7 @@ syntax match   juliaFloat		display contained "0x\x\%(_\?\x\)*\%\(\.\%\(\x\%(_\?\
 
 syntax match   juliaComplexUnit		display	contained "\<im\>"
 
-syntax match   juliaArithOperator	"\%(+\|-\|//\|%\|\.\?\%(\*\|/\|\\\|\^\)\)"
+syntax match   juliaArithOperator	"\%(//\|\.\?\%(+\|-\|//\|%\|\*\|/\|\\\|\^\)\)"
 syntax match   juliaCompOperator	"\.\?[<>]"
 syntax match   juliaBitOperator		"\%(<<\|>>>\|>>\|&\||\|\~\|\$\)"
 syntax match   juliaRedirOperator	"\%(|>\|<|\)"
