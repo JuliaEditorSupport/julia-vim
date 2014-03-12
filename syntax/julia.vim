@@ -23,7 +23,7 @@ syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliabString,jul
 syntax cluster juliaPrintfItems		contains=juliaPrintfParBlock,juliaPrintfString
 syntax cluster juliaOperatorItems	contains=juliaArithOperator,juliaBitOperator,juliaRedirOperator,juliaBoolOperator,juliaCompOperator,juliaAssignOperator,juliaRangeOperator,juliaTypeOperator,juliaFuncOperator,juliaCTransOperator,juliaVarargOperator,juliaTernaryRegion
 syntax cluster juliaQuotedItems		contains=juliaQuotedEnd,juliaQuotedBlockKeyword,juliaQuotedQuestion
-syntax cluster juliaCommentItems	contains=juliaCommentL
+syntax cluster juliaCommentItems	contains=juliaCommentL,juliaCommentM
 syntax cluster juliaErrorItems		contains=juliaErrorPar,juliaErrorEnd,juliaErrorElse
 
 syntax match   juliaErrorPar		display "[])}]"
@@ -183,7 +183,8 @@ syntax match   juliaQuotedBlockKeyword	display ":\s*\%(if\|elseif\|else\|while\|
 syntax match   juliaQuotedQuestion      display ":\s*\%(?\|(\s*?\s*)\)"he=s+1 contains=juliaInQuote
 syntax match   juliaInQuote             display contained ":\zs\s*[^])}[:space:],;]\+"
 
-syntax region  juliaCommentL		matchgroup=juliaCommentDelim start="#" end="$" keepend contains=@juliaCommentSpace,@spell
+syntax region  juliaCommentL		matchgroup=juliaCommentDelim start="#[^=]" end="$" keepend contains=@juliaCommentSpace,@spell
+syntax region  juliaCommentM		matchgroup=juliaCommentDelim start="#=" end="=#" contains=@juliaCommentSpace,@spell
 syntax cluster juliaCommentSpace	contains=juliaTodo
 syntax keyword juliaTodo		contained TODO FIXME XXX
 
@@ -285,6 +286,7 @@ hi def link juliaQuotedBlockKeyword	juliaOperator
 hi def link juliaQuotedQuestion 	juliaOperator
 
 hi def link juliaCommentL		Comment
+hi def link juliaCommentM		Comment
 hi def link juliaCommentDelim		Comment
 hi def link juliaTodo			Todo
 
