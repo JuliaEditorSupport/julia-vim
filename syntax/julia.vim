@@ -183,8 +183,8 @@ syntax match   juliaQuotedBlockKeyword	display ":\s*\%(if\|elseif\|else\|while\|
 syntax match   juliaQuotedQuestion      display ":\s*\%(?\|(\s*?\s*)\)"he=s+1 contains=juliaInQuote
 syntax match   juliaInQuote             display contained ":\zs\s*[^])}[:space:],;]\+"
 
-syntax region  juliaCommentL		matchgroup=juliaCommentDelim start="#\%([^=]\|\ze$\)" end="$" keepend contains=juliaTodo,@spell
-syntax region  juliaCommentM		matchgroup=juliaCommentDelim start="#=\%([^#]\|\ze$\)" end="=#" contains=juliaTodo,juliaCommentM,juliaCommentT,@spell
+syntax region  juliaCommentL		matchgroup=juliaCommentDelim start="#\ze\%([^=]\|$\)" end="$" keepend contains=juliaTodo,@spell
+syntax region  juliaCommentM		matchgroup=juliaCommentDelim start="#=\ze\%([^#]\|$\)" end="=#" contains=juliaTodo,juliaCommentM,juliaCommentT,@spell
 syntax match   juliaCommentT		display "#=#"
 syntax keyword juliaTodo		contained TODO FIXME XXX
 
