@@ -117,12 +117,13 @@ syntax match   juliaFloat		display contained "0x\x\%(_\?\x\)*\%\(\.\%\(\x\%(_\?\
 
 syntax match   juliaComplexUnit		display	contained "\<im\>"
 
-syntax match   juliaArithOperator	"\%(//\|\.\?\%(+\|-\|//\|%\|\*\|/\|\\\|\^\)\)"
+syntax match   juliaArithOperator	"\%(//\|\.\?\%(+\|-\|//\|%\|\*\|/\|\\\|\^\|[÷⋅⊛⊖⊗⊘⊙⊚⊛⫽]\)\)"
+syntax match   juliaSetOperator		"[∪∩∈∉∋∌⊆⊈]"
 syntax match   juliaCompOperator	"\.\?[<>]"
 syntax match   juliaBitOperator		"\%(<<\|>>>\|>>\|&\||\|\~\|\$\)"
 syntax match   juliaRedirOperator	"\%(|>\|<|\)"
-syntax match   juliaBoolOperator	"\%(&&\|||\|!\)"
-syntax match   juliaCompOperator	"\.\?\%([<>]=\|!=\|==\)"
+syntax match   juliaBoolOperator	"\%(&&\|||\|!\|[∧∨]\)"
+syntax match   juliaCompOperator	"\.\?\%([<>]=\|!=\|==\|[≤≥≠≡≢]\)"
 syntax match   juliaAssignOperator	"\%([$|\&*/\\%+-]\|<<\|>>>\|>>\)\?="
 syntax match   juliaRangeOperator	":"
 syntax match   juliaTypeOperator	"\%(<:\|::\)"
@@ -268,6 +269,7 @@ else
   hi def link juliaOperator		juliaNone
 endif
 hi def link juliaArithOperator		juliaOperator
+hi def link juliaSetOperator		juliaOperator
 hi def link juliaBitOperator		juliaOperator
 hi def link juliaRedirOperator		juliaOperator
 hi def link juliaBoolOperator		juliaOperator
