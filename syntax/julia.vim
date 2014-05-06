@@ -68,7 +68,7 @@ syntax match   juliaBuiltinTypeC	display "\<\%(FileOffset\|C\%(u\?\%(char\|short
 syntax match   juliaBuiltinTypeError	display "\<\%(\%(Bounds\|Divide\|Domain\|Memory\|IO\|\%(Stack\)\?Overflow\|EOF\|Undef\%(Ref\|Var\)\|System\|Type\|Parse\|Argument\|Key\|Load\|Method\|Inexact\|UV\)Error\|\%(Interrupt\|Error\|ProcessExited\)Exception\|DimensionMismatch\)\>"
 syntax match   juliaBuiltinTypeIter	display "\<\%(Each\%(Line\|Search\)\|Enumerate\|Zip\|Filter\|Reverse\)\>"
 syntax match   juliaBuiltinTypeString	display "\<\%(DirectIndex\|ASCII\|UTF\%(8\|16\|32\)\|Byte\|Sub\|Generic\|Rep\|Rev\|Rope\|Transformed\)\?String\>"
-syntax match   juliaBuiltinTypeArray	display "\<\%(\%(D\|Shared\)\?Array\|\%(Abstract\%(Sparse\)\?\|Dense\|Strided\)\?\%(Array\|Matrix\|Vec\%(tor\|OrMat\)\)\|Sparse\%(MatrixCSC\|Accumulator\)\|Sub\%(Array\|\%(Or\)\?DArray\)\|Bit\%(Array\|Vector\|Matrix\)\|\%\(D\|Bid\|\%(Sym\)\?Trid\)iagonal\|Woodbury\|Triangular\|Hermitian\|Symmetric\|UniformScaling\)\>"
+syntax match   juliaBuiltinTypeArray	display "\<\%(D\?Array\|\%(Abstract\%(Sparse\)\?\|Dense\|Strided\)\?\%(Array\|Matrix\|Vec\%(tor\|OrMat\)\)\|Sparse\%(MatrixCSC\|Accumulator\)\|Sub\%(Array\|\%(Or\)\?DArray\)\|\%(Bit\|Shared\)\%(Array\|Vector\|Matrix\)\|\%\(D\|Bid\|\%(Sym\)\?Trid\)iagonal\|Woodbury\|Triangular\|Hermitian\|Symmetric\|UniformScaling\)\>"
 syntax match   juliaBuiltinTypeDict	display "\<\%(WeakKey\|ObjectId\)\?Dict\>"
 syntax match   juliaBuiltinTypeSet	display "\<\%(Int\)\?Set\>"
 syntax match   juliaBuiltinTypeIO	display "\<\%(IO\%(Stream\|Buffer\)\?\|CFILE\|Base64Pipe\|RawFD\|StatStruct\|DevNull\|FileMonitor\|PollingFileWatcher\|Timer\|UdpSocket\)\>"
