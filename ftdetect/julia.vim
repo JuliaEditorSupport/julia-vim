@@ -4,3 +4,5 @@
 au BufRead,BufNewFile *.jl		let b:undo_ftplugin = "setlocal comments< define< formatoptions< iskeyword< lisp<"
 
 au BufRead,BufNewFile *.jl		set filetype=julia
+
+au VimEnter * let g:jl_did_vim_enter = 1
