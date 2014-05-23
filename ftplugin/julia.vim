@@ -12,7 +12,7 @@ let b:did_ftplugin = 1
 let s:save_cpo = &cpo
 set cpo-=C
 
-setlocal include="^\s*load\>"
+setlocal include="^\s*\%(reload\|include\)\>"
 setlocal suffixesadd=.jl
 setlocal comments=:#
 setlocal commentstring=#=%s=#
