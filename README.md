@@ -40,9 +40,9 @@ This plugin adds a mapping to the `Tab` key which makes it behave like the Julia
 the cursor is at the end of a recognized LaTeX symbol (e.g. `\alpha`) in insert mode, pressing
 the `Tab` key will substitute it with the corresponding Unicode symbol (e.g. `α`).
 
-If no suitabe substitution is found, the action will fall back to whatever mapping was previously
+If no suitable substitution is found, the action will fall back to whatever mapping was previously
 defined: by default, inserting a literal `Tab` character, or invoking some other action if another
-plug-in is installed, e.g. syntastic or YouCompleteMe.
+plug-in is installed, e.g. [supertab] or [YouCompleteMe].
 
 A literal tab can always be forced by using `CTRL-V` and then `Tab`.
 
@@ -51,3 +51,6 @@ it into your `.vimrc` file.
 
 Even when the mapping is disabled, the feature is still available via the omnicompletion mechanism,
 i.e. by pressing `CTRL-X` and then `CTRL-O`.
+
+[supertab]: https://github.com/ervandew/supertab
+[YouCompleteMe]: https://github.com/Valloric/YouCompleteMe
