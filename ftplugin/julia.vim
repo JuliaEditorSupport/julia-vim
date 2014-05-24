@@ -101,17 +101,26 @@ function! JuliaTab()
     endif
 endfunction
 
+let b:julia_tab_set = 0
+
 function! s:JuliaSetTab(wait_vim_enter)
     if a:wait_vim_enter && !exists("g:jl_did_vim_enter")
         return
     endif
     let g:jl_did_vim_enter = 1
+    if !get(g:, "julia_latex_to_unicode", 1)
+        return
+    endif
     call s:JuliaSetFallbackTab('<Tab>', s:JuliaFallbackTabTrigger)
     imap <buffer> <Tab> <Plug>JuliaTab
     imap <buffer><expr> <Plug>JuliaTab JuliaTab()
+    let b:julia_tab_set = 1
 endfunction
 
 function! JuliaUnsetTab()
+    if !b:julia_tab_set
+        return
+    endif
     iunmap <buffer> <Tab>
     if empty(maparg("<Tab>", "i"))
         call s:JuliaSetFallbackTab(s:JuliaFallbackTabTrigger, '<Tab>')
