@@ -279,7 +279,7 @@ endfunction
 
 " YouCompleteMe plugin does not work well with LaTeX symbols
 " suggestions
-if exists("g:loaded_youcompleteme")
+if exists("g:loaded_youcompleteme") || exists("g:loaded_neocomplcache")
     let g:julia_latex_suggestions_enabled = 0
 endif
 
