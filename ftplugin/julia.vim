@@ -121,7 +121,6 @@ function! LaTeXtoUnicode_omnifunc(findstart, base)
         " completion not found
         if col0 == -1
             let b:julia_found_completion = 0
-            " XXX: should this just be let col0 = -3?
             call feedkeys(s:julia_esc_sequence)
             let col0 = -2
         endif
@@ -158,11 +157,11 @@ function! LaTeXtoUnicode_omnifunc(findstart, base)
         " pass them on
         if !suggestions
             let partmatches = []
-            call feedkeys(s:julia_esc_sequence)
         else
             call sort(partmatches)
         endif
         if empty(partmatches)
+            call feedkeys(s:julia_esc_sequence)
             let b:julia_found_completion = 0
         endif
         return partmatches
@@ -239,7 +238,6 @@ function! JuliaFallbackCallback()
     endif
     " fallback
     call feedkeys(s:JuliaFallbackTabTrigger)
-    let b:julia_found_completion = 0 " XXX: is this really needed?
     return
 endfunction
 
