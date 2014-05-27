@@ -206,7 +206,7 @@ function! JuliaTab()
     " the <Tab> is passed through to the fallback mapping if the completion
     " menu is present, and it hasn't been raised by the Julia tab, and there
     " isn't an exact match before the cursor when suggestions are disabled
-    if pumvisible() && !b:julia_tab_completing && (get(g:, "julia_latex_suggestions_enabled", 1) || LaTeXtoUnicode_match())
+    if pumvisible() && !b:julia_tab_completing && (get(g:, "julia_latex_suggestions_enabled", 1) || !LaTeXtoUnicode_match())
         call feedkeys(s:JuliaFallbackTabTrigger)
         return ''
     endif
