@@ -36,13 +36,19 @@ Julia should appear as a file type and be automatically detected for files with 
 
 ## LaTeX-to-Unicode substitution via Tab key
 
-This plugin adds a mapping to the `Tab` key which makes it behave like the Julia REPL, i.e. when
+This plug-in adds a mapping to the `Tab` key which makes it behave like the Julia REPL, i.e. when
 the cursor is at the end of a recognized LaTeX symbol (e.g. `\alpha`) in insert mode, pressing
-the `Tab` key will substitute it with the corresponding Unicode symbol (e.g. `α`).
+the `Tab` key will substitute it with the corresponding Unicode symbol (e.g. `α`). If a partial match
+is found (e.g. `\al`), a list of possible completions is suggested (e.g. `\aleph`, `\allequal`,
+`\alpha`), and it will be refined while you enter more characters; when only one match is left, pressing
+`Tab` will complete it and pressing it again will perform the substitution to Unicode.
 
 If no suitable substitution is found, the action will fall back to whatever mapping was previously
 defined: by default, inserting a literal `Tab` character, or invoking some other action if another
 plug-in is installed, e.g. [supertab] or [YouCompleteMe].
+
+Note that the YouCompleteMe plug-in does not work well with the suggestion of possible completions for
+partial matches, and therefore this feature is disabled if that plug-in is detected.
 
 A literal tab can always be forced by using `CTRL-V` and then `Tab`.
 
@@ -51,6 +57,15 @@ it into your `.vimrc` file.
 
 Even when the mapping is disabled, the feature is still available via the omnicompletion mechanism,
 i.e. by pressing `CTRL-X` and then `CTRL-O`.
+
+To disable the suggestions of partial matches completions, use the command
+`:let g:julia_latex_suggestions_enabled = 0`.
+
+In general, suggestions try not to get in the way, and so if an exact match is detected (e.g. `\ne`) when
+`Tab` is pressed, the substitution will be done even when there would be other symbols with the same prefix
+(e.g. `\neg`). This behaviour can be changed by the command `:let g:julia_latex_to_unicode_eager = 0`, in
+which case hitting `Tab` will first produce a suggestion list, and only pressing it again will trigger the
+substitution to Unicode.
 
 [supertab]: https://github.com/ervandew/supertab
 [YouCompleteMe]: https://github.com/Valloric/YouCompleteMe
