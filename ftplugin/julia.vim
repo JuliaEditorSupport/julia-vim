@@ -84,6 +84,22 @@ function! LaTeXtoUnicode_match()
     return has_key(g:latex_symbols, base)
 endfunction
 
+" Helper function to sort suggestion entries
+function! s:partmatches_sort(p1, p2)
+    return a:p1.word > a:p2.word ? 1 : a:p1.word < a:p2.word ? -1 : 0
+endfunction
+
+" Helper function to fix display of Unicode compose characters
+" in the suggestions menu (they are displayed on top of '◌')
+function! s:fix_compose_chars(uni)
+    let u = matchstr(a:uni, '^.')
+    let isc = ("\u0300" <= u && u <= "\u036F") ||
+        \     ("\u1DC0" <= u && u <= "\u1DFF") ||
+        \     ("\u20D0" <= u && u <= "\u20FF") ||
+        \     ("\uFE20" <= u && u <= "\uFE2F")
+    return isc ? "\u25CC" . a:uni : a:uni
+endfunction
+
 " Omnicompletion function. Besides the usual two-stage omnifunc behaviour,
 " it has the following peculiar features:
 "  *) keeps track of the previous completion attempt
@@ -137,7 +153,8 @@ function! LaTeXtoUnicode_omnifunc(findstart, base)
                 let exact_match = 1
             endif
             if len(k) >= len(a:base) && k[0 : len(a:base)-1] ==# a:base
-                call add(partmatches, k)
+                let menu = s:fix_compose_chars(g:latex_symbols[k])
+                call add(partmatches, {'word': k, 'menu': menu})
             endif
         endfor
         " exact matches are replaced with Unicode
@@ -158,7 +175,7 @@ function! LaTeXtoUnicode_omnifunc(findstart, base)
         if !suggestions
             let partmatches = []
         else
-            call sort(partmatches)
+            call sort(partmatches, "s:partmatches_sort")
         endif
         if empty(partmatches)
             call feedkeys(s:julia_esc_sequence)
@@ -174,7 +191,7 @@ set omnifunc=LaTeXtoUnicode_omnifunc
 let s:JuliaFallbackTabTrigger = "\u0091JuliaFallbackTab"
 
 " Function which saves the current insert-mode mapping of a key sequence `s`
-" and associates it with another key sequence `k` (e.g. stores the current 
+" and associates it with another key sequence `k` (e.g. stores the current
 " <Tab> mapping into the Fallback trigger)
 function! s:JuliaSetFallbackTab(s, k)
     let mmdict = maparg(a:s, 'i', 0, 1)
