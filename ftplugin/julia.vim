@@ -241,26 +241,28 @@ function! JuliaFallbackCallback()
     return
 endfunction
 
-" Every time a completion finishes, the fallback may be invoked
-autocmd CompleteDone <buffer> call JuliaFallbackCallback()
-
-
 " Did we install the Julia tab mappings?
 let b:julia_tab_set = 0
 
 " Setup the Julia tab mapping
 function! s:JuliaSetTab(wait_vim_enter)
     " g:julia_did_vim_enter is set from an autocommand in ftdetect
-    if a:wait_vim_enter && !exists("g:julia_did_vim_enter")
+    if a:wait_vim_enter && !get(g:, "julia_did_vim_enter", 0)
         return
     endif
-    let g:julia_did_vim_enter = 1
     if !get(g:, "julia_latex_to_unicode", 1)
         return
     endif
     call s:JuliaSetFallbackTab('<Tab>', s:JuliaFallbackTabTrigger)
     imap <buffer> <Tab> <Plug>JuliaTab
     inoremap <buffer><expr> <Plug>JuliaTab JuliaTab()
+
+    augroup Julia
+        autocmd!
+        " Every time a completion finishes, the fallback may be invoked
+        autocmd CompleteDone <buffer> call JuliaFallbackCallback()
+    augroup END
+
     let b:julia_tab_set = 1
 endfunction
 
@@ -275,6 +277,8 @@ function! JuliaUnsetTab()
     endif
     iunmap <buffer> <Plug>JuliaTab
     exe 'iunmap <buffer> ' . s:JuliaFallbackTabTrigger
+    autocmd! Julia
+    augroup! Julia
 endfunction
 
 " YouCompleteMe plugin does not work well with LaTeX symbols
