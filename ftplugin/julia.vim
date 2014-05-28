@@ -87,7 +87,7 @@ endfunction
 " Omnicompletion function. Besides the usual two-stage omnifunc behaviour,
 " it has the following peculiar features:
 "  *) keeps track of the previous completion attempt
-"  *) sets some info to be used by the fallckab function
+"  *) sets some info to be used by the fallback function
 "  *) either returns a list of completions if a partial match is found, or a
 "     Unicode char if an exact match is found
 "  *) forces its way out of completion mode through a hack in some cases
@@ -106,9 +106,9 @@ function! LaTeXtoUnicode_omnifunc(findstart, base)
         let b:julia_completed_once = 0
         if col0 == b:julia_last_compl['col0']
             let prevl = b:julia_last_compl['line']
-            if col1 == b:julia_last_compl['col1'] && l == prevl
+            if col1 == b:julia_last_compl['col1'] && l ==# prevl
                 let b:julia_completed_once = 1
-            elseif col1 == b:julia_last_compl['col1'] - 1 && l == prevl[0 : col1-2] . prevl[col1 : -1]
+            elseif col1 == b:julia_last_compl['col1'] - 1 && l ==# prevl[0 : col1-2] . prevl[col1 : -1]
                 let b:julia_bs_while_completing = 1
             endif
         endif
@@ -133,10 +133,10 @@ function! LaTeXtoUnicode_omnifunc(findstart, base)
         let partmatches = []
         let exact_match = 0
         for k in keys(g:latex_symbols)
-            if k == a:base
+            if k ==# a:base
                 let exact_match = 1
             endif
-            if len(k) >= len(a:base) && k[0 : len(a:base)-1] == a:base
+            if len(k) >= len(a:base) && k[0 : len(a:base)-1] ==# a:base
                 call add(partmatches, k)
             endif
         endfor
@@ -183,7 +183,7 @@ function! s:JuliaSetFallbackTab(s, k)
         return
     endif
     let rhs = mmdict["rhs"]
-    if rhs == '<Plug>JuliaTab'
+    if rhs ==# '<Plug>JuliaTab'
         return
     endif
     let pre = '<buffer>'
