@@ -76,7 +76,7 @@ let b:julia_tab_completing = 0
 function! LaTeXtoUnicode_match()
     let col1 = col('.')
     let l = getline('.')
-    let col0 = match(l[0:col1-2], '\\[A-Za-z]\+$')
+    let col0 = match(l[0:col1-2], '\\[^[:space:]\\]\+$')
     if col0 == -1
         return 0
     endif
@@ -116,7 +116,7 @@ function! LaTeXtoUnicode_omnifunc(findstart, base)
         " analyse current line
         let col1 = col('.')
         let l = getline('.')
-        let col0 = match(l[0:col1-2], '\\[A-Za-z]\+$')
+        let col0 = match(l[0:col1-2], '\\[^[:space:]\\]\+$')
         " compare with previous completion attempt
         let b:julia_bs_while_completing = 0
         let b:julia_completed_once = 0
