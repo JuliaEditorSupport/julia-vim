@@ -312,7 +312,7 @@ function! JuliaAutoLaTeXtoUnicode(...)
   endif
   let bs = (vc != "\n")
   let l = getline(lnum)[0 : col1-1-bs] . v:char
-  let col0 = match(l, '\\\%([A-Za-z]\+\%' . (col1) . 'c\%([^A-Za-z]\|$\)\|[_^]\%([0-9a-z()=+-]\|schwa\)\%' . (col1) .'c\%(.\|$\)\)')
+  let col0 = match(l, '\\\%([_^]\?[A-Za-z]\+\%' . col1 . 'c\%([^A-Za-z]\|$\)\|[_^]\%([0-9()=+-]\)\%' . col1 .'c\%(.\|$\)\)')
   if col0 == -1
     if a:0 > 1
       call feedkeys(a:2, 'n')
