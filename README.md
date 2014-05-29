@@ -10,16 +10,16 @@ git clone git://github.com/JuliaLang/julia-vim.git
 
 ### Using [vundle]
 
-Add a new bundle to your `.vimrc`:
+Add a new plugin line to your `.vimrc`:
 
 ``` vim
-Bundle 'JuliaLang/julia-vim'
+Plugin 'JuliaLang/julia-vim'
 ```
 
 Run `vim` and update your bundles:
 
 ``` vim
-:BundleInstall!
+:PluginInstall!
 ```
 
 [pathogen]: https://github.com/tpope/vim-pathogen
