@@ -196,11 +196,11 @@ let s:JuliaFallbackTabTrigger = "\u0091JuliaFallbackTab"
 function! s:JuliaSetFallbackTab(s, k)
     let mmdict = maparg(a:s, 'i', 0, 1)
     if empty(mmdict)
-        exe 'inoremap <buffer> ' . a:k . ' <Tab>'
+        exe 'inoremap <buffer> ' . a:k . ' ' . a:s
         return
     endif
     let rhs = mmdict["rhs"]
-    if rhs ==# '<Plug>JuliaTab'
+    if rhs =~# '^<Plug>Julia'
         return
     endif
     let pre = '<buffer>'
@@ -274,7 +274,7 @@ function! s:JuliaSetTab(wait_vim_enter)
     imap <buffer> <Tab> <Plug>JuliaTab
     inoremap <buffer><expr> <Plug>JuliaTab JuliaTab()
 
-    augroup Julia
+    augroup JuliaTab
         autocmd!
         " Every time a completion finishes, the fallback may be invoked
         autocmd CompleteDone <buffer> call JuliaFallbackCallback()
@@ -294,28 +294,113 @@ function! JuliaUnsetTab()
     endif
     iunmap <buffer> <Plug>JuliaTab
     exe 'iunmap <buffer> ' . s:JuliaFallbackTabTrigger
-    autocmd! Julia
-    augroup! Julia
+    autocmd! JuliaTab
+    augroup! JuliaTab
+    let b:julia_tab_set = 0
 endfunction
 
-" YouCompleteMe plugin does not work well with LaTeX symbols
+" Function which looks for viable LaTeX-to-Unicode supstitutions as you type
+function! JuliaAutoLaTeXtoUnicode(...)
+    let vc = a:0 == 0 ? v:char : a:1
+    let col1 = col('.')
+    let lnum = line('.')
+    if col1 == 1
+        if a:0 > 1
+            call feedkeys(a:2, 'n')
+        endif
+        return ''
+    endif
+    let bs = (vc != "\n")
+    let l = getline(lnum)[0 : col1-1-bs] . v:char
+    let col0 = match(l, '\\\%([A-Za-z]\+\%' . (col1) . 'c\%([^A-Za-z]\|$\)\|[_^]\%([0-9a-z()=+-]\|schwa\)\%' . (col1) .'c\%(.\|$\)\)')
+    if col0 == -1
+        if a:0 > 1
+            call feedkeys(a:2, 'n')
+        endif
+        return ''
+    endif
+    let base = l[col0 : -1-bs]
+    let unicode = get(g:latex_symbols, base, '')
+    if empty(unicode)
+        if a:0 > 1
+            call feedkeys(a:2, 'n')
+        endif
+        return ''
+    endif
+    call feedkeys("\<C-G>u", 'n')
+    call feedkeys(repeat("\b", len(base) + bs) . unicode . vc . s:julia_esc_sequence, 't')
+    call feedkeys("\<C-G>u", 'n')
+    return ''
+endfunction
+
+" Did we activate the Julia as-you-type LaTeX-to-Unicode substitutions?
+let b:julia_auto_l2u_set = 0
+
+" Setup the Julia auto as-you-type LaTeX-to-Unicode substitution
+function! s:JuliaSetAutoLtoU(wait_vim_enter)
+    " g:julia_did_vim_enter is set from an autocommand in ftdetect
+    if a:wait_vim_enter && !get(g:, "julia_did_vim_enter", 0)
+        return
+    endif
+    if !get(g:, "julia_auto_latex_to_unicode", 0)
+        return
+    endif
+    " Viable substitutions are searched at every character insertion via the
+    " autocmd InsertCharPre. The <Enter> key does not seem to be catched in
+    " this way though, so we use a mapping for that case.
+    imap <buffer> <CR> <Plug>JuliaAutoLtoU
+    inoremap <buffer><expr> <Plug>JuliaAutoLtoU JuliaAutoLaTeXtoUnicode("\n", "\<CR>")
+
+    augroup JuliaAutoLtoU
+        autocmd!
+        autocmd InsertCharPre <buffer> call JuliaAutoLaTeXtoUnicode()
+    augroup END
+
+    let b:julia_auto_l2u_set = 1
+endfunction
+
+" Revert the Julia auto LaTeX-to-Unicode settings
+function! JuliaUnsetAutoLtoU()
+    if !b:julia_auto_l2u_set
+        return
+    endif
+    iunmap <buffer> <CR>
+    iunmap <buffer> <Plug>JuliaAutoLtoU
+    autocmd! JuliaAutoLtoU
+    augroup! JuliaAutoLtoU
+    let b:julia_auto_l2u_set = 0
+endfunction
+
+" YouCompleteMe and neocomplcache plug-ins do not work well with LaTeX symbols
 " suggestions
 if exists("g:loaded_youcompleteme") || exists("g:loaded_neocomplcache")
     let g:julia_latex_suggestions_enabled = 0
 endif
 
+" Initialization. Can be used to re-init when global settings have changed.
+function! JuliaLaTeXtoUnicodeInit(...)
+    let wait_vim_enter = a:0 > 0 ? a:1 : 1
+    call JuliaUnsetTab()
+    call JuliaUnsetAutoLtoU()
+
+    call s:JuliaSetTab(wait_vim_enter)
+    call s:JuliaSetAutoLtoU(wait_vim_enter)
+endfunction
+
 " Try to postpone the first initialization as much as possible,
-" by calling s:JuliaSetTab only at VimEnter or later
-call s:JuliaSetTab(1)
-autocmd VimEnter *.jl call s:JuliaSetTab(0)
+" by calling s:JuliaSetTab amd s:JuliaSetAutoLtoU only at VimEnter or later
+autocmd VimEnter *.jl call JuliaLaTeXtoUnicodeInit(0)
+call JuliaLaTeXtoUnicodeInit()
 
 """"""""""""""[ End of LaTeX-to-Unicode section ]""""""""""""""
 
 
 let b:undo_ftplugin = "setlocal include< suffixesadd< comments< commentstring<"
 	\ . " define< shiftwidth< expandtab< indentexpr< indentkeys< cinoptions< omnifunc<"
-        \ . " | call JuliaUnsetTab()"
-        \ . " | delfunction LaTeXtoUnicode_omnifunc | delfunction JuliaTab | delfunction JuliaUnsetTab"
+        \ . " | call JuliaUnsetTab() | call JuliaUnsetAutoLtoU()"
+        \ . " | delfunction LaTeXtoUnicode_omnifunc | delfunction JuliaLaTeXtoUnicodeInit"
+        \ . " | delfunction JuliaTab | delfunction JuliaUnsetTab"
+        \ . " | delfunction JuliaAutoLaTeXtoUnicode | delfunction JuliaUnsetAutoLtoU"
 
 " MatchIt plugin support
 if exists("loaded_matchit")
