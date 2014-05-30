@@ -58,7 +58,9 @@ This Vim plug-in extends this functionality:
   - optionally, symbols are substituted on the fly as you type them, see
     |julia-vim-L2U-as-you-type|
 
-These features are only available with Vim version 7.4 or higher.
+These features only work as described with Vim version 7.4 or higher. Tab
+completion can still be made available on lower Vim versions, see
+|julia-vim-L2U-workaround|.
 
 ------------------------------------------------------------------------------
 LATEX TO UNICODE VIA TAB KEY                    *julia-vim-L2U-tab*
@@ -116,14 +118,29 @@ match for `\nequiv` (`≢`). By default, if <Tab> finds an exact match performs
 the substitution, but this can be controlled by the
 |g:julia_latex_to_unicode_eager| setting.
 
+Vim versions lower than 7.4                     *julia-vim-L2U-workaround*
+
+The <Tab> key remapping is not performed by default with Vim versions lower
+than 7.4. However, the functionality is still available via onmicompletion,
+which is accessible by the CTRL-X CTRL-O key combination. You can map some
+other key combination to this by adding something like
+>
+  inoremap <C-Tab> <C-X><C-O>
+<
+in your |.vimrc| file. If you'd map <Tab> directly, then you'd need to use
+CTRL-V <Tab> to insert a literal <Tab>.
+
+The settings |g:julia_latex_to_unicode_eager| and
+|g:julia_latex_suggestions_enabled| are still meaningful in this case.
 
 ------------------------------------------------------------------------------
 LATEX TO UNICODE AS YOU TYPE                    *julia-vim-L2U-as-you-type*
 
-This feature is disabled by default, see |g:julia_auto_latex_to_unicode|. It
-consists in substituting valid LaTeX sequences with Unicode symbols
-automatically as the typing progresses, as soon as the sequences is
-unambiguously complete. For example, when typing:
+This feature is disabled by default, see |g:julia_auto_latex_to_unicode|, and
+it is only available with Vim version 7.4 or higher. It consists in
+substituting valid LaTeX sequences with Unicode symbols automatically as the
+typing progresses, as soon as the sequences is unambiguously complete. For
+example, when typing:
 >
     \chi\^2 = 1
 <

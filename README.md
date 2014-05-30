@@ -45,7 +45,8 @@ Unicode symbols (e.g. `α`). By default, these substitutions must be triggered e
 `<Tab>` key, as in the Julia command line (the REPL); however, an automatic, as-you-type mode can also
 be activated.
 
-These features are only available with Vim version 7.4 or higher.
+These features only work as described with Vim version 7.4 or higher. Tab completion can still be made
+available on lower Vim versions, see below for more details.
 
 The following sections provide details on this features. The complete documentation is provided by calling
 `:help julia-vim` from within Vim.
@@ -88,6 +89,20 @@ substitution to Unicode.
 [YouCompleteMe]: https://github.com/Valloric/YouCompleteMe
 [neocomplcache]: https://github.com/Shougo/neocomplcache.vim
 
+#### Using this feature on Vim versions lower than 7.4
+
+The automatic remapping of the `<Tab>` key is not performed if Vim version is lower than 7.4. However, the
+functionality can still be used via the omnicompletion mechanism, i.e. by using `CTRL-X + CTRL-O`. You can
+map this to some more convenient key combination, e.g. you may want to add something like this line to your
+`.vimrc` file:
+
+```
+inoremap <C-Tab> <C-X><C-O>
+```
+
+This would map the functionality to `CTRL-Tab`. However, if you try to map this to `<Tab>`, you'd only be
+able to use literal `<Tab>` by using `CTRL-V + <Tab>`.
+
 ### LaTeX-to-Unicode as you type
 
 An automatic substitution mode can be activated by using the command `:let g:julia_auto_latex_to_unicode = 1`,
@@ -104,3 +119,5 @@ This does not interfere with the `<Tab>` mapping discussed above.
 
 The `g:julia_auto_latex_to_unicode` setting can also be changed from the Vim command-line, but you will
 also need to give the command `:call JuliaLaTeXtoUnicodeInit()` for the change to take effect.
+
+This feature is not available with Vim versions lower then 7.4.
