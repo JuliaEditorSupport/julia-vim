@@ -58,6 +58,8 @@ This Vim plug-in extends this functionality:
   - optionally, symbols are substituted on the fly as you type them, see
     |julia-vim-L2U-as-you-type|
 
+These features are only available with Vim version 7.4 or higher.
+
 ------------------------------------------------------------------------------
 LATEX TO UNICODE VIA TAB KEY                    *julia-vim-L2U-tab*
 

@@ -371,6 +371,11 @@ function! JuliaUnsetAutoLtoU()
   let b:julia_auto_l2u_set = 0
 endfunction
 
+if v:version < 704
+    let g:julia_latex_to_unicode = 0
+    let g:julia_auto_latex_to_unicode = 0
+endif
+
 " YouCompleteMe and neocomplcache plug-ins do not work well with LaTeX symbols
 " suggestions
 if exists("g:loaded_youcompleteme") || exists("g:loaded_neocomplcache")

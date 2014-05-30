@@ -45,6 +45,8 @@ Unicode symbols (e.g. `α`). By default, these substitutions must be triggered e
 `<Tab>` key, as in the Julia command line (the REPL); however, an automatic, as-you-type mode can also
 be activated.
 
+These features are only available with Vim version 7.4 or higher.
+
 The following sections provide details on this features. The complete documentation is provided by calling
 `:help julia-vim` from within Vim.
 
