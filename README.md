@@ -32,6 +32,7 @@ Copy (or symlink) the contents of this repository into the vim application suppo
 ``` bash
 git clone git://github.com/JuliaLang/julia-vim.git
 cd julia-vim
+mkdir -p ~/.vim
 cp -R * ~/.vim
 ```
 
