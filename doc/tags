@@ -1,0 +1,14 @@
+JuliaLaTeXtoUnicodeInit()	julia-vim.txt	/*JuliaLaTeXtoUnicodeInit()*
+g:julia_auto_latex_to_unicode	julia-vim.txt	/*g:julia_auto_latex_to_unicode*
+g:julia_latex_suggestions_enabled	julia-vim.txt	/*g:julia_latex_suggestions_enabled*
+g:julia_latex_to_unicode	julia-vim.txt	/*g:julia_latex_to_unicode*
+g:julia_latex_to_unicode_eager	julia-vim.txt	/*g:julia_latex_to_unicode_eager*
+julia-vim	julia-vim.txt	/*julia-vim*
+julia-vim-L2U	julia-vim.txt	/*julia-vim-L2U*
+julia-vim-L2U-as-you-type	julia-vim.txt	/*julia-vim-L2U-as-you-type*
+julia-vim-L2U-tab	julia-vim.txt	/*julia-vim-L2U-tab*
+julia-vim-about	julia-vim.txt	/*julia-vim-about*
+julia-vim-functions	julia-vim.txt	/*julia-vim-functions*
+julia-vim-introduction	julia-vim.txt	/*julia-vim-introduction*
+julia-vim-variables	julia-vim.txt	/*julia-vim-variables*
+julia-vim.txt	julia-vim.txt	/*julia-vim.txt*

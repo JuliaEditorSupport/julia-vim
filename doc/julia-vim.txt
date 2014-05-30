@@ -1,0 +1,220 @@
+*julia-vim.txt*  Support for Julia in Vim
+
+Author:  Carlo Baldassi <carlobaldassi@gmail.com>
+License: MIT license  {{{
+    Permission is hereby granted, free of charge, to any person obtaining
+    a copy of this software and associated documentation files (the
+    "Software"), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to
+    the following conditions:
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+}}}
+
+CONTENTS					*julia-vim*
+
+Introduction	                    |julia-vim-introduction|
+LaTeX-to-Unicode substitutions      |julia-vim-L2U|
+  Via Tab key                       |julia-vim-L2U-tab|
+  As you type                       |julia-vim-L2U-as-you-type|
+Variables                           |julia-vim-variables|
+Functions                           |julia-vim-functions|
+About                               |julia-vim-about|
+
+==============================================================================
+INTRODUCTION                                    *julia-vim-introduction*
+
+The julia-vim plug-in provides:
+  - basic support for editing Julia files (automatic filetype detection,
+    indentation, syntax highlighting)
+  - support for the matchit plugin (https://github.com/edsono/matchit)
+  - facilities for conversion of LaTeX entries to Unicode symbols which mimic
+    and extend what the Julia REPL and the IJulia notebook interface do
+
+This help file documents the latter feature, how it works and what variables
+can be used to enable/disable/tweak it.
+
+==============================================================================
+LATEX TO UNICODE                                *julia-vim-L2U*
+
+In the Julia REPL, entering a LaTeX sequence such as `\alpha` and pressing the
+<Tab> key substitutes it with a Unicode character such as `α`. 
+
+This Vim plug-in extends this functionality:
+  - by default, LaTeX sequences are recognized and substituted upon pressing
+    the <Tab> key, just like in Julia's own REPL, but <Tab> can also be used
+    to produce suggestions of possible completions for partial sequences and
+    auto-completion, see |julia-vim-L2U-tab|
+  - optionally, symbols are substituted on the fly as you type them, see
+    |julia-vim-L2U-as-you-type|
+
+------------------------------------------------------------------------------
+LATEX TO UNICODE VIA TAB KEY                    *julia-vim-L2U-tab*
+
+Substitution of LaTeX sequences when pressing the <Tab> is active by default.
+Use |g:julia_latex_to_unicode| to control it.
+
+When this feature is active, the julia-vim plug-in creates a mapping for the
+<Tab> key (in |Insert| mode) which takes precedence on any previously defined
+mapping assigned to it, such that when the <Tab> key is pressed the plug-in
+looks for potential LaTeX symbol matches before the cursor, and if it fails to
+find anything of interest it will fall-back to the previous mapping for <Tab>
+(with default Vim settings, this means it will insert a literal <Tab>; but if
+you have defined dome other behaviour for that key, e.g. by installing another
+plug-in such as supertab (https://github.com/ervandew/supertab) than that will
+be used).
+
+For example, entering this text in a file:
+>
+    1 + \alpha
+<
+and then pressing <Tab>, results in:
+>
+    1 + α
+<
+
+This feature is associated with 'omnifunc' completion, and therefore can
+always be accessed via CTRL-X CTRL-O, even when |g:julia_latex_to_unicode| is
+0.
+
+A literal <Tab> key can always be entered by using CTRL-V before <Tab>.
+
+By default, partial LaTeX sequences are also recognized, unless a plug-in
+which is known to be incompatible with this feature is detected, see
+|g:julia_latex_suggestions_enabled|.
+
+Partial sequence recognition triggers auto-completion (performed as if the
+`longest` setting was used in 'completeopt') and shows a menu of suggestions
+together with their corresponding Unicode symbol (prvided the `menu` setting
+is included in 'completeopt', and more then one match is found). So for
+example, entering `\al` and pressing <Tab> will result in the following list:
+>
+    +-------------+
+    | \aleph    ℵ |
+    | \allequal ≌ |
+    | \alpha    α |
+    +-------------+
+>
+Then, pressing `p` will reduce the list to `\alpha`, pressing <Tab> will
+complete it and pressing <Tab> again will perform the substitution.
+
+Some LaTeX sequences can be valid both as they are and as partial matches for
+other sequences, e.g. `\ne` is associated with `≠`, but it is also a partial
+match for `\nequiv` (`≢`). By default, if <Tab> finds an exact match performs
+the substitution, but this can be controlled by the
+|g:julia_latex_to_unicode_eager| setting.
+
+
+------------------------------------------------------------------------------
+LATEX TO UNICODE AS YOU TYPE                    *julia-vim-L2U-as-you-type*
+
+This feature is disabled by default, see |g:julia_auto_latex_to_unicode|. It
+consists in substituting valid LaTeX sequences with Unicode symbols
+automatically as the typing progresses, as soon as the sequences is
+unambiguously complete. For example, when typing:
+>
+    \chi\^2 = 1
+<
+The result is
+>
+    χ² = 1
+<
+The `\chi` is substituted right when the second backslash is entered, and the
+`\^2` is substituted when the following space is entered, before the equal
+sign.
+
+This feature does not interfere with the <Tab> based substitution.
+
+==============================================================================
+VARIABLES                                       *julia-vim-variables*
+
+                                                *g:julia_latex_to_unicode*
+g:julia_latex_to_unicode
+
+                Determines whether to map LaTeX-to-Unicode substitution to the
+                <Tab> key, see |julia-vim-L2U-tab|. If unspecified, it is on.
+                You can disable the feature by default by inserting the line
+>
+                    let g:julia_latex_to_unicode = 0
+<
+                in your |.vimrc| file. You can change this setting at any
+                moment while editing, but you need to invoke
+                |JuliaLaTeXtoUnicodeInit()| for the change to take effect.
+                
+                                         *g:julia_latex_suggestions_enabled*
+g:julia_latex_suggestions_enabled
+
+                Determines whether the <Tab> key mapping also recognizes
+                partial matches and produces suggestions. By default, this is
+                active, unless a plug-in which is known to be incompatible
+                with it is detected. Currently, known incompatible plug-ins
+                are YouCompleteMe (https://github.com/Valloric/YouCompleteMe)
+                and neocomplcache
+                (https://github.com/Shougo/neocomplcache.vim).
+
+                This variable can be set at any time, changes will immediately
+                take effect.
+                
+                                            *g:julia_latex_to_unicode_eager*
+g:julia_latex_to_unicode_eager
+
+                Determines whether the <Tab> key mapping performs the
+                substitution immediately upon finding an exact match. By
+                default this setting is on, so that e.g. typing `\ne` and
+                pressing the <Tab> key triggers the substitution. If this
+                variable is set to 0, an exact match which is also a possible
+                partial match to some other sequence triggers the suggestions
+                menu first, but another <Tab> forces the substitution, so that
+                e.g. typing `\ne` and then <Tab> produces a list with `\ne`,
+                `\neg`, `\nequiv` etc., and pressing <Tab> again performs the
+                substitution.
+
+                This variable can be set at any time, changes will immediately
+                take effect. When |g:julia_latex_to_unicode_eager| is 0, this
+                setting has no effect (it's like if it was always on).
+                
+                                               *g:julia_auto_latex_to_unicode*
+g:julia_auto_latex_to_unicode
+
+                Determines whether to activate LaTeX-to-Unicode substitution
+                on the fly as you type (in |Insert| mode), see
+                |julia-vim-L2U-as-you-type|. If unspecified, it is off.  You
+                can enable the feature by default by inserting the line
+>
+                    let g:julia_auto_latex_to_unicode = 1
+<
+                in your |.vimrc| file. You can change this setting at any
+                moment while editing, but you need to invoke
+                |JuliaLaTeXtoUnicodeInit()| for the change to take effect.
+                
+
+==============================================================================
+FUNCTIONS                                       *julia-vim-functions*
+
+                                                 *JuliaLaTeXtoUnicodeInit()*
+JuliaLaTeXtoUnicodeInit()
+
+                Initialize or re-initialize the LaTeX-to-Unicode substitutions
+                (see |julia-vim-L2U|). Must be invoked after changing
+                |g:julia_latex_to_unicode| or |g:julia_auto_latex_to_unicode|
+                to make the changes take effect.
+
+
+==============================================================================
+ABOUT                                           *julia-vim-about*
+
+Grab the latest version or report a bug on GitHub:
+
+http://github.com/JuliaLang/julia-vim
+
+ vim:tw=78:et:ft=help:norl:

@@ -44,6 +44,9 @@ Unicode symbols (e.g. `α`). By default, these substitutions must be triggered e
 `<Tab>` key, as in the Julia command line (the REPL); however, an automatic, as-you-type mode can also
 be activated.
 
+The following sections provide details on this features. The complete documentation is provided by calling
+`:help julia-vim` from within Vim.
+
 ### LaTeX-to-Unicode via Tab key
 
 This plug-in adds a mapping to the `<Tab>` key which makes it behave like the Julia REPL, i.e. when
