@@ -7,6 +7,7 @@ julia-vim	julia-vim.txt	/*julia-vim*
 julia-vim-L2U	julia-vim.txt	/*julia-vim-L2U*
 julia-vim-L2U-as-you-type	julia-vim.txt	/*julia-vim-L2U-as-you-type*
 julia-vim-L2U-tab	julia-vim.txt	/*julia-vim-L2U-tab*
+julia-vim-L2U-workaround	julia-vim.txt	/*julia-vim-L2U-workaround*
 julia-vim-about	julia-vim.txt	/*julia-vim-about*
 julia-vim-functions	julia-vim.txt	/*julia-vim-functions*
 julia-vim-introduction	julia-vim.txt	/*julia-vim-introduction*
