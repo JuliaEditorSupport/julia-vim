@@ -73,6 +73,8 @@ let b:julia_singlebslash = 0
 let b:bk_completeopt = &completeopt
 " Are we in the middle of a Julia tab completion?
 let b:julia_tab_completing = 0
+" Are we calling the tab fallback?
+let b:julia_in_fallback = 0
 
 
 " This function only detects whether an exact match is found for a LaTeX
@@ -114,6 +116,12 @@ endfunction
 function! LaTeXtoUnicode_omnifunc(findstart, base)
   if a:findstart
     " first stage
+    " avoid infinite loop if the fallback happens to call omnicompletion
+    if b:julia_in_fallback
+      let b:julia_in_fallback = 0
+      return -3
+    endif
+    let b:julia_in_fallback = 0
     " set info for the callback
     let b:julia_tab_completing = 1
     let b:julia_found_completion = 1
@@ -258,6 +266,7 @@ function! JuliaFallbackCallback()
     return
   endif
   " fallback
+  let b:julia_in_fallback = 1
   call feedkeys(s:JuliaFallbackTabTrigger)
   return
 endfunction
