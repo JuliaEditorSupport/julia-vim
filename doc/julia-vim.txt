@@ -48,13 +48,14 @@ can be used to enable/disable/tweak it.
 LATEX TO UNICODE                                *julia-vim-L2U*
 
 In the Julia REPL, entering a LaTeX sequence such as `\alpha` and pressing the
-<Tab> key substitutes it with a Unicode character such as `α`. 
+<Tab> key substitutes it with a Unicode character such as `α`. The julia REPL
+also provides partial completions, and suggestions for possible completions
+upon repeated pressing of the <Tab> key.
 
-This Vim plug-in extends this functionality:
-  - by default, LaTeX sequences are recognized and substituted upon pressing
-    the <Tab> key, just like in Julia's own REPL, but <Tab> can also be used
-    to produce suggestions of possible completions for partial sequences and
-    auto-completion, see |julia-vim-L2U-tab|
+This Vim plug-in provides the same functionality, with some extensions:
+  - when a partial sequence is found, suggestions are presented in a menu
+    together with their Unicode counterpart; the exact behaviour of this
+    feature can be customized, see |julia-vim-L2U-tab|
   - optionally, symbols are substituted on the fly as you type them, see
     |julia-vim-L2U-as-you-type|
 
@@ -95,15 +96,12 @@ This feature is associated with 'omnifunc' completion, and therefore can
 always be accessed via CTRL-X CTRL-O, even when |g:julia_latex_to_unicode| is
 0.
 
-A literal <Tab> key can always be entered by using CTRL-V before <Tab>.
-
-By default, partial LaTeX sequences are also recognized, unless a plug-in
-which is known to be incompatible with this feature is detected, see
-|g:julia_latex_suggestions_enabled|.
+A literal <Tab> key can always be entered by using CTRL-V before <Tab> (see
+|i_CTRL-V|).
 
 Partial sequence recognition triggers auto-completion (performed as if the
 `longest` setting was used in 'completeopt') and shows a menu of suggestions
-together with their corresponding Unicode symbol (prvided the `menu` setting
+together with their corresponding Unicode symbol (provided the `menu` setting
 is included in 'completeopt', and more then one match is found). So for
 example, entering `\al` and pressing <Tab> will result in the following list:
 >
@@ -115,6 +113,10 @@ example, entering `\al` and pressing <Tab> will result in the following list:
 >
 Then, pressing `p` will reduce the list to `\alpha`, pressing <Tab> will
 complete it and pressing <Tab> again will perform the substitution.
+
+The completion menu can be disbled, and this will happen automatically if a
+plug-in which is known to be incompatible with this feature is detected: see
+|g:julia_latex_suggestions_enabled|.
 
 Some LaTeX sequences can be valid both as they are and as partial matches for
 other sequences, e.g. `\ne` is associated with `≠`, but it is also a partial
@@ -179,13 +181,12 @@ g:julia_latex_to_unicode
                                          *g:julia_latex_suggestions_enabled*
 g:julia_latex_suggestions_enabled
 
-                Determines whether the <Tab> key mapping also recognizes
-                partial matches and produces suggestions. By default, this is
-                active, unless a plug-in which is known to be incompatible
-                with it is detected. Currently, known incompatible plug-ins
-                are YouCompleteMe (https://github.com/Valloric/YouCompleteMe)
-                and neocomplcache
-                (https://github.com/Shougo/neocomplcache.vim).
+                Determines whether the <Tab> key mapping produces suggestions
+                for partial matches. By default, this is set to 1 (active),
+                unless a plug-in which is known to be incompatible with it is
+                detected. Currently, known incompatible plug-ins are
+                YouCompleteMe (https://github.com/Valloric/YouCompleteMe) and
+                neocomplcache (https://github.com/Shougo/neocomplcache.vim).
 
                 This variable can be set at any time, changes will immediately
                 take effect.
@@ -195,14 +196,14 @@ g:julia_latex_to_unicode_eager
 
                 Determines whether the <Tab> key mapping performs the
                 substitution immediately upon finding an exact match. By
-                default this setting is on, so that e.g. typing `\ne` and
-                pressing the <Tab> key triggers the substitution. If this
-                variable is set to 0, an exact match which is also a possible
-                partial match to some other sequence triggers the suggestions
-                menu first, but another <Tab> forces the substitution, so that
-                e.g. typing `\ne` and then <Tab> produces a list with `\ne`,
-                `\neg`, `\nequiv` etc., and pressing <Tab> again performs the
-                substitution.
+                default this setting is set to 1 (active), so that e.g. typing
+                `\ne` and pressing the <Tab> key triggers the substitution. If
+                this variable is set to 0, an exact match which is also a
+                possible partial match to some other sequence triggers the
+                suggestions menu first, but another <Tab> forces the
+                substitution, so that e.g. typing `\ne` and then <Tab> produces
+                a list with `\ne`, `\neg`, `\nequiv` etc., and pressing <Tab>
+                again performs the substitution.
 
                 This variable can be set at any time, changes will immediately
                 take effect. When |g:julia_latex_suggestions_enabled| is 0,
@@ -213,7 +214,7 @@ g:julia_auto_latex_to_unicode
 
                 Determines whether to activate LaTeX-to-Unicode substitution
                 on the fly as you type (in |Insert| mode), see
-                |julia-vim-L2U-as-you-type|. If unspecified, it is off.  You
+                |julia-vim-L2U-as-you-type|. If unspecified, it is 0 (off). You
                 can enable the feature by default by inserting the line
 >
                     let g:julia_auto_latex_to_unicode = 1

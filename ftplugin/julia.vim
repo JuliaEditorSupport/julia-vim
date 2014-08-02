@@ -106,6 +106,26 @@ function! s:fix_compose_chars(uni)
   return isc ? "\u25CC" . a:uni : a:uni
 endfunction
 
+" Helper function to find the longest common prefix among
+" partial completion matches (used when suggestions are disabled
+" and in command line mode)
+function! s:longest_common_prefix(partmatches)
+  let common = a:partmatches[0]
+  for i in range(1, len(a:partmatches)-1)
+    let p = a:partmatches[i]
+    if len(p) < len(common)
+      common = common[0 : len(p)-1]
+    endif
+    for j in range(1, len(common)-1)
+      if p[j] != common[j]
+        let common = common[0 : j-1]
+        break
+      endif
+    endfor
+  endfor
+  return common
+endfunction
+
 " Omnicompletion function. Besides the usual two-stage omnifunc behaviour,
 " it has the following peculiar features:
 "  *) keeps track of the previous completion attempt
@@ -166,7 +186,11 @@ function! LaTeXtoUnicode_omnifunc(findstart, base)
       endif
       if len(k) >= len(a:base) && k[0 : len(a:base)-1] ==# a:base
         let menu = s:fix_compose_chars(g:latex_symbols[k])
-        call add(partmatches, {'word': k, 'menu': menu})
+        if suggestions
+          call add(partmatches, {'word': k, 'menu': menu})
+        else
+          call add(partmatches, k)
+        endif
       endif
     endfor
     " exact matches are replaced with Unicode
@@ -182,10 +206,10 @@ function! LaTeXtoUnicode_omnifunc(findstart, base)
       " ...return the Unicode symbol
       return [g:latex_symbols[a:base]]
     endif
-    " here, only partial matches were found; either throw them away or
-    " pass them on
+    " here, only partial matches were found; either keep just the longest
+    " common prefix, or pass them on
     if !suggestions
-      let partmatches = []
+      let partmatches = [s:longest_common_prefix(partmatches)]
     else
       call sort(partmatches, "s:partmatches_sort")
     endif
@@ -311,16 +335,7 @@ function! JuliaCmdTab()
     return pre . unicode . l[col1 : -1]
   endif
   " no exact match: complete with the longest common prefix
-  let common = partmatches[0]
-  for i in range(1, len(partmatches)-1)
-    let p = partmatches[i]
-    for j in range(1, min([len(p), len(common)])-1)
-      if p[j] != common[j]
-        let common = common[0 : j-1]
-        break
-      endif
-    endfor
-  endfor
+  let common = s:longest_common_prefix(partmatches)
   if col0 > 0
     let pre = l[0 : col0 - 1]
   else
