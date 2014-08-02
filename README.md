@@ -45,6 +45,9 @@ Unicode symbols (e.g. `α`). By default, these substitutions must be triggered e
 `<Tab>` key, as in the Julia command line (the REPL); however, an automatic, as-you-type mode can also
 be activated.
 
+On the Vim command line, the feature is activated by pressing `Shift-Tab`. This is mostly useful
+when searching the files with the `/` or `?` commands.
+
 These features only work as described with Vim version 7.4 or higher. Tab completion can still be made
 available on lower Vim versions, see below for more details.
 
@@ -68,6 +71,9 @@ Note that the [YouCompleteMe] and [neocomplcache] plug-ins do not work well with
 completions for partial matches, and therefore this feature is disabled if those plug-ins are detected.
 
 A literal tab can always be forced by using `CTRL-V` and then `Tab`.
+
+On the Vim command line, e.g. when searching the file with the `/` or `?` commands, the feature is
+activated by `Shift-Tab`.
 
 To disable this mapping, you can use the command `:let g:julia_latex_to_unicode = 0`, e.g. by putting
 it into your `.vimrc` file. You can also change this setting from the Vim command-line, but you will

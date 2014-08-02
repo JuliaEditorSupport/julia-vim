@@ -58,6 +58,9 @@ This Vim plug-in extends this functionality:
   - optionally, symbols are substituted on the fly as you type them, see
     |julia-vim-L2U-as-you-type|
 
+The substitution is triggered by the <S-Tab> combination while in command line
+mode, e.g. when searching in a file with the |/| or |?| commands.
+
 These features only work as described with Vim version 7.4 or higher. Tab
 completion can still be made available on lower Vim versions, see
 |julia-vim-L2U-workaround|.
@@ -65,8 +68,9 @@ completion can still be made available on lower Vim versions, see
 ------------------------------------------------------------------------------
 LATEX TO UNICODE VIA TAB KEY                    *julia-vim-L2U-tab*
 
-Substitution of LaTeX sequences when pressing the <Tab> is active by default.
-Use |g:julia_latex_to_unicode| to control it.
+Substitution of LaTeX sequences when pressing the <Tab> key in insert mode, or
+the <S-Tab> combination while on the command line, is active by default. Use
+|g:julia_latex_to_unicode| to control it.
 
 When this feature is active, the julia-vim plug-in creates a mapping for the
 <Tab> key (in |Insert| mode) which takes precedence on any previously defined
@@ -161,8 +165,10 @@ VARIABLES                                       *julia-vim-variables*
 g:julia_latex_to_unicode
 
                 Determines whether to map LaTeX-to-Unicode substitution to the
-                <Tab> key, see |julia-vim-L2U-tab|. If unspecified, it is on.
-                You can disable the feature by default by inserting the line
+                <Tab> key while in insert mode (and to the <S-Tab> combination
+                for command line mode), see |julia-vim-L2U-tab|. If
+                unspecified, it is on.  You can disable the feature by
+                default by inserting the line
 >
                     let g:julia_latex_to_unicode = 0
 <
@@ -199,8 +205,8 @@ g:julia_latex_to_unicode_eager
                 substitution.
 
                 This variable can be set at any time, changes will immediately
-                take effect. When |g:julia_latex_to_unicode_eager| is 0, this
-                setting has no effect (it's like if it was always on).
+                take effect. When |g:julia_latex_suggestions_enabled| is 0,
+                this setting has no effect (it's like if it was always on).
                 
                                                *g:julia_auto_latex_to_unicode*
 g:julia_auto_latex_to_unicode

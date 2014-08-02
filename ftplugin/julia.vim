@@ -271,6 +271,66 @@ function! JuliaFallbackCallback()
   return
 endfunction
 
+" This is the function which is mapped to <S-Tab> in command-line mode
+function! JuliaCmdTab()
+  " first stage
+  " analyse command line
+  let col1 = getcmdpos() - 1
+  let l = getcmdline()
+  let col0 = match(l[0:col1-1], '\\[^[:space:]\\]\+$')
+  let b:julia_singlebslash = (match(l[0:col1-1], '\\$') >= 0)
+  " completion not found
+  if col0 == -1
+    return l
+  endif
+  let base = l[col0 : col1-1]
+  " search for matches
+  let partmatches = []
+  let exact_match = 0
+  for k in keys(g:latex_symbols)
+    if k ==# base
+      let exact_match = 1
+    endif
+    if len(k) >= len(base) && k[0 : len(base)-1] ==# base
+      call add(partmatches, k)
+    endif
+  endfor
+  if len(partmatches) == 0
+    return l
+  endif
+  " exact matches are replaced with Unicode
+  if exact_match
+    let unicode = g:latex_symbols[base]
+    if col0 > 0
+      let pre = l[0 : col0 - 1]
+    else
+      let pre = ''
+    endif
+    let posdiff = col1-col0 - len(unicode)
+    call setcmdpos(col1 - posdiff + 1)
+    return pre . unicode . l[col1 : -1]
+  endif
+  " no exact match: complete with the longest common prefix
+  let common = partmatches[0]
+  for i in range(1, len(partmatches)-1)
+    let p = partmatches[i]
+    for j in range(1, min([len(p), len(common)])-1)
+      if p[j] != common[j]
+        let common = common[0 : j-1]
+        break
+      endif
+    endfor
+  endfor
+  if col0 > 0
+    let pre = l[0 : col0 - 1]
+  else
+    let pre = ''
+  endif
+  let posdiff = col1-col0 - len(common)
+  call setcmdpos(col1 - posdiff + 1)
+  return pre . common . l[col1 : -1]
+endfunction
+
 " Did we install the Julia tab mappings?
 let b:julia_tab_set = 0
 
@@ -285,7 +345,9 @@ function! s:JuliaSetTab(wait_vim_enter)
   endif
   call s:JuliaSetFallbackTab('<Tab>', s:JuliaFallbackTabTrigger)
   imap <buffer> <Tab> <Plug>JuliaTab
+  cmap <buffer> <S-Tab> <Plug>JuliaCmdTab
   inoremap <buffer><expr> <Plug>JuliaTab JuliaTab()
+  cnoremap <buffer> <Plug>JuliaCmdTab <C-\>eJuliaCmdTab()<CR>
 
   augroup JuliaTab
     autocmd!
