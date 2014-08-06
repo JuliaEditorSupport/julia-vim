@@ -129,7 +129,6 @@ syntax match   juliaRangeOperator	":"
 syntax match   juliaTypeOperator	"\%(<:\|::\)"
 syntax match   juliaFuncOperator	"->"
 syntax match   juliaVarargOperator	"\.\{3\}"
-syntax match   juliaCTransOperator	"\.\?'"
 syntax region  juliaTernaryRegion	matchgroup=juliaTernaryOperator start="?" skip="::" end=":" contains=@juliaExpressions,juliaErrorSemicol
 
 " TODO: this is very greedy. Improve?
@@ -140,6 +139,8 @@ syntax match   juliaChar		display "'\\\o\{3\}'" contains=juliaOctalEscapeChar
 syntax match   juliaChar		display "'\\x\x\{2\}'" contains=juliaHexEscapeChar
 syntax match   juliaChar		display "'\\u\x\{1,4\}'" contains=juliaUniCharSmall
 syntax match   juliaChar		display "'\\U\x\{1,8\}'" contains=juliaUniCharLarge
+
+syntax match   juliaCTransOperator	"[])}[:alnum:]_]\@<=\.\?'"
 
 syntax region  juliaString		matchgroup=juliaStringDelim start=+"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaStringVars,@juliaSpecialChars
 syntax region  juliabString		matchgroup=juliaStringDelim start=+\<b"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaSpecialChars
