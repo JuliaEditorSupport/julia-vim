@@ -229,7 +229,7 @@ let s:JuliaFallbackTabTrigger = "\u0091JuliaFallbackTab"
 " Function which saves the current insert-mode mapping of a key sequence `s`
 " and associates it with another key sequence `k` (e.g. stores the current
 " <Tab> mapping into the Fallback trigger)
-function! s:JuliaSetFallbackTab(s, k)
+function! s:JuliaSetFallbackMapping(s, k)
   let mmdict = maparg(a:s, 'i', 0, 1)
   if empty(mmdict)
     exe 'inoremap <buffer> ' . a:k . ' ' . a:s
@@ -358,7 +358,7 @@ function! s:JuliaSetTab(wait_vim_enter)
   if !get(g:, "julia_latex_to_unicode", 1)
     return
   endif
-  call s:JuliaSetFallbackTab('<Tab>', s:JuliaFallbackTabTrigger)
+  call s:JuliaSetFallbackMapping('<Tab>', s:JuliaFallbackTabTrigger)
   imap <buffer> <Tab> <Plug>JuliaTab
   cmap <buffer> <S-Tab> <Plug>JuliaCmdTab
   inoremap <buffer><expr> <Plug>JuliaTab JuliaTab()
@@ -380,7 +380,7 @@ function! JuliaUnsetTab()
   endif
   iunmap <buffer> <Tab>
   if empty(maparg("<Tab>", "i"))
-    call s:JuliaSetFallbackTab(s:JuliaFallbackTabTrigger, '<Tab>')
+    call s:JuliaSetFallbackMapping(s:JuliaFallbackTabTrigger, '<Tab>')
   endif
   iunmap <buffer> <Plug>JuliaTab
   exe 'iunmap <buffer> ' . s:JuliaFallbackTabTrigger
