@@ -493,7 +493,7 @@ if exists("loaded_matchit")
 
   " note: beginKeywords must contain all blocks in order
   " for nested-structures-skipping to work properly
-  let s:beginKeywords = '\<\%(function\|macro\|begin\|type\|immutable\|let\|do\|\%(bare\)\?module\|quote\|if\|for\|while\|try\)\>'
+  let s:beginKeywords = '\%(\.\s*\)\@<!\<\%(function\|macro\|begin\|type\|immutable\|let\|do\|\%(bare\)\?module\|quote\|if\|for\|while\|try\)\>'
   let s:endKeyowrds = '\<end\>'
 
   " note: this function relies heavily on the syntax file
