@@ -48,10 +48,13 @@ be activated.
 On the Vim command line, the feature is activated by pressing `Shift-Tab`. This is mostly useful
 when searching the files with the `/` or `?` commands.
 
+By default, this feature is only active when editing Julia files. However, it can be also enabled with
+other file types, and even turned on/off on the fly regardless of the file type.
+
 These features only work as described with Vim version 7.4 or higher. Tab completion can still be made
 available on lower Vim versions, see below for more details.
 
-The following sections provide details on this features. The complete documentation is provided by calling
+The following sections provide details on these features. The complete documentation is provided by calling
 `:help julia-vim` from within Vim.
 
 ### LaTeX-to-Unicode via Tab key
@@ -75,19 +78,19 @@ A literal tab can always be forced by using `CTRL-V` and then `Tab`.
 On the Vim command line, e.g. when searching the file with the `/` or `?` commands, the feature is
 activated by `Shift-Tab`.
 
-To disable this mapping, you can use the command `:let g:julia_latex_to_unicode = 0`, e.g. by putting
+To disable this mapping, you can use the command `:let g:latex_to_unicode_tab = 0`, e.g. by putting
 it into your `.vimrc` file. You can also change this setting from the Vim command-line, but you will
-also need to give the command `:call JuliaLaTeXtoUnicodeInit()` for the change to take effect.
+also need to give the command `:call LaTeXtoUnicode#Init()` for the change to take effect.
 
 Even when the mapping is disabled, the feature is still available via the omnicompletion mechanism,
 i.e. by pressing `CTRL-X` and then `CTRL-O`.
 
 To disable the suggestions of partial matches completions, use the command
-`:let g:julia_latex_suggestions_enabled = 0`.
+`:let g:latex_to_unicode_suggestions = 0`.
 
 In general, suggestions try not to get in the way, and so if an exact match is detected (e.g. `\ne`) when
 `Tab` is pressed, the substitution will be done even when there would be other symbols with the same prefix
-(e.g. `\neg`). This behaviour can be changed by the command `:let g:julia_latex_to_unicode_eager = 0`, in
+(e.g. `\neg`). This behaviour can be changed by the command `:let g:latex_to_unicode_eager = 0`, in
 which case hitting `Tab` will first produce a suggestion list, and only pressing it again will trigger the
 substitution to Unicode.
 
@@ -111,9 +114,9 @@ able to use literal `<Tab>` by using `CTRL-V + <Tab>`.
 
 ### LaTeX-to-Unicode as you type
 
-An automatic substitution mode can be activated by using the command `:let g:julia_auto_latex_to_unicode = 1`,
+An automatic substitution mode can be activated by using the command `:let g:latex_to_unicode_auto = 1`,
 e.g. by putting it into your `.vimrc` file. You can also change this setting from the Vim command-line, but
-you will also need to give the command `:call JuliaLaTeXtoUnicodeInit()` for the change to take effect.
+you will also need to give the command `:call LaTeXtoUnicode#Init()` for the change to take effect.
 
 In this mode, symbols will be substituted as you type, as soon as some extra character appears after the symbol
 and a LaTeX sequence can unambiguously be identified.
@@ -123,7 +126,30 @@ the `b`.
 
 This does not interfere with the `<Tab>` mapping discussed above.
 
-The `g:julia_auto_latex_to_unicode` setting can also be changed from the Vim command-line, but you will
-also need to give the command `:call JuliaLaTeXtoUnicodeInit()` for the change to take effect.
+The `g:latex_to_unicode_auto` setting can also be changed from the Vim command-line, but you will
+also need to give the command `:call LaTeXtoUnicode#Init()` for the change to take effect.
 
 This feature is not available with Vim versions lower then 7.4.
+
+### LaTeX-to-Unicode on other file types
+
+By default, the LaTeX-to-Unicode substitutions are only active when editing Julia files. However, you can use
+the variable `g:latex_to_unicode_file_types` to specify for which file types this feature is active by default.
+The variable must be set to a string containing a pattern (a regular expression) which matches the desired file
+types, or to a list of such patterns. For example, to activate the feature on all file types, you could put
+`let g:latex_to_unicode_file_types = ".*"` in your `.vimrc` file.
+Be aware, however, that enabling the functionality overrides the `omnifunc` setting for that file type.
+
+### Enabling and disabling the LaTeX-to-Unicode functionality
+
+Regardless of the type of the file you are editing and of the `g:latex_to_unicode_file_types` setting, the
+LaTeX-to-Unicode substitutions can be enabled/disabled/toggled by calling the functions
+`LaTeXtoUnicode#Enable()`, `LaTeXtoUnicode#Disable()`, `LaTeXtoUnicode#Toggle()`. For example, you could use
+the mappings:
+
+```
+noremap <expr> <F7> LaTeXtoUnicode#Toggle()
+inoremap <expr> <F7> LaTeXtoUnicode#Toggle()
+```
+
+and then use the `<F7>` key to quickly turn the feature on and off.

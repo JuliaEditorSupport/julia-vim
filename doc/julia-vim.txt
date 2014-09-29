@@ -27,28 +27,32 @@ Introduction	                    |julia-vim-introduction|
 LaTeX-to-Unicode substitutions      |julia-vim-L2U|
   Via Tab key                       |julia-vim-L2U-tab|
   As you type                       |julia-vim-L2U-as-you-type|
+  On different file types           |julia-vim-L2U-file-types|
+  Enabling and disabling            |julia-vim-L2U-enable-disable|
 Variables                           |julia-vim-variables|
 Functions                           |julia-vim-functions|
 About                               |julia-vim-about|
 
 ==============================================================================
-INTRODUCTION                                    *julia-vim-introduction*
+INTRODUCTION                                       *julia-vim-introduction*
 
 The julia-vim plug-in provides:
   - basic support for editing Julia files (automatic filetype detection,
     indentation, syntax highlighting)
   - support for the matchit plugin (https://github.com/edsono/matchit)
   - facilities for conversion of LaTeX entries to Unicode symbols which mimic
-    and extend what the Julia REPL and the IJulia notebook interface do
+    and extend what the Julia REPL and the IJulia notebook interface do.
+    Optionally, this functionality can be used with all file types, not
+    just Julia files.
 
 This help file documents the latter feature, how it works and what variables
 can be used to enable/disable/tweak it.
 
 ==============================================================================
-LATEX TO UNICODE                                *julia-vim-L2U*
+LATEX TO UNICODE                                            *julia-vim-L2U*
 
 In the Julia REPL, entering a LaTeX sequence such as `\alpha` and pressing the
-<Tab> key substitutes it with a Unicode character such as `α`. The julia REPL
+<Tab> key substitutes it with a Unicode character such as `α`. The Julia REPL
 also provides partial completions, and suggestions for possible completions
 upon repeated pressing of the <Tab> key.
 
@@ -62,16 +66,21 @@ This Vim plug-in provides the same functionality, with some extensions:
 The substitution is triggered by the <S-Tab> combination while in command line
 mode, e.g. when searching in a file with the |/| or |?| commands.
 
+By default, this feature is only active when editing Julia files. However, it
+can be also enabled with other file types, see |julia-vim-L2U-file-types|, and
+even turned on/off on the fly regardless of the file type, see
+|julia-vim-L2U-enable-disable|.
+
 These features only work as described with Vim version 7.4 or higher. Tab
 completion can still be made available on lower Vim versions, see
 |julia-vim-L2U-workaround|.
 
 ------------------------------------------------------------------------------
-LATEX TO UNICODE VIA TAB KEY                    *julia-vim-L2U-tab*
+LATEX TO UNICODE VIA TAB KEY                            *julia-vim-L2U-tab*
 
 Substitution of LaTeX sequences when pressing the <Tab> key in insert mode, or
 the <S-Tab> combination while on the command line, is active by default. Use
-|g:julia_latex_to_unicode| to control it.
+|g:latex_to_unicode_tab| to control it.
 
 When this feature is active, the julia-vim plug-in creates a mapping for the
 <Tab> key (in |Insert| mode) which takes precedence on any previously defined
@@ -93,8 +102,7 @@ and then pressing <Tab>, results in:
 <
 
 This feature is associated with 'omnifunc' completion, and therefore can
-always be accessed via CTRL-X CTRL-O, even when |g:julia_latex_to_unicode| is
-0.
+always be accessed via CTRL-X CTRL-O, even when |g:latex_to_unicode_tab| is 0.
 
 A literal <Tab> key can always be entered by using CTRL-V before <Tab> (see
 |i_CTRL-V|).
@@ -116,13 +124,13 @@ complete it and pressing <Tab> again will perform the substitution.
 
 The completion menu can be disbled, and this will happen automatically if a
 plug-in which is known to be incompatible with this feature is detected: see
-|g:julia_latex_suggestions_enabled|.
+|g:latex_to_unicode_suggestions|.
 
 Some LaTeX sequences can be valid both as they are and as partial matches for
 other sequences, e.g. `\ne` is associated with `≠`, but it is also a partial
 match for `\nequiv` (`≢`). By default, if <Tab> finds an exact match performs
-the substitution, but this can be controlled by the
-|g:julia_latex_to_unicode_eager| setting.
+the substitution, but this can be controlled by the |g:latex_to_unicode_eager|
+setting.
 
 Vim versions lower than 7.4                     *julia-vim-L2U-workaround*
 
@@ -136,17 +144,17 @@ other key combination to this by adding something like
 in your |.vimrc| file. If you'd map <Tab> directly, then you'd need to use
 CTRL-V <Tab> to insert a literal <Tab>.
 
-The settings |g:julia_latex_to_unicode_eager| and
-|g:julia_latex_suggestions_enabled| are still meaningful in this case.
+The settings |g:latex_to_unicode_eager| and |g:latex_to_unicode_suggestions|
+are still meaningful in this case.
 
 ------------------------------------------------------------------------------
 LATEX TO UNICODE AS YOU TYPE                    *julia-vim-L2U-as-you-type*
 
-This feature is disabled by default, see |g:julia_auto_latex_to_unicode|, and
-it is only available with Vim version 7.4 or higher. It consists in
-substituting valid LaTeX sequences with Unicode symbols automatically as the
-typing progresses, as soon as the sequences is unambiguously complete. For
-example, when typing:
+This feature is disabled by default, see |g:latex_to_unicode_auto|, and it is
+only available with Vim version 7.4 or higher. It consists in substituting
+valid LaTeX sequences with Unicode symbols automatically as the typing
+progresses, as soon as the sequences is unambiguously complete. For example,
+when typing:
 >
     \chi\^2 = 1
 <
@@ -160,26 +168,76 @@ sign.
 
 This feature does not interfere with the <Tab> based substitution.
 
-==============================================================================
-VARIABLES                                       *julia-vim-variables*
+------------------------------------------------------------------------------
+LATEX TO UNICODE ON DIFFERENT FILE TYPES         *julia-vim-L2U-file-types*
 
-                                                *g:julia_latex_to_unicode*
-g:julia_latex_to_unicode
+By default, the LaTeX-to-Unicode substitutions are only active when editing
+Julia files. However, you can use the variable |g:latex_to_unicode_file_types|
+to specify for which file types this feature is active by default. The
+variable must be set to a string containing a |pattern| (a regular expression)
+which matches the desired file types, or to a list of such patterns. For
+example, to activate the feature on all file types by default, you could put
+this in your |.vimrc| file:
+>
+    let g:latex_to_unicode_file_types = ".*"
+<
+To make it active only on, say, Julia and Lisp files, you could use:
+>
+    let g:latex_to_unicode_file_types = ["julia", "lisp"]
+<
+
+Another option, |g:latex_to_unicode_file_types_blacklist|, can be used to
+exclude certain file types. For example, if you'd wish to enable the feature
+in all cases except for Python and untyped files, you would use:
+>
+    let g:latex_to_unicode_file_types = ".*"
+    let g:latex_to_unicode_file_types_blacklist = ["python", ""]
+<
+
+NOTE: enabling the functionality will override the |'omnifunc'| setting, which
+can be undesirable, and interfere with plugins for different file types. In
+any case, the previous |'omnifunc'| setting is restored when the functionality
+is disabled, see |julia-vim-L2U-enable-disable|.
+
+------------------------------------------------------------------------------
+ENABLING AND DISABLING LATEX TO UNICODE      *julia-vim-L2U-enable-disable*
+
+The LaTeX-to-Unicode functionality can be enabled or disabled at any time,
+regardless of the |'filetype'| of the file you're editing, using the functions
+|LaTeXtoUnicode#Enable()|, |LaTeXtoUnicode#Disable()|, |LaTeXtoUnicode#Toggle()|.
+For example, you could use a mapping like:
+>
+    noremap <expr> <F7> LaTeXtoUnicode#Toggle()
+    inoremap <expr> <F7> LaTeXtoUnicode#Toggle()
+<
+and then use the <F7> key to quickly switch the functionality on and off as
+needed (the first mapping is for |Normal| mode, the second for |Insert| mode).
+
+NOTE: these functions are different from the variables |g:latex_to_unicode_tab|
+and |g:latex_to_unicode_auto|: the functions enable/disable the functionality
+as a whole, while the variables control individual features (tab substitution
+and auto substitution).
+
+==============================================================================
+VARIABLES                                             *julia-vim-variables*
+
+                                                   *g:latex_to_unicode_tab*
+g:latex_to_unicode_tab
 
                 Determines whether to map LaTeX-to-Unicode substitution to the
                 <Tab> key while in insert mode (and to the <S-Tab> combination
-                for command line mode), see |julia-vim-L2U-tab|. If
-                unspecified, it is on.  You can disable the feature by
-                default by inserting the line
+                for command line mode), see |julia-vim-L2U-tab|. If unspecified,
+                it is on.  You can disable the feature by default by inserting
+                the line
 >
-                    let g:julia_latex_to_unicode = 0
+                    let g:latex_to_unicode_tab = 0
 <
-                in your |.vimrc| file. You can change this setting at any
-                moment while editing, but you need to invoke
-                |JuliaLaTeXtoUnicodeInit()| for the change to take effect.
+                in your |.vimrc| file. You can change this setting at any moment
+                while editing, but you need to invoke |LaTeXtoUnicode#Init()|
+                for the change to take effect.
                 
-                                         *g:julia_latex_suggestions_enabled*
-g:julia_latex_suggestions_enabled
+                                           *g:latex_to_unicode_suggestions*
+g:latex_to_unicode_suggestions
 
                 Determines whether the <Tab> key mapping produces suggestions
                 for partial matches. By default, this is set to 1 (active),
@@ -191,8 +249,8 @@ g:julia_latex_suggestions_enabled
                 This variable can be set at any time, changes will immediately
                 take effect.
                 
-                                            *g:julia_latex_to_unicode_eager*
-g:julia_latex_to_unicode_eager
+                                                 *g:latex_to_unicode_eager*
+g:latex_to_unicode_eager
 
                 Determines whether the <Tab> key mapping performs the
                 substitution immediately upon finding an exact match. By
@@ -201,43 +259,76 @@ g:julia_latex_to_unicode_eager
                 this variable is set to 0, an exact match which is also a
                 possible partial match to some other sequence triggers the
                 suggestions menu first, but another <Tab> forces the
-                substitution, so that e.g. typing `\ne` and then <Tab> produces
-                a list with `\ne`, `\neg`, `\nequiv` etc., and pressing <Tab>
-                again performs the substitution.
+                substitution, so that e.g. typing `\ne` and then <Tab>
+                produces a list with `\ne`, `\neg`, `\nequiv` etc., and
+                pressing <Tab> again performs the substitution.
 
                 This variable can be set at any time, changes will immediately
-                take effect. When |g:julia_latex_suggestions_enabled| is 0,
+                take effect. When |g:latex_to_unicode_suggestions| is 0,
                 this setting has no effect (it's like if it was always on).
                 
-                                               *g:julia_auto_latex_to_unicode*
-g:julia_auto_latex_to_unicode
+                                                  *g:latex_to_unicode_auto*
+g:latex_to_unicode_auto
 
                 Determines whether to activate LaTeX-to-Unicode substitution
                 on the fly as you type (in |Insert| mode), see
-                |julia-vim-L2U-as-you-type|. If unspecified, it is 0 (off). You
-                can enable the feature by default by inserting the line
+                |julia-vim-L2U-as-you-type|. If unspecified, it is 0 (off).
+                You can enable the feature by default by inserting the line
 >
-                    let g:julia_auto_latex_to_unicode = 1
+                    let g:latex_to_unicode_auto = 1
 <
                 in your |.vimrc| file. You can change this setting at any
                 moment while editing, but you need to invoke
-                |JuliaLaTeXtoUnicodeInit()| for the change to take effect.
-                
+                |LaTeXtoUnicode#Init()| for the change to take effect.
+
+                                            *g:latex_to_unicode_file_types*
+g:latex_to_unicode_file_types
+
+                Contains a |pattern|, or a list of patterns, which are matched
+                against the |'filetype'| to determine when to enable the
+                LaTeX-to-Unicode functionality, see |julia-vim-L2U-file-types|.
+                By default, its value is `"julia"`. The patterns provided must
+                match the whole filetype name. See also
+                |g:latex_to_unicode_file_types_blacklist|.
+
+                                  *g:latex_to_unicode_file_types_blacklist*
+g:latex_to_unicode_file_types_blacklist
+
+                Same as |g:latex_to_unicode_file_types|, but acts in reverse:
+                it disables the LaTeX-to-Unicode functionality when the
+                |'filetype'| matches the provided pattern (or any of the
+                patterns if a list is provided). By default, it contains an
+                unmatchable pattern, i.e. it is effectively disabled.
 
 ==============================================================================
-FUNCTIONS                                       *julia-vim-functions*
+FUNCTIONS                                             *julia-vim-functions*
 
-                                                 *JuliaLaTeXtoUnicodeInit()*
-JuliaLaTeXtoUnicodeInit()
+                                                    *LaTeXtoUnicode#Init()*
+LaTeXtoUnicode#Init()
 
                 Initialize or re-initialize the LaTeX-to-Unicode substitutions
                 (see |julia-vim-L2U|). Must be invoked after changing
-                |g:julia_latex_to_unicode| or |g:julia_auto_latex_to_unicode|
+                |g:latex_to_unicode_tab| or |g:latex_to_unicode_auto|
                 to make the changes take effect.
 
+                                                  *LaTeXtoUnicode#Enable()*
+                                                 *LaTeXtoUnicode#Disable()*
+                                                  *LaTeXtoUnicode#Toggle()*
+LaTeXtoUnicode#Enable()
+LaTeXtoUnicode#Disable()
+LaTeXtoUnicode#Toggle()
+
+                These functions enable/disable/toggle the LaTeX-to-Unicode
+                functionality, regardless of the |'filetype'| specified in
+                |g:latex_to_unicode_file_types| and
+                |g:latex_to_unicode_file_types_blacklist|. See
+                |julia-vim-L2U-enable-disable|. Note that LaTeXtoUnicode#Enable()
+                will override the |'omnifunc'| definition, if present. However,
+                LaTeXtoUnicode#Disable() will restore it.
+                These functions implicitly invoke |LaTeXtoUnicode#Init()|.
 
 ==============================================================================
-ABOUT                                           *julia-vim-about*
+ABOUT                                                    *julia-vim-about*
 
 Grab the latest version or report a bug on GitHub:
 
