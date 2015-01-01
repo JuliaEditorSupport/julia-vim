@@ -67,7 +67,7 @@ function! s:L2U_SetupGlobal()
 
   " A hack to forcibly get out of completion mode: feed
   " this string with feedkeys()
-  let s:l2u_esc_sequence = "\u0091\<BS>"
+  let s:l2u_esc_sequence = "\u0006"
 
   " Trigger for the previous mapping of <Tab>
   let s:l2u_fallback_trigger = "\u0091L2UFallbackTab"
