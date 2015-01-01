@@ -354,6 +354,8 @@ function! LaTeXtoUnicode#Tab()
     call feedkeys(s:l2u_fallback_trigger)
     return ''
   endif
+  " reset the in_fallback info
+  let b:l2u_in_fallback = 0
   " temporary change to completeopt to use the `longest` setting, which is
   " probably the only one which makes sense given that the goal of the
   " completion is to substitute the final string
