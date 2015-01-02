@@ -75,6 +75,9 @@ These features only work as described with Vim version 7.4 or higher. Tab
 completion can still be made available on lower Vim versions, see
 |julia-vim-L2U-workaround|.
 
+See |julia-vim-L2U-reference| for the complete table of the available
+LaTeX-to-Unicode substitutions.
+
 ------------------------------------------------------------------------------
 LATEX TO UNICODE VIA TAB KEY                            *julia-vim-L2U-tab*
 

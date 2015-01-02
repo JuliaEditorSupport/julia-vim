@@ -55,7 +55,8 @@ These features only work as described with Vim version 7.4 or higher. Tab comple
 available on lower Vim versions, see below for more details.
 
 The following sections provide details on these features. The complete documentation is provided by calling
-`:help julia-vim` from within Vim.
+`:help julia-vim` from within Vim. A complete reference table of the available substitution can be
+accessed by calling `:help L2U-ref` from within Vim.
 
 ### LaTeX-to-Unicode via Tab key
 

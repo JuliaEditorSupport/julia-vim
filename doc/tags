@@ -1,3 +1,4 @@
+L2U-ref	julia-vim-L2U-table.txt	/*L2U-ref*
 LaTeXtoUnicode#Disable()	julia-vim.txt	/*LaTeXtoUnicode#Disable()*
 LaTeXtoUnicode#Enable()	julia-vim.txt	/*LaTeXtoUnicode#Enable()*
 LaTeXtoUnicode#Init()	julia-vim.txt	/*LaTeXtoUnicode#Init()*
@@ -13,6 +14,7 @@ julia-vim-L2U	julia-vim.txt	/*julia-vim-L2U*
 julia-vim-L2U-as-you-type	julia-vim.txt	/*julia-vim-L2U-as-you-type*
 julia-vim-L2U-enable-disable	julia-vim.txt	/*julia-vim-L2U-enable-disable*
 julia-vim-L2U-file-types	julia-vim.txt	/*julia-vim-L2U-file-types*
+julia-vim-L2U-reference	julia-vim-L2U-table.txt	/*julia-vim-L2U-reference*
 julia-vim-L2U-tab	julia-vim.txt	/*julia-vim-L2U-tab*
 julia-vim-L2U-workaround	julia-vim.txt	/*julia-vim-L2U-workaround*
 julia-vim-about	julia-vim.txt	/*julia-vim-about*
