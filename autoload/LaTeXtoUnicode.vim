@@ -214,7 +214,7 @@ function! s:L2U_longest_common_prefix(partmatches)
   for i in range(1, len(a:partmatches)-1)
     let p = a:partmatches[i]
     if len(p) < len(common)
-      common = common[0 : len(p)-1]
+      let common = common[0 : len(p)-1]
     endif
     for j in range(1, len(common)-1)
       if p[j] != common[j]
