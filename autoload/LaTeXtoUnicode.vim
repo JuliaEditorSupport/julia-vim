@@ -113,7 +113,7 @@ function! LaTeXtoUnicode#Enable()
     let b:prev_omnifunc = &omnifunc
   endif
 
-  set omnifunc=LaTeXtoUnicode#ommnifunc
+  setlocal omnifunc=LaTeXtoUnicode#ommnifunc
 
   let b:l2u_enabled = 1
 
@@ -462,7 +462,7 @@ function! s:L2U_SetTab(wait_vim_enter)
   cnoremap <buffer> <Plug>L2UCmdTab <C-\>eLaTeXtoUnicode#CmdTab()<CR>
 
   augroup L2UTab
-    autocmd!
+    autocmd! * <buffer>
     " Every time a completion finishes, the fallback may be invoked
     autocmd CompleteDone <buffer> call LaTeXtoUnicode#FallbackCallback()
   augroup END
@@ -481,8 +481,9 @@ function! s:L2U_UnsetTab()
   endif
   iunmap <buffer> <Plug>L2UTab
   exe 'iunmap <buffer> ' . s:l2u_fallback_trigger
-  autocmd! L2UTab
-  augroup! L2UTab
+  augroup L2UTab
+    autocmd! * <buffer>
+  augroup END
   let b:l2u_tab_set = 0
 endfunction
 
@@ -539,7 +540,7 @@ function! s:L2U_SetAutoSub(wait_vim_enter)
   inoremap <buffer><expr> <Plug>L2UAutoSub LaTeXtoUnicode#AutoSub("\n", "\<CR>")
 
   augroup L2UAutoSub
-    autocmd!
+    autocmd! * <buffer>
     autocmd InsertCharPre <buffer> call LaTeXtoUnicode#AutoSub()
   augroup END
 
@@ -554,8 +555,9 @@ function! s:L2U_UnsetAutoSub()
 
   iunmap <buffer> <CR>
   iunmap <buffer> <Plug>L2UAutoSub
-  autocmd! L2UAutoSub
-  augroup! L2UAutoSub
+  augroup L2UAutoSub
+    autocmd! * <buffer>
+  augroup END
   let b:l2u_autosub_set = 0
 endfunction
 
