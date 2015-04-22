@@ -354,7 +354,7 @@ function! LaTeXtoUnicode#Tab()
   " the <Tab> is passed through to the fallback mapping if the completion
   " menu is present, and it hasn't been raised by the L2U tab, and there
   " isn't an exact match before the cursor when suggestions are disabled
-  if pumvisible() && !b:l2u_tab_completing && (get(g:, "latex_to_unicode_suggestions", 1) || !LaTeXtoUnicode#ismatch())
+  if pumvisible() && !b:l2u_tab_completing && (get(g:, "latex_to_unicode_suggestions", 1) || !s:L2U_ismatch())
     call feedkeys(s:l2u_fallback_trigger)
     return ''
   endif
