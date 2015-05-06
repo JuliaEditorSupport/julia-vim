@@ -1,37 +1,122 @@
-function! julia_blocks#init_mappings()
-  noremap <buffer> <nowait> <silent> ][ :<C-U>call julia_blocks#moveblock_N()<CR>
-  noremap <buffer> <nowait> <silent> ]] :<C-U>call julia_blocks#moveblock_n()<CR>
-  noremap <buffer> <nowait> <silent> [[ :<C-U>call julia_blocks#moveblock_p()<CR>
-  noremap <buffer> <nowait> <silent> [] :<C-U>call julia_blocks#moveblock_P()<CR>
+function! s:map(chars, function, toend, backwards)
+  let lhs = "<buffer> <nowait> <silent> " . s:escape(a:chars)
+  let cnt = " :<C-U>let b:jlblk_count=v:count1"
+  exe "nnoremap " . lhs . cnt
+    \ . " <Bar> call " . a:function . "()<CR>"
+  exe "onoremap " . lhs . cnt
+    \ . "<CR><Esc>:call julia_blocks#owrapper(v:operator, \"" . a:function . "\", " . a:toend . ", " . a:backwards . ")<CR>"
+  exe "xnoremap " . lhs . cnt
+    \ . "<CR>gv<Esc>:call julia_blocks#vwrapper(\"" . a:function . "\")<CR>"
+endfunction
 
-  noremap <buffer> <nowait> <silent> ]J :<C-U>call julia_blocks#move_N()<CR>
-  noremap <buffer> <nowait> <silent> ]j :<C-U>call julia_blocks#move_n()<CR>
-  noremap <buffer> <nowait> <silent> [j :<C-U>call julia_blocks#move_p()<CR>
-  noremap <buffer> <nowait> <silent> [J :<C-U>call julia_blocks#move_P()<CR>
+function! julia_blocks#owrapper(oper, function, toend, backwards)
+  let F = function(a:function)
+
+  let save_redraw = &lazyredraw
+  let save_select = &selection
+
+  let restore_cmds = "\<Esc>"
+    \ . ":let &l:selection = \"" . save_select . "\"\<CR>"
+    \ . ":let &l:lazyredraw = " . save_redraw . "\<CR>"
+    \ . ":\<BS>"
+
+  setlocal lazyredraw
+
+  let start_pos = getpos('.')
+  let b:jlblk_abort_calls_esc = 0
+  call F()
+  let b:jlblk_abort_calls_esc = 1
+  let end_pos = getpos('.')
+  if start_pos == end_pos
+    call feedkeys(restore_cmds)
+  endif
+
+  if a:backwards || !a:toend
+    let &l:selection = "exclusive"
+  endif
+  if a:toend && a:backwards
+    let end_pos[2] += 1
+  endif
+
+  if s:compare_pos(start_pos, end_pos) > 0
+    let [start_pos, end_pos] = [end_pos, start_pos]
+  endif
+
+  call setpos("'<", start_pos)
+  call setpos("'>", end_pos)
+
+  call feedkeys("gv" . a:oper . restore_cmds . (a:oper == "c" ? "i" : ""))
+endfunction
+
+function! julia_blocks#vwrapper(function)
+  let F = function(a:function)
+
+  let s = getpos('.')
+  let b1 = getpos("'<")
+  let b2 = getpos("'>")
+
+  let b = b1 == s ? b2 : b1
+  call setpos('.', s)
+  let b:jlblk_abort_calls_esc = 0
+  call F()
+  let b:jlblk_abort_calls_esc = 1
+  let e = getpos('.')
+  call setpos('.', b)
+  exe "normal " . visualmode()
+  call setpos('.', e)
+endfunction
+
+function! s:unmap(chars)
+  let cmd = "<buffer> " . s:escape(a:chars)
+  for m in ["n", "x", "o"]
+    exe m . "unmap " . cmd
+  endfor
+endfunction
+
+function! s:escape(chars)
+  let c = a:chars
+  let c = substitute(c, '<', '<LT>', 'g')
+  let c = substitute(c, '|', '<Bar>', 'g')
+  return c
+endfunction
+
+let g:julia_blocks_default_mappings = [
+      \  ["][", "julia_blocks#moveblock_N", 1, 0],
+      \  ["]]", "julia_blocks#moveblock_n", 0, 0],
+      \  ["[[", "julia_blocks#moveblock_p", 0, 1],
+      \  ["[]", "julia_blocks#moveblock_P", 1, 1],
+      \
+      \  ["]J", "julia_blocks#move_N", 1, 0],
+      \  ["]j", "julia_blocks#move_n", 0, 0],
+      \  ["[j", "julia_blocks#move_p", 0, 1],
+      \  ["[J", "julia_blocks#move_P", 1, 1]]
+
+function! julia_blocks#init_mappings()
+  for [c,f,te,bw] in g:julia_blocks_default_mappings
+    call s:map(c, f, te, bw)
+  endfor
 endfunction
 
 function! julia_blocks#remove_mappings()
-  unmap <buffer> ][
-  unmap <buffer> ]]
-  unmap <buffer> [[
-  unmap <buffer> []
-  unmap <buffer> ]j
-  unmap <buffer> ]J
-  unmap <buffer> [j
-  unmap <buffer> [J
+  for [c;rest] in g:julia_blocks_default_mappings
+    call s:unmap(c)
+  endfor
+  unlet! b:jlblk_save_pos b:jlblk_count b:jlblk_abort_calls_esc
 endfunction
 
 function! s:abort()
   call setpos('.', b:jlblk_save_pos)
-  call feedkeys("\<Esc>")
+  if get(b:, "jlblk_abort_calls_esc", 1)
+    call feedkeys("\<Esc>")
+  endif
   return 0
 endfunction
 
 function! s:set_mark_tick(...)
   let pos = a:0 > 0 ? a:1 : getpos('.')
-  call setpos('.', b:jlblk_save_pos)
-  normal! m`
-  keepjumps call setpos('.', pos)
+  call setpos("''", b:jlblk_save_pos)
+  "normal! m`
+  "keepjumps call setpos('.', pos)
 endfunction
 
 function! s:get_save_pos()
@@ -60,11 +145,12 @@ function! s:cycle_until_end()
   return 1
 endfunction
 
-function! s:moveto_block_delim(toend, backwards)
+function! s:moveto_block_delim(toend, backwards, ...)
   let pattern = a:toend ? b:julia_end_keywords : b:julia_begin_keywords
   let flags = a:backwards ? 'Wb' : 'W'
+  let cnt = a:0 > 0 ? a:1 : b:jlblk_count
   let ret = 0
-  for c in range(v:count1)
+  for c in range(cnt)
     if a:toend && a:backwards && s:on_end()
       normal! bh
     endif
@@ -173,18 +259,18 @@ function! julia_blocks#moveblock_N()
   call s:get_save_pos()
 
   let ret = 0
-  for c in range(v:count1)
+  for c in range(b:jlblk_count)
     let last_seen_pos = getpos('.')
     if s:on_end()
       normal! hel
       let save_pos = getpos('.')
-      let ret_start = s:moveto_block_delim(0, 0)
+      let ret_start = s:moveto_block_delim(0, 0, 1)
       let start1_pos = ret_start ? getpos('.') : [0,0,0,0]
       call setpos('.', save_pos)
       if s:on_end()
 	normal! h
       endif
-      let ret_end = s:moveto_block_delim(1, 0)
+      let ret_end = s:moveto_block_delim(1, 0, 1)
       let end1_pos = ret_end ? getpos('.')  : [0,0,0,0]
 
       if ret_start && (!ret_end || s:compare_pos(start1_pos, end1_pos) < 0)
@@ -195,6 +281,12 @@ function! julia_blocks#moveblock_N()
     endif
 
     let moveret = s:moveto_currentblock_end()
+    if !moveret && c == 0
+      let moveret = s:moveto_block_delim(0, 0, 1) && s:cycle_until_end()
+      if moveret
+        normal! e
+      endif
+    endif
     if !moveret
       call setpos('.', last_seen_pos)
       break
@@ -214,33 +306,15 @@ endfunction
 function! julia_blocks#moveblock_n()
   call s:get_save_pos()
 
-  let vcount = v:count1
-
-  let moveret = s:moveto_currentblock_end()
-  if !moveret
-    return s:abort()
-  endif
-
   let ret = 0
-  for c in range(vcount)
+  for c in range(b:jlblk_count)
     let last_seen_pos = getpos('.')
-    normal! hel
-    let save_pos = getpos('.')
-    let ret_start = s:moveto_block_delim(0, 0)
-    let start1_pos = ret_start ? getpos('.') : [0,0,0,0]
-    call setpos('.', save_pos)
-    if s:on_end()
-      normal! h
-    endif
-    let ret_end = s:moveto_block_delim(1, 0)
-    let end1_pos = ret_end ? getpos('.') : [0,0,0,0]
 
-    if ret_start && (!ret_end || s:compare_pos(start1_pos, end1_pos) < 0)
-      call setpos('.', start1_pos)
-      if !s:cycle_until_end()
-	call setpos('.', last_seen_pos)
-	break
-      endif
+    call s:moveto_currentblock_end()
+    if s:on_end()
+      normal! hel
+    endif
+    if s:moveto_block_delim(0, 0, 1)
       let ret = 1
     else
       call setpos('.', last_seen_pos)
@@ -251,7 +325,6 @@ function! julia_blocks#moveblock_n()
   if !ret
     return s:abort()
   endif
-  normal %
 
   call s:set_mark_tick()
 
@@ -262,15 +335,15 @@ function! julia_blocks#moveblock_p()
   call s:get_save_pos()
 
   let ret = 0
-  for c in range(v:count1)
+  for c in range(b:jlblk_count)
     let last_seen_pos = getpos('.')
     if s:on_begin()
       normal! lbh
       let save_pos = getpos('.')
-      let ret_start = s:moveto_block_delim(0, 1)
+      let ret_start = s:moveto_block_delim(0, 1, 1)
       let start1_pos = ret_start ? getpos('.') : [0,0,0,0]
       call setpos('.', save_pos)
-      let ret_end = s:moveto_block_delim(1, 1)
+      let ret_end = s:moveto_block_delim(1, 1, 1)
       let end1_pos = ret_end ? getpos('.') : [0,0,0,0]
 
       if ret_end && (!ret_start || s:compare_pos(start1_pos, end1_pos) < 0)
@@ -281,6 +354,9 @@ function! julia_blocks#moveblock_p()
     endif
 
     let moveret = s:moveto_currentblock_end()
+    if !moveret && c == 0
+      let moveret = s:moveto_block_delim(1, 1, 1)
+    endif
     if !moveret
       call setpos('.', last_seen_pos)
       break
@@ -301,35 +377,20 @@ endfunction
 function! julia_blocks#moveblock_P()
   call s:get_save_pos()
 
-  let vcount = v:count1
-
-  let moveret = s:moveto_currentblock_end()
-  if !moveret
-    return s:abort()
-  endif
-  normal %
-  if !s:on_begin()
-    return s:abort()
-  endif
-
   let ret = 0
-  for c in range(vcount)
+  for c in range(b:jlblk_count)
     let last_seen_pos = getpos('.')
-    normal! lbh
-    let save_pos = getpos('.')
-    let ret_start = s:moveto_block_delim(0, 1)
-    let start1_pos = ret_start ? getpos('.') : [0,0,0,0]
-    call setpos('.', save_pos)
-    let ret_end = s:moveto_block_delim(1, 1)
-    let end1_pos = ret_end ? getpos('.') : [0,0,0,0]
 
-    if ret_end && (!ret_start || s:compare_pos(start1_pos, end1_pos) < 0)
-      call setpos('.', end1_pos)
+    call s:moveto_currentblock_end()
+    if s:on_end()
       normal %
-      if !s:on_begin()
-	call setpos('.', last_seen_pos)
-	break
-      endif
+    endif
+
+    if s:on_begin()
+      normal! lbh
+    endif
+    if s:moveto_block_delim(1, 1, 1)
+      normal! he
       let ret = 1
     else
       call setpos('.', last_seen_pos)
@@ -337,9 +398,6 @@ function! julia_blocks#moveblock_P()
   endfor
 
   if !ret
-    return s:abort()
-  endif
-  if !s:cycle_until_end()
     return s:abort()
   endif
 
