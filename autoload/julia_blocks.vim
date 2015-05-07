@@ -343,9 +343,6 @@ function! julia_blocks#moveblock_n()
     let last_seen_pos = getpos('.')
 
     call s:moveto_currentblock_end()
-    if s:on_end()
-      normal! hel
-    endif
     if s:moveto_block_delim(0, 0, 1)
       let ret = 1
     else
@@ -371,6 +368,9 @@ function! julia_blocks#moveblock_p()
     let last_seen_pos = getpos('.')
     if s:on_begin()
       normal! lbh
+      if s:on_end()
+	normal! l
+      endif
       let save_pos = getpos('.')
       let ret_start = s:moveto_block_delim(0, 1, 1)
       let start1_pos = ret_start ? getpos('.') : [0,0,0,0]
@@ -418,9 +418,6 @@ function! julia_blocks#moveblock_P()
       normal %
     endif
 
-    if s:on_begin()
-      normal! lbh
-    endif
     if s:moveto_block_delim(1, 1, 1)
       normal! he
       let ret = 1
