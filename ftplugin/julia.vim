@@ -60,13 +60,17 @@ if exists("loaded_matchit")
   let b:match_skip = 'synIDattr(synID(line("."),col("."),1),"name") =~ '
         \ . '"\\<julia\\%(ComprehensionFor\\|RangeEnd\\|QuotedBlockKeyword\\|InQuote\\|Comment[LM]\\|\\%([bv]\\|ip\\|MIME\\|Tri\\|Shell\\)\\?String\\|RegEx\\)\\>"'
 
-  call julia_blocks#init_mappings()
-
   let b:undo_ftplugin = b:undo_ftplugin
         \ . " | unlet! b:match_words b:match_skip b:match_ignorecase"
         \ . " | unlet! b:julia_begin_keywords b:julia_end_keywords"
         \ . " | delfunction JuliaGetMatchWords"
         \ . " | call julia_blocks#remove_mappings()"
+
+  if get(g:, "julia_blocks", 1)
+    call julia_blocks#init_mappings()
+    let b:undo_ftplugin .= " | call julia_blocks#remove_mappings()"
+  endif
+
 endif
 
 if has("gui_win32")

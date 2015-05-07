@@ -1,12 +1,39 @@
-function! s:map(chars, function, toend, backwards)
-  let lhs = "<buffer> <nowait> <silent> " . s:escape(a:chars)
+" Facilities for moving around Julia blocks (e.g. if/end, function/end etc.)
+
+let s:default_mappings = {
+  \  "moveblock_n" : "]]",
+  \  "moveblock_N" : "][",
+  \  "moveblock_p" : "[[",
+  \  "moveblock_P" : "[]",
+  \
+  \  "move_n" : "]j",
+  \  "move_N" : "]J",
+  \  "move_p" : "[j",
+  \  "move_P" : "[J",
+  \  }
+
+function! s:getmapchars(function)
+  if exists("g:julia_blocks_mappings") && has_key(g:julia_blocks_mappings, a:function)
+    return s:escape(g:julia_blocks_mappings[a:function])
+  else
+    return s:escape(s:default_mappings[a:function])
+  endif
+endfunction
+
+function! s:map(function, toend, backwards)
+  let chars = s:getmapchars(a:function)
+  if empty(chars)
+    return
+  endif
+  let fn = "julia_blocks#" . a:function
+  let lhs = "<buffer> <nowait> <silent> " . chars
   let cnt = " :<C-U>let b:jlblk_count=v:count1"
   exe "nnoremap " . lhs . cnt
-    \ . " <Bar> call " . a:function . "()<CR>"
+    \ . " <Bar> call " . fn . "()<CR>"
   exe "onoremap " . lhs . cnt
-    \ . "<CR><Esc>:call julia_blocks#owrapper(v:operator, \"" . a:function . "\", " . a:toend . ", " . a:backwards . ")<CR>"
+    \ . "<CR><Esc>:call julia_blocks#owrapper(v:operator, \"" . fn . "\", " . a:toend . ", " . a:backwards . ")<CR>"
   exe "xnoremap " . lhs . cnt
-    \ . "<CR>gv<Esc>:call julia_blocks#vwrapper(\"" . a:function . "\")<CR>"
+    \ . "<CR>gv<Esc>:call julia_blocks#vwrapper(\"" . fn . "\")<CR>"
 endfunction
 
 function! julia_blocks#owrapper(oper, function, toend, backwards)
@@ -66,8 +93,13 @@ function! julia_blocks#vwrapper(function)
   call setpos('.', e)
 endfunction
 
-function! s:unmap(chars)
-  let cmd = "<buffer> " . s:escape(a:chars)
+function! s:unmap(function)
+  let chars = s:getmapchars(a:function)
+  if empty(chars)
+    return
+  endif
+  let fn = "julia_blocks#" . a:function
+  let cmd = "<buffer> " . chars
   for m in ["n", "x", "o"]
     exe m . "unmap " . cmd
   endfor
@@ -80,26 +112,26 @@ function! s:escape(chars)
   return c
 endfunction
 
-let g:julia_blocks_default_mappings = [
-      \  ["][", "julia_blocks#moveblock_N", 1, 0],
-      \  ["]]", "julia_blocks#moveblock_n", 0, 0],
-      \  ["[[", "julia_blocks#moveblock_p", 0, 1],
-      \  ["[]", "julia_blocks#moveblock_P", 1, 1],
+let g:julia_blocks_functions = [
+      \  ["moveblock_N", 1, 0],
+      \  ["moveblock_n", 0, 0],
+      \  ["moveblock_p", 0, 1],
+      \  ["moveblock_P", 1, 1],
       \
-      \  ["]J", "julia_blocks#move_N", 1, 0],
-      \  ["]j", "julia_blocks#move_n", 0, 0],
-      \  ["[j", "julia_blocks#move_p", 0, 1],
-      \  ["[J", "julia_blocks#move_P", 1, 1]]
+      \  ["move_N", 1, 0],
+      \  ["move_n", 0, 0],
+      \  ["move_p", 0, 1],
+      \  ["move_P", 1, 1]]
 
 function! julia_blocks#init_mappings()
-  for [c,f,te,bw] in g:julia_blocks_default_mappings
-    call s:map(c, f, te, bw)
+  for [f,te,bw] in g:julia_blocks_functions
+    call s:map(f, te, bw)
   endfor
 endfunction
 
 function! julia_blocks#remove_mappings()
-  for [c;rest] in g:julia_blocks_default_mappings
-    call s:unmap(c)
+  for [f;rest] in g:julia_blocks_functions
+    call s:unmap(f)
   endfor
   unlet! b:jlblk_save_pos b:jlblk_count b:jlblk_abort_calls_esc
 endfunction
