@@ -24,13 +24,10 @@ License: MIT license  {{{
 CONTENTS					*julia-vim*
 
 Introduction	                    |julia-vim-introduction|
-LaTeX-to-Unicode substitutions      |julia-vim-L2U|
-  Via Tab key                       |julia-vim-L2U-tab|
-  As you type                       |julia-vim-L2U-as-you-type|
-  On different file types           |julia-vim-L2U-file-types|
-  Enabling and disabling            |julia-vim-L2U-enable-disable|
-Variables                           |julia-vim-variables|
-Functions                           |julia-vim-functions|
+Block-wise movements                |julia-vim-blocks|
+  Keyword-oriented movements        |julia-vim-blocks-move|
+  Block-oriented movements          |julia-vim-blocks-moveblock|
+  Variables                         |julia-vim-blocks-variables|
 About                               |julia-vim-about|
 
 ==============================================================================
@@ -40,298 +37,171 @@ The julia-vim plug-in provides:
   - basic support for editing Julia files (automatic filetype detection,
     indentation, syntax highlighting)
   - support for the matchit plugin (https://github.com/edsono/matchit)
+  - support for Julia block-wise movements (i.e. jumping around between
+    Julia blocks like if/end, function/end etc.)
   - facilities for conversion of LaTeX entries to Unicode symbols which mimic
     and extend what the Julia REPL and the IJulia notebook interface do.
     Optionally, this functionality can be used with all file types, not
-    just Julia files.
+    just Julia files. See |julia-vim-L2U|.
 
-This help file documents the latter feature, how it works and what variables
-can be used to enable/disable/tweak it.
-
-==============================================================================
-LATEX TO UNICODE                                            *julia-vim-L2U*
-
-In the Julia REPL, entering a LaTeX sequence such as `\alpha` and pressing the
-<Tab> key substitutes it with a Unicode character such as `α`. The Julia REPL
-also provides partial completions, and suggestions for possible completions
-upon repeated pressing of the <Tab> key.
-
-This Vim plug-in provides the same functionality, with some extensions:
-  - when a partial sequence is found, suggestions are presented in a menu
-    together with their Unicode counterpart; the exact behaviour of this
-    feature can be customized, see |julia-vim-L2U-tab|
-  - optionally, symbols are substituted on the fly as you type them, see
-    |julia-vim-L2U-as-you-type|
-
-The substitution is triggered by the <S-Tab> combination while in command line
-mode, e.g. when searching in a file with the |/| or |?| commands.
-
-By default, this feature is only active when editing Julia files. However, it
-can be also enabled with other file types, see |julia-vim-L2U-file-types|, and
-even turned on/off on the fly regardless of the file type, see
-|julia-vim-L2U-enable-disable|.
-
-These features only work as described with Vim version 7.4 or higher. Tab
-completion can still be made available on lower Vim versions, see
-|julia-vim-L2U-workaround|.
-
-See |julia-vim-L2U-reference| for the complete table of the available
-LaTeX-to-Unicode substitutions.
-
-------------------------------------------------------------------------------
-LATEX TO UNICODE VIA TAB KEY                            *julia-vim-L2U-tab*
-
-Substitution of LaTeX sequences when pressing the <Tab> key in insert mode, or
-the <S-Tab> combination while on the command line, is active by default. Use
-|g:latex_to_unicode_tab| to control it.
-
-When this feature is active, the julia-vim plug-in creates a mapping for the
-<Tab> key (in |Insert| mode) which takes precedence on any previously defined
-mapping assigned to it, such that when the <Tab> key is pressed the plug-in
-looks for potential LaTeX symbol matches before the cursor, and if it fails to
-find anything of interest it will fall-back to the previous mapping for <Tab>
-(with default Vim settings, this means it will insert a literal <Tab>; but if
-you have defined dome other behaviour for that key, e.g. by installing another
-plug-in such as supertab (https://github.com/ervandew/supertab) than that will
-be used).
-
-For example, entering this text in a file:
->
-    1 + \alpha
-<
-and then pressing <Tab>, results in:
->
-    1 + α
-<
-
-This feature is associated with 'omnifunc' completion, and therefore can
-always be accessed via CTRL-X CTRL-O, even when |g:latex_to_unicode_tab| is 0.
-
-A literal <Tab> key can always be entered by using CTRL-V before <Tab> (see
-|i_CTRL-V|).
-
-Partial sequence recognition triggers auto-completion (performed as if the
-`longest` setting was used in 'completeopt') and shows a menu of suggestions
-together with their corresponding Unicode symbol (provided the `menu` setting
-is included in 'completeopt', and more then one match is found). So for
-example, entering `\al` and pressing <Tab> will result in the following list:
->
-    +-------------+
-    | \aleph    ℵ |
-    | \allequal ≌ |
-    | \alpha    α |
-    +-------------+
->
-Then, pressing `p` will reduce the list to `\alpha`, pressing <Tab> will
-complete it and pressing <Tab> again will perform the substitution.
-
-The completion menu can be disbled, and this will happen automatically if a
-plug-in which is known to be incompatible with this feature is detected: see
-|g:latex_to_unicode_suggestions|.
-
-Some LaTeX sequences can be valid both as they are and as partial matches for
-other sequences, e.g. `\ne` is associated with `≠`, but it is also a partial
-match for `\nequiv` (`≢`). By default, if <Tab> finds an exact match performs
-the substitution, but this can be controlled by the |g:latex_to_unicode_eager|
-setting.
-
-Vim versions lower than 7.4                     *julia-vim-L2U-workaround*
-
-The <Tab> key remapping is not performed by default with Vim versions lower
-than 7.4. However, the functionality is still available via onmicompletion,
-which is accessible by the CTRL-X CTRL-O key combination. You can map some
-other key combination to this by adding something like
->
-  inoremap <C-Tab> <C-X><C-O>
-<
-in your |.vimrc| file. If you'd map <Tab> directly, then you'd need to use
-CTRL-V <Tab> to insert a literal <Tab>.
-
-The settings |g:latex_to_unicode_eager| and |g:latex_to_unicode_suggestions|
-are still meaningful in this case.
-
-------------------------------------------------------------------------------
-LATEX TO UNICODE AS YOU TYPE                    *julia-vim-L2U-as-you-type*
-
-This feature is disabled by default, see |g:latex_to_unicode_auto|, and it is
-only available with Vim version 7.4 or higher. It consists in substituting
-valid LaTeX sequences with Unicode symbols automatically as the typing
-progresses, as soon as the sequences is unambiguously complete. For example,
-when typing:
->
-    \chi\^2 = 1
-<
-The result is
->
-    χ² = 1
-<
-The `\chi` is substituted right when the second backslash is entered, and the
-`\^2` is substituted when the following space is entered, before the equal
-sign.
-
-This feature does not interfere with the <Tab> based substitution.
-
-------------------------------------------------------------------------------
-LATEX TO UNICODE ON DIFFERENT FILE TYPES         *julia-vim-L2U-file-types*
-
-By default, the LaTeX-to-Unicode substitutions are only active when editing
-Julia files. However, you can use the variable |g:latex_to_unicode_file_types|
-to specify for which file types this feature is active by default. The
-variable must be set to a string containing a |pattern| (a regular expression)
-which matches the desired file types, or to a list of such patterns. For
-example, to activate the feature on all file types by default, you could put
-this in your |.vimrc| file:
->
-    let g:latex_to_unicode_file_types = ".*"
-<
-To make it active only on, say, Julia and Lisp files, you could use:
->
-    let g:latex_to_unicode_file_types = ["julia", "lisp"]
-<
-
-Another option, |g:latex_to_unicode_file_types_blacklist|, can be used to
-exclude certain file types. For example, if you'd wish to enable the feature
-in all cases except for Python and untyped files, you would use:
->
-    let g:latex_to_unicode_file_types = ".*"
-    let g:latex_to_unicode_file_types_blacklist = ["python", ""]
-<
-
-NOTE: enabling the functionality will override the |'omnifunc'| setting, which
-can be undesirable, and interfere with plugins for different file types. In
-any case, the previous |'omnifunc'| setting is restored when the functionality
-is disabled, see |julia-vim-L2U-enable-disable|.
-
-------------------------------------------------------------------------------
-ENABLING AND DISABLING LATEX TO UNICODE      *julia-vim-L2U-enable-disable*
-
-The LaTeX-to-Unicode functionality can be enabled or disabled at any time,
-regardless of the |'filetype'| of the file you're editing, using the functions
-|LaTeXtoUnicode#Enable()|, |LaTeXtoUnicode#Disable()|, |LaTeXtoUnicode#Toggle()|.
-For example, you could use a mapping like:
->
-    noremap <expr> <F7> LaTeXtoUnicode#Toggle()
-    inoremap <expr> <F7> LaTeXtoUnicode#Toggle()
-<
-and then use the <F7> key to quickly switch the functionality on and off as
-needed (the first mapping is for |Normal| mode, the second for |Insert| mode).
-
-NOTE: these functions are different from the variables |g:latex_to_unicode_tab|
-and |g:latex_to_unicode_auto|: the functions enable/disable the functionality
-as a whole, while the variables control individual features (tab substitution
-and auto substitution).
+This help file documents the block-wise movements, how they work and what
+variables can be used to enable/disable/tweak them.
+The LaTeX-to-Unicode facilities are documented in |julia-vim-L2U|.
 
 ==============================================================================
-VARIABLES                                             *julia-vim-variables*
+BLOCK-WISE MOVEMENTS                                     *julia-vim-blocks*
 
-                                                   *g:latex_to_unicode_tab*
-g:latex_to_unicode_tab
+In Julia, all blocks start with a keyword (`module`, `function`, `if`, `for`,
+`while`, `type`, etc.) and end with the `end` keyword.
 
-                Determines whether to map LaTeX-to-Unicode substitution to the
-                <Tab> key while in insert mode (and to the <S-Tab> combination
-                for command line mode), see |julia-vim-L2U-tab|. If unspecified,
-                it is on.  You can disable the feature by default by inserting
-                the line
+This plug-in adds support for the matchit plugin, such that pressing |%| while
+on a block keyword will jump to the other keywords pertaining to the same
+block. For example, if the cursor is at the beginning of the following code:
 >
-                    let g:latex_to_unicode_tab = 0
+    if a == 1
+      if b > 0
+        println("yes")
+      end
+    else
+      println("no")
+    end
 <
-                in your |.vimrc| file. You can change this setting at any moment
-                while editing, but you need to invoke |LaTeXtoUnicode#Init()|
-                for the change to take effect.
+then pressing |%| will jump to the `else` keyword, pressing it again will jump
+to `end`, and pressing it again will go back to the first `if`.
+
+Note that the matchit plugin is normally distributed with ViM, but it is
+disabled by default. To enable it, add this line to your |.vimrc| file:
+>
+    runtime macros/matchit.vim
+<
+The julia-vim plug-in also adds commands to jump around block keywords in
+normal, operator-pending and visual modes (see |vim-modes|). These are somehow
+similar to the |]]| and |]m| mappings when used in C and Java files,
+respectively, but are more powerful. These commands also require that the
+matchit plugin is enabled.
+
+These movements can be collectively disabled, see |g:julia_blocks|, and their
+mappings can be customized, see |g:julia_blocks_mappings|.
+
+There are two families of block movements, keyword-oriented (see
+|julia-vim-blocks-move|) and block-oriented (see
+|julia-vim-blocks-blockmove|).
+
+------------------------------------------------------------------------------
+KEYWORD-ORIENTED MOVEMENTS                          *julia-vim-blocks-move*
+
+These movements jump to the following/preceding block keyword, and they
+differentiate between begin keywords and end keywords. Some block keywords can
+also be used outside blocks (e.g. `for` in comprehensions, or `end` within
+indexing expressions): these instances are ignored by these commands.
+
+The following movements are provided:
+
+move_n : jumps to the next begin keyword. By default, it is mapped to `]j`.
+move_N : jumps to the next end keyword. By default, it is mapped to `]J`.
+move_p : jumps to the preceding begin keyword. By default, it is mapped to `[j`.
+move_P : jumps to the preceding end keyword. By default, it is mapped to `[J`.
+
+Use |g:julia_blocks_mappings| to customize the mappings.
+
+------------------------------------------------------------------------------
+BLOCK-ORIENTED MOVEMENTS                       *julia-vim-blocks-moveblock*
+
+These movements are like keyword-oriented movements (|julia-vim-blocks-move|),
+except that they ignore nested blocks within the block where the cursor is.
+For example, given the following code (with line annotations):
+>
+    1  while true
+    2    a += 1
+    3    if a > 5
+    4      break
+    5    end
+    6  end
+    7  if b == 2
+    8    return
+    9  end
+<
+if the cursor is on line 2, these movements will ignore the inner
+`if/end` block (lines 3 to 5). You would then be able to jump directly
+to lines 1, 6, 7, or 9.
+
+The following movements are provided:
+
+moveblock_n : gets out from the current block (if any) and jumps to the next
+              begin keyword. (Similar to |w| for word movements.) By default,
+              it is mapped to `]]`.
+moveblock_N : jumps to the end of the current block, if any. If the cursor is
+              already at the end of a block, jumps to the end of the following
+              block at the same level of the current one, or at the end of the
+              enclosing block. (Similar to |e| for word movements.) By
+              default, it is mapped to `][`.
+moveblock_p : jumps to the beginning of the current block, if any. If the
+              cursor is already at the beginning of a block, jumps to the
+              beginning of the preceding block at the same level of the
+              current one, or at the beginning of the enclosing block.
+              (Similar to |b| for word movements.) By default, it is mapped to
+              `[[`.
+moveblock_P : gets out from the current block (if any) and jumps to the
+              preceding end keyword. (Similar to |ge| for word movements.)
+              By default, it is mapped to `[]`.
+
+Use |g:julia_blocks_mappings| to customize the mappings.
+
+------------------------------------------------------------------------------
+VARIABLES                                      *julia-vim-blocks-variables*
+
+                                                           *g:julia_blocks*
+g:julia_blocks
+
+                Determines whether to map block-wise movements. If
+                unspecified, it is on. You can disable the feature by default
+                by inserting the line
+>
+                    let g:julia_blocks = 0
+<
+                in your |.vimrc| file.
                 
-                                           *g:latex_to_unicode_suggestions*
-g:latex_to_unicode_suggestions
+                                                  *g:julia_blocks_mappings*
+g:julia_blocks_mappings
 
-                Determines whether the <Tab> key mapping produces suggestions
-                for partial matches. By default, this is set to 1 (active),
-                unless a plug-in which is known to be incompatible with it is
-                detected. Currently, known incompatible plug-ins are
-                YouCompleteMe (https://github.com/Valloric/YouCompleteMe) and
-                neocomplcache (https://github.com/Shougo/neocomplcache.vim).
-
-                This variable can be set at any time, changes will immediately
-                take effect.
-                
-                                                 *g:latex_to_unicode_eager*
-g:latex_to_unicode_eager
-
-                Determines whether the <Tab> key mapping performs the
-                substitution immediately upon finding an exact match. By
-                default this setting is set to 1 (active), so that e.g. typing
-                `\ne` and pressing the <Tab> key triggers the substitution. If
-                this variable is set to 0, an exact match which is also a
-                possible partial match to some other sequence triggers the
-                suggestions menu first, but another <Tab> forces the
-                substitution, so that e.g. typing `\ne` and then <Tab>
-                produces a list with `\ne`, `\neg`, `\nequiv` etc., and
-                pressing <Tab> again performs the substitution.
-
-                This variable can be set at any time, changes will immediately
-                take effect. When |g:latex_to_unicode_suggestions| is 0,
-                this setting has no effect (it's like if it was always on).
-                
-                                                  *g:latex_to_unicode_auto*
-g:latex_to_unicode_auto
-
-                Determines whether to activate LaTeX-to-Unicode substitution
-                on the fly as you type (in |Insert| mode), see
-                |julia-vim-L2U-as-you-type|. If unspecified, it is 0 (off).
-                You can enable the feature by default by inserting the line
+                Custom mapping for block-wise movements. This must be a |dict|
+                associating movements to key combinations. Use empty strings
+                to disable individual mappings. The following is equivalent
+                to the default mappings (see |julia-vim-blocks-moveblock| and
+                |julia-vim-blocks-move|):
 >
-                    let g:latex_to_unicode_auto = 1
+                  let g:julia_blocks_mappings = {
+                    \  "move_n" : "]j",
+                    \  "move_N" : "]J",
+                    \  "move_p" : "[j",
+                    \  "move_P" : "[J",
+                    \
+                    \  "moveblock_n" : "]]",
+                    \  "moveblock_N" : "][",
+                    \  "moveblock_p" : "[[",
+                    \  "moveblock_P" : "[]",
+                    \  }
 <
-                in your |.vimrc| file. You can change this setting at any
-                moment while editing, but you need to invoke
-                |LaTeXtoUnicode#Init()| for the change to take effect.
-
-                                            *g:latex_to_unicode_file_types*
-g:latex_to_unicode_file_types
-
-                Contains a |pattern|, or a list of patterns, which are matched
-                against the |'filetype'| to determine when to enable the
-                LaTeX-to-Unicode functionality, see |julia-vim-L2U-file-types|.
-                By default, its value is `"julia"`. The patterns provided must
-                match the whole filetype name. See also
-                |g:latex_to_unicode_file_types_blacklist|.
-
-                                  *g:latex_to_unicode_file_types_blacklist*
-g:latex_to_unicode_file_types_blacklist
-
-                Same as |g:latex_to_unicode_file_types|, but acts in reverse:
-                it disables the LaTeX-to-Unicode functionality when the
-                |'filetype'| matches the provided pattern (or any of the
-                patterns if a list is provided). By default, it contains an
-                unmatchable pattern, i.e. it is effectively disabled.
+                You can change individual mappings by writing something like
+                this in your |.vimrc| file:
+>
+                  let g:julia_blocks_mappings = {
+                    \  "move_N" : "]n",
+                    \  "move_P" : "[n",
+                    \  }
+<
+                Or you can disable individual mappings by writing something like
+                this in your |.vimrc| file:
+>
+                  let g:julia_blocks_mappings = {
+                    \  "moveblock_n" : "",
+                    \  "moveblock_p" : "",
+                    \  }
+<
+                All unspecified entries keep their default value.
 
 ==============================================================================
-FUNCTIONS                                             *julia-vim-functions*
-
-                                                    *LaTeXtoUnicode#Init()*
-LaTeXtoUnicode#Init()
-
-                Initialize or re-initialize the LaTeX-to-Unicode substitutions
-                (see |julia-vim-L2U|). Must be invoked after changing
-                |g:latex_to_unicode_tab| or |g:latex_to_unicode_auto|
-                to make the changes take effect.
-
-                                                  *LaTeXtoUnicode#Enable()*
-                                                 *LaTeXtoUnicode#Disable()*
-                                                  *LaTeXtoUnicode#Toggle()*
-LaTeXtoUnicode#Enable()
-LaTeXtoUnicode#Disable()
-LaTeXtoUnicode#Toggle()
-
-                These functions enable/disable/toggle the LaTeX-to-Unicode
-                functionality, regardless of the |'filetype'| specified in
-                |g:latex_to_unicode_file_types| and
-                |g:latex_to_unicode_file_types_blacklist|. See
-                |julia-vim-L2U-enable-disable|. Note that LaTeXtoUnicode#Enable()
-                will override the |'omnifunc'| definition, if present. However,
-                LaTeXtoUnicode#Disable() will restore it.
-                These functions implicitly invoke |LaTeXtoUnicode#Init()|.
-
-==============================================================================
-ABOUT                                                    *julia-vim-about*
+ABOUT                                                     *julia-vim-about*
 
 Grab the latest version or report a bug on GitHub:
 
