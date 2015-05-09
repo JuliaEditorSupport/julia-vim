@@ -31,18 +31,18 @@ function! s:map_move(function, toend, backwards)
     return
   endif
   let fn = "julia_blocks#" . a:function
-  let lhs = "<buffer> <nowait> <silent> " . chars
-  let cnt = " :<C-U>let b:jlblk_count=v:count1"
+  let lhs = "<buffer> <nowait> <silent> " . chars . " "
+  let cnt = ":<C-U>let b:jlblk_count=v:count1"
   exe "nnoremap " . lhs . cnt
     \ . " <Bar> call " . fn . "()<CR>"
   exe "onoremap " . lhs . cnt
-    \ . "<CR><Esc>:call julia_blocks#owrapper(v:operator, \"" . fn . "\", " . a:toend . ", " . a:backwards . ")<CR>"
+    \ . "<CR><Esc>:call julia_blocks#owrapper_move(v:operator, \"" . fn . "\", " . a:toend . ", " . a:backwards . ")<CR>"
   exe "xnoremap " . lhs . cnt
-    \ . "<CR>gv<Esc>:call julia_blocks#vwrapper(\"" . fn . "\")<CR>"
+    \ . "<CR>gv<Esc>:call julia_blocks#vwrapper_move(\"" . fn . "\")<CR>"
   let b:jlblk_mapped[a:function] = 1
 endfunction
 
-function! julia_blocks#owrapper(oper, function, toend, backwards)
+function! julia_blocks#owrapper_move(oper, function, toend, backwards)
   let F = function(a:function)
 
   let save_redraw = &lazyredraw
@@ -64,6 +64,7 @@ function! julia_blocks#owrapper(oper, function, toend, backwards)
     call feedkeys(restore_cmds)
   endif
 
+  let &l:selection = "inclusive"
   if a:backwards || !a:toend
     let &l:selection = "exclusive"
   endif
@@ -78,10 +79,12 @@ function! julia_blocks#owrapper(oper, function, toend, backwards)
   call setpos("'<", start_pos)
   call setpos("'>", end_pos)
 
-  call feedkeys("gv" . a:oper . restore_cmds . (a:oper == "c" ? "i" : ""))
+  " NOTE: the 'c' operator behaves differently, for mysterious reasons. We
+  "       simulate it with 'd' followed by 'i' instead
+  call feedkeys("gv" . (a:oper == "c" ? "d" : a:oper) . restore_cmds . (a:oper == "c" ? "i" : ""))
 endfunction
 
-function! julia_blocks#vwrapper(function)
+function! julia_blocks#vwrapper_move(function)
   let F = function(a:function)
 
   let s = getpos('.')
@@ -130,13 +133,51 @@ function! s:map_select(function)
     return
   endif
   let fn = "julia_blocks#" . a:function
-  let lhs = "<buffer> <nowait> <silent> " . chars
-  let cnt = " :<C-U>let b:jlblk_inwrapper=1<CR>:let b:jlblk_count=max([v:prevcount,1])<CR>"
-  "exe "onoremap " . lhs . cnt
-    "\ . "<Esc>:call julia_blocks#owrapper(v:operator, \"" . fn . "\", " . a:toend . ", " . a:backwards . ")<CR>"
+  let lhs = "<buffer> <nowait> <silent> " . chars . " "
+  let cnt = ":<C-U>let b:jlblk_inwrapper=1<CR>:let b:jlblk_count=max([v:prevcount,1])<CR>"
+  exe "onoremap " . lhs . "<Esc>" . cnt
+    \ . ":call julia_blocks#owrapper_select(v:operator, \"" . fn . "\")<CR>"
   exe "xnoremap " . lhs . cnt
     \ . ":call julia_blocks#vwrapper_select(\"" . fn . "\")<CR>"
   let b:jlblk_mapped[a:function] = 1
+endfunction
+
+function! julia_blocks#owrapper_select(oper, function) ", toend, backwards)
+  let F = function(a:function)
+
+  let save_redraw = &lazyredraw
+  let save_select = &selection
+
+  let restore_cmds = "\<Esc>"
+    \ . ":let &l:selection = \"" . save_select . "\"\<CR>"
+    \ . ":let &l:lazyredraw = " . save_redraw . "\<CR>"
+    \ . ":\<BS>"
+
+  setlocal lazyredraw
+
+  let b:jlblk_abort_calls_esc = 0
+  let retF = F()
+  let b:jlblk_abort_calls_esc = 1
+  if empty(retF)
+    let b:jlblk_inwrapper = 0
+    call feedkeys(restore_cmds)
+    return
+  end
+  let [start_pos, end_pos] = retF
+
+  if start_pos == end_pos
+    call feedkeys(restore_cmds)
+  endif
+
+  let &l:selection = "inclusive"
+
+  call setpos("'<", start_pos)
+  call setpos("'>", end_pos)
+
+  let b:jlblk_inwrapper = 0
+  " NOTE: the 'c' operator behaves differently, for mysterious reasons. We
+  "       simulate it with 'd' followed by 'i' instead
+  call feedkeys("gv" . (a:oper == "c" ? "d" : a:oper) . restore_cmds . (a:oper == "c" ? "i" : ""))
 endfunction
 
 function! julia_blocks#vwrapper_select(function)
@@ -149,10 +190,9 @@ function! julia_blocks#vwrapper_select(function)
     let b:jlblk_inwrapper = 0
     return
   end
-  let [b, e] = retF
-  call setpos("'<", b)
-  "exe "normal " . visualmode()
-  call setpos("'>", e)
+  let [start_pos, end_pos] = retF
+  call setpos("'<", start_pos)
+  call setpos("'>", end_pos)
   normal! gv
   let b:jlblk_inwrapper = 0
 endfunction
@@ -220,10 +260,7 @@ function! s:abort()
 endfunction
 
 function! s:set_mark_tick(...)
-  let pos = a:0 > 0 ? a:1 : getpos('.')
   call setpos("''", b:jlblk_save_pos)
-  "normal! m`
-  "keepjumps call setpos('.', pos)
 endfunction
 
 function! s:get_save_pos(...)
@@ -582,8 +619,6 @@ function! julia_blocks#select_a(...)
   let [start_pos, end_pos] = ret_find_block
 
   call setpos('.', end_pos)
-  call s:set_mark_tick()
-
   normal! e
   let end_pos = getpos('.')
 
@@ -597,6 +632,7 @@ function! julia_blocks#select_a(...)
     call s:cursor_moved(1)
   endif
 
+  call s:set_mark_tick()
   return [start_pos, end_pos]
 endfunction
 
@@ -614,7 +650,6 @@ function! julia_blocks#select_i()
   endif
 
   call setpos('.', end_pos)
-  call s:set_mark_tick()
 
   let b:jlblk_doing_select = 1
 
@@ -633,6 +668,7 @@ function! julia_blocks#select_i()
     call s:cursor_moved(1)
   endif
 
+  call s:set_mark_tick()
   return [start_pos, end_pos]
 endfunction
 
