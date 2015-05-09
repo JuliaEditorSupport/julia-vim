@@ -10,6 +10,9 @@ let s:default_mappings = {
   \  "move_N" : "]J",
   \  "move_p" : "[j",
   \  "move_P" : "[J",
+  \
+  \  "select_a" : "aj",
+  \  "select_i" : "ij",
   \  }
 
 function! s:getmapchars(function)
@@ -20,7 +23,9 @@ function! s:getmapchars(function)
   endif
 endfunction
 
-function! s:map(function, toend, backwards)
+let b:jlblk_mapped = {}
+
+function! s:map_move(function, toend, backwards)
   let chars = s:getmapchars(a:function)
   if empty(chars)
     return
@@ -34,6 +39,7 @@ function! s:map(function, toend, backwards)
     \ . "<CR><Esc>:call julia_blocks#owrapper(v:operator, \"" . fn . "\", " . a:toend . ", " . a:backwards . ")<CR>"
   exe "xnoremap " . lhs . cnt
     \ . "<CR>gv<Esc>:call julia_blocks#vwrapper(\"" . fn . "\")<CR>"
+  let b:jlblk_mapped[a:function] = 1
 endfunction
 
 function! julia_blocks#owrapper(oper, function, toend, backwards)
@@ -94,15 +100,21 @@ function! julia_blocks#vwrapper(function)
 endfunction
 
 function! s:unmap(function)
-  let chars = s:getmapchars(a:function)
-  if empty(chars)
+  if !get(b:jlblk_mapped, a:function, 0)
     return
   endif
+  let chars = s:getmapchars(a:function)
+  if empty(chars)
+    " shouldn't happen
+    return
+  endif
+  let mapids = (a:function =~# "^move" ? ["n", "x", "o"] : ["x"])
   let fn = "julia_blocks#" . a:function
   let cmd = "<buffer> " . chars
-  for m in ["n", "x", "o"]
+  for m in mapids
     exe m . "unmap " . cmd
   endfor
+  let b:jlblk_mapped[a:function] = 0
 endfunction
 
 function! s:escape(chars)
@@ -112,28 +124,91 @@ function! s:escape(chars)
   return c
 endfunction
 
-let g:julia_blocks_functions = [
-      \  ["moveblock_N", 1, 0],
-      \  ["moveblock_n", 0, 0],
-      \  ["moveblock_p", 0, 1],
-      \  ["moveblock_P", 1, 1],
+function! s:map_select(function)
+  let chars = s:getmapchars(a:function)
+  if empty(chars)
+    return
+  endif
+  let fn = "julia_blocks#" . a:function
+  let lhs = "<buffer> <nowait> <silent> " . chars
+  let cnt = " :<C-U>let b:jlblk_inwrapper=1<CR>:let b:jlblk_count=max([v:prevcount,1])<CR>"
+  "exe "onoremap " . lhs . cnt
+    "\ . "<Esc>:call julia_blocks#owrapper(v:operator, \"" . fn . "\", " . a:toend . ", " . a:backwards . ")<CR>"
+  exe "xnoremap " . lhs . cnt
+    \ . ":call julia_blocks#vwrapper_select(\"" . fn . "\")<CR>"
+  let b:jlblk_mapped[a:function] = 1
+endfunction
+
+function! julia_blocks#vwrapper_select(function)
+  let F = function(a:function)
+
+  let b:jlblk_abort_calls_esc = 0
+  let retF = F()
+  let b:jlblk_abort_calls_esc = 1
+  if empty(retF)
+    let b:jlblk_inwrapper = 0
+    return
+  end
+  let [b, e] = retF
+  call setpos("'<", b)
+  "exe "normal " . visualmode()
+  call setpos("'>", e)
+  normal! gv
+  let b:jlblk_inwrapper = 0
+endfunction
+
+let s:julia_blocks_functions = {
+      \  "moveblock_N": [1, 0],
+      \  "moveblock_n": [0, 0],
+      \  "moveblock_p": [0, 1],
+      \  "moveblock_P": [1, 1],
       \
-      \  ["move_N", 1, 0],
-      \  ["move_n", 0, 0],
-      \  ["move_p", 0, 1],
-      \  ["move_P", 1, 1]]
+      \  "move_N": [1, 0],
+      \  "move_n": [0, 0],
+      \  "move_p": [0, 1],
+      \  "move_P": [1, 1],
+      \
+      \  "select_a": [],
+      \  "select_i": [],
+      \  }
 
 function! julia_blocks#init_mappings()
-  for [f,te,bw] in g:julia_blocks_functions
-    call s:map(f, te, bw)
+  for f in keys(s:julia_blocks_functions)
+    if f =~# "^move"
+      let [te, bw] = s:julia_blocks_functions[f]
+      call s:map_move(f, te, bw)
+    else
+      call s:map_select(f)
+    endif
   endfor
+  call julia_blocks#select_reset()
+  augroup JuliaBlocks
+    au!
+    au InsertEnter *.jl call julia_blocks#select_reset()
+    au CursorMoved *.jl call s:cursor_moved()
+  augroup END
+
+  " we would need some autocmd event associated with exiting from
+  " visual mode, but there isn't any, so we resort to this crude
+  " hack
+  vnoremap <buffer><silent><unique> <Esc> <Esc>:call julia_blocks#select_reset()<CR>
 endfunction
 
 function! julia_blocks#remove_mappings()
-  for [f;rest] in g:julia_blocks_functions
+  for f in keys(s:julia_blocks_functions)
     call s:unmap(f)
   endfor
   unlet! b:jlblk_save_pos b:jlblk_count b:jlblk_abort_calls_esc
+  unlet! b:jlblk_inwrapper b:jlblk_did_select b:jlblk_doing_select
+  unlet! b:jlblk_last_start_pos b:jlblk_last_end_pos b:jlblk_last_mode
+  augroup JuliaBlocks
+    au!
+  augroup END
+  augroup! JuliaBlocks
+  let md = maparg("<Esc>", "x", 0, 1)
+  if !empty(md) && md["buffer"]
+    vunmap <buffer> <Esc>
+  endif
 endfunction
 
 function! s:abort()
@@ -151,8 +226,10 @@ function! s:set_mark_tick(...)
   "keepjumps call setpos('.', pos)
 endfunction
 
-function! s:get_save_pos()
-  let b:jlblk_save_pos = getpos('.')
+function! s:get_save_pos(...)
+  if !exists("b:jlblk_save_pos") || (a:0 == 0) || (a:0 > 0 && a:1)
+    let b:jlblk_save_pos = getpos('.')
+  endif
 endfunction
 
 function! s:on_end()
@@ -433,4 +510,143 @@ function! julia_blocks#moveblock_P()
   call s:set_mark_tick()
 
   return 1
+endfunction
+
+
+" Block text objects
+
+function! s:find_block(current_mode)
+
+  let flags = 'W'
+
+  if b:jlblk_did_select
+    call setpos('.', b:jlblk_last_start_pos)
+    if !s:cycle_until_end()
+      return s:abort()
+    endif
+    if !(a:current_mode[0] == 'a' && a:current_mode == b:jlblk_last_mode)
+      let flags .= 'c'
+    endif
+  elseif s:on_end()
+    let flags .= 'c'
+    " NOTE: using "normal! lb" fails at the end of the file (?!)
+    normal! l
+    normal! b
+  endif
+  let searchret = searchpair(b:julia_begin_keywords, '', b:julia_end_keywords, flags, b:match_skip)
+  if searchret <= 0
+    if !b:jlblk_did_select
+      return s:abort()
+    else
+     call setpos('.', b:jlblk_last_end_pos)
+    endif
+  endif
+
+  let end_pos = getpos('.')
+  " Jump to match
+  normal %
+  let start_pos = getpos('.')
+
+  let b:jlblk_last_start_pos = copy(start_pos)
+  let b:jlblk_last_end_pos = copy(end_pos)
+
+  return [start_pos, end_pos]
+endfunction
+
+function! s:repeated_find(ai_mode)
+  let repeat = b:jlblk_count + (a:ai_mode == 'i' && v:count1 > 1 ? 1 : 0)
+  for c in range(repeat)
+    let current_mode = (c < repeat - 1 ? 'a' : a:ai_mode)
+    let ret_find_block = s:find_block(current_mode)
+    if empty(ret_find_block)
+      return 0
+    endif
+    let [start_pos, end_pos] = ret_find_block
+    call setpos('.', end_pos)
+    let b:jlblk_last_mode = current_mode
+    if c < repeat - 1
+      let b:jlblk_doing_select = 0
+      let b:jlblk_did_select = 1
+    endif
+  endfor
+  return [start_pos, end_pos]
+endfunction
+
+function! julia_blocks#select_a(...)
+  call s:get_save_pos(!b:jlblk_did_select)
+  let current_pos = getpos('.')
+  let ret_find_block = s:repeated_find('a')
+  if empty(ret_find_block)
+    return 0
+  endif
+  let [start_pos, end_pos] = ret_find_block
+
+  call setpos('.', end_pos)
+  call s:set_mark_tick()
+
+  normal! e
+  let end_pos = getpos('.')
+
+  let b:jlblk_doing_select = 1
+
+  " CursorMove is only triggered if end_pos
+  " end_pos is different than the staring position;
+  " so when starting from the 'd' in 'end' we need to
+  " force it
+  if current_pos == end_pos
+    call s:cursor_moved(1)
+  endif
+
+  return [start_pos, end_pos]
+endfunction
+
+function! julia_blocks#select_i()
+  call s:get_save_pos(!b:jlblk_did_select)
+  let current_pos = getpos('.')
+  let ret_find_block = s:repeated_find('i')
+  if empty(ret_find_block)
+    return 0
+  endif
+  let [start_pos, end_pos] = ret_find_block
+
+  if end_pos[1] <= start_pos[1]+1
+    return s:abort()
+  endif
+
+  call setpos('.', end_pos)
+  call s:set_mark_tick()
+
+  let b:jlblk_doing_select = 1
+
+  let start_pos[1] += 1
+  call setpos('.', start_pos)
+  normal! ^
+  let start_pos = getpos('.')
+  let end_pos[1] -= 1
+  let end_pos[2] = len(getline(end_pos[1]))
+
+  " CursorMove is only triggered if end_pos
+  " end_pos is different than the staring position;
+  " so when starting from the 'd' in 'end' we need to
+  " force it
+  if current_pos == end_pos
+    call s:cursor_moved(1)
+  endif
+
+  return [start_pos, end_pos]
+endfunction
+
+function julia_blocks#select_reset()
+  let b:jlblk_did_select = 0
+  let b:jlblk_doing_select = 0
+  let b:jlblk_inwrapper = 0
+  let b:jlblk_last_mode = ""
+endfunction
+
+function! s:cursor_moved(...)
+  if b:jlblk_inwrapper && !(a:0 > 0 && a:1)
+    return
+  endif
+  let b:jlblk_did_select = b:jlblk_doing_select
+  let b:jlblk_doing_select = 0
 endfunction
