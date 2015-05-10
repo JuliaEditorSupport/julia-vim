@@ -24,9 +24,10 @@ License: MIT license  {{{
 CONTENTS					*julia-vim*
 
 Introduction	                    |julia-vim-introduction|
-Block-wise movements                |julia-vim-blocks|
+Block-wise movements/objects        |julia-vim-blocks|
   Keyword-oriented movements        |julia-vim-blocks-move|
   Block-oriented movements          |julia-vim-blocks-moveblock|
+  Block text objects                |julia-vim-blocks-objects|
   Variables                         |julia-vim-blocks-variables|
 About                               |julia-vim-about|
 
@@ -38,18 +39,18 @@ The julia-vim plug-in provides:
     indentation, syntax highlighting)
   - support for the matchit plugin (https://github.com/edsono/matchit)
   - support for Julia block-wise movements (i.e. jumping around between
-    Julia blocks like if/end, function/end etc.)
+    Julia blocks like if/end, function/end etc.) and block text-objects
   - facilities for conversion of LaTeX entries to Unicode symbols which mimic
     and extend what the Julia REPL and the IJulia notebook interface do.
     Optionally, this functionality can be used with all file types, not
     just Julia files. See |julia-vim-L2U|.
 
-This help file documents the block-wise movements, how they work and what
-variables can be used to enable/disable/tweak them.
+This help file documents the block-wise movements and objects, how they work
+and what variables can be used to enable/disable/tweak them.
 The LaTeX-to-Unicode facilities are documented in |julia-vim-L2U|.
 
 ==============================================================================
-BLOCK-WISE MOVEMENTS                                     *julia-vim-blocks*
+BLOCK-WISE MOVEMENTS AND BLOCK TEXT OBJECTS              *julia-vim-blocks*
 
 In Julia, all blocks start with a keyword (`module`, `function`, `if`, `for`,
 `while`, `type`, etc.) and end with the `end` keyword.
@@ -80,12 +81,16 @@ similar to the |]]| and |]m| mappings when used in C and Java files,
 respectively, but are more powerful. These commands also require that the
 matchit plugin is enabled.
 
-These movements can be collectively disabled, see |g:julia_blocks|, and their
-mappings can be customized, see |g:julia_blocks_mappings|.
-
 There are two families of block movements, keyword-oriented (see
 |julia-vim-blocks-move|) and block-oriented (see
 |julia-vim-blocks-blockmove|).
+
+Finally, this plug-in also adds block |text-objects| special mappings, so that
+whole blocks can be manipulated as a whole when in visual mode or
+operator-pending mode, see |julia-vim-block-objects|.
+
+The block movements and block objects mappings can be collectively disabled,
+see |g:julia_blocks|, and customized, see |g:julia_blocks_mappings|.
 
 ------------------------------------------------------------------------------
 KEYWORD-ORIENTED MOVEMENTS                          *julia-vim-blocks-move*
@@ -97,6 +102,7 @@ indexing expressions): these instances are ignored by these commands.
 
 The following movements are provided:
 
+                                      *julia_]j* *julia_]J* *julia_[j* *julia_[J*
 move_n : jumps to the next begin keyword. By default, it is mapped to `]j`.
 move_N : jumps to the next end keyword. By default, it is mapped to `]J`.
 move_p : jumps to the preceding begin keyword. By default, it is mapped to `[j`.
@@ -127,6 +133,7 @@ to lines 1, 6, 7, or 9.
 
 The following movements are provided:
 
+                                      *julia_]]* *julia_][* *julia_[[* *julia_[]*
 moveblock_n : gets out from the current block (if any) and jumps to the next
               begin keyword. (Similar to |w| for word movements.) By default,
               it is mapped to `]]`.
@@ -148,12 +155,54 @@ moveblock_P : gets out from the current block (if any) and jumps to the
 Use |g:julia_blocks_mappings| to customize the mappings.
 
 ------------------------------------------------------------------------------
+BLOCK TEXT OBJECTS                               *julia-vim-blocks-objects*
+
+The julia-vim plug-in extends the ViM |text-objects| by defining special
+mappings which allow to operate on whole blocks as a whole when in visual mode
+or operator-pending mode. The default mappings use `aj` and `ij` to refer to
+these objects.
+For example, given the following code (with line annotations):
+>
+    1  while true
+    2    a += 1
+    3    if a > 5
+    4      break
+    5    end
+    6  end
+<
+if the cursor is on `break` on line 4, pressing `vaj` will select the whole
+inner `if` block (lines 3 to 5), and pressing `aj` again will select the whole
+`while` block (lines 1 to 6). The same effect could have been obtained with a
+counter, i.e. using `v2aj`. If the cursor were initially on line 2, the whole
+`while` block would have been selected with the first `vaj`. Using `daj` would
+delete a block, `caj` would delete it and leave ViM in insert mode, etc.
+Starting from line 2, pressing `vij` wuold only select the inner part of the
+`while` block (lines 2 to 5).
+
+The following mappings are provided:
+
+                                                        *julia_aj* *julia_ij*
+select_a : the block which contains the cursor, including its delimiters.
+           By default, this is mapped to `aj`. Repeated application (e.g.
+           `vajaj`) selects the enclosing blocks. A counter can be used to
+           the same effect as repetition (e.g. `v2aj`).
+select_i : same as select_a, but only selects the lines included between the
+           delimiters. Thus, this does not work with single-line blocks.
+           By default, this is mapped to `ij`. Repeated application (e.g.
+           `vijij`) has no effect, but using a counter has the same effect as
+           using "select_a" and then selecting the inner part of the outermost
+           block. For example, with the default mappings, `v3ij` is the same as
+           `v3ajij`, or `vajajajij`.
+
+Use |g:julia_blocks_mappings| to customize the mappings.
+
+------------------------------------------------------------------------------
 VARIABLES                                      *julia-vim-blocks-variables*
 
                                                            *g:julia_blocks*
 g:julia_blocks
 
-                Determines whether to map block-wise movements. If
+                Determines whether to map block-wise movements and objects. If
                 unspecified, it is on. You can disable the feature by default
                 by inserting the line
 >
@@ -167,8 +216,8 @@ g:julia_blocks_mappings
                 Custom mapping for block-wise movements. This must be a |dict|
                 associating movements to key combinations. Use empty strings
                 to disable individual mappings. The following is equivalent
-                to the default mappings (see |julia-vim-blocks-moveblock| and
-                |julia-vim-blocks-move|):
+                to the default mappings (see |julia-vim-blocks-moveblock|,
+                |julia-vim-blocks-move| and |julia-vim-blocks-objects|):
 >
                   let g:julia_blocks_mappings = {
                     \  "move_n" : "]j",
@@ -180,6 +229,9 @@ g:julia_blocks_mappings
                     \  "moveblock_N" : "][",
                     \  "moveblock_p" : "[[",
                     \  "moveblock_P" : "[]",
+                    \
+                    \  "select_a" : "aj",
+                    \  "select_i" : "ij",
                     \  }
 <
                 You can change individual mappings by writing something like

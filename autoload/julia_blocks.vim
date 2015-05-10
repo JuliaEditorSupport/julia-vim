@@ -1,4 +1,5 @@
 " Facilities for moving around Julia blocks (e.g. if/end, function/end etc.)
+" (AKA a collection of horrible hacks)
 
 let s:default_mappings = {
   \  "moveblock_n" : "]]",
@@ -61,7 +62,7 @@ function! julia_blocks#owrapper_move(oper, function, toend, backwards)
   let b:jlblk_abort_calls_esc = 1
   let end_pos = getpos('.')
   if start_pos == end_pos
-    call feedkeys(restore_cmds)
+    call feedkeys(restore_cmds, 'n')
   endif
 
   let &l:selection = "inclusive"
@@ -81,7 +82,7 @@ function! julia_blocks#owrapper_move(oper, function, toend, backwards)
 
   " NOTE: the 'c' operator behaves differently, for mysterious reasons. We
   "       simulate it with 'd' followed by 'i' instead
-  call feedkeys("gv" . (a:oper == "c" ? "d" : a:oper) . restore_cmds . (a:oper == "c" ? "i" : ""))
+  call feedkeys("gv" . (a:oper == "c" ? "d" : a:oper) . restore_cmds . (a:oper == "c" ? "i" : ""), 'n')
 endfunction
 
 function! julia_blocks#vwrapper_move(function)
@@ -160,13 +161,13 @@ function! julia_blocks#owrapper_select(oper, function) ", toend, backwards)
   let b:jlblk_abort_calls_esc = 1
   if empty(retF)
     let b:jlblk_inwrapper = 0
-    call feedkeys(restore_cmds)
+    call feedkeys(restore_cmds, 'n')
     return
   end
   let [start_pos, end_pos] = retF
 
   if start_pos == end_pos
-    call feedkeys(restore_cmds)
+    call feedkeys(restore_cmds, 'n')
   endif
 
   let &l:selection = "inclusive"
@@ -177,7 +178,7 @@ function! julia_blocks#owrapper_select(oper, function) ", toend, backwards)
   let b:jlblk_inwrapper = 0
   " NOTE: the 'c' operator behaves differently, for mysterious reasons. We
   "       simulate it with 'd' followed by 'i' instead
-  call feedkeys("gv" . (a:oper == "c" ? "d" : a:oper) . restore_cmds . (a:oper == "c" ? "i" : ""))
+  call feedkeys("gv" . (a:oper == "c" ? "d" : a:oper) . restore_cmds . (a:oper == "c" ? "i" : ""), 'n')
 endfunction
 
 function! julia_blocks#vwrapper_select(function)
@@ -254,7 +255,7 @@ endfunction
 function! s:abort()
   call setpos('.', b:jlblk_save_pos)
   if get(b:, "jlblk_abort_calls_esc", 1)
-    call feedkeys("\<Esc>")
+    call feedkeys("\<Esc>", 'n')
   endif
   return 0
 endfunction
