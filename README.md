@@ -38,6 +38,14 @@ cp -R * ~/.vim
 
 Julia should appear as a file type and be automatically detected for files with the `.jl` extension.
 
+## Complete documentation
+
+The full documentation is available from Vim. Vundle and other plugin managers will generate the required
+help tags automatically, so that you just need to type `:help julia-vim`. Otherwise use `:help helptags`
+in ViM and see how to generate them.
+
+The remainder of this README will only give an overview of some of the features.
+
 ## LaTeX-to-Unicode substitutions
 
 This plug-in adds some functionality to substitute LaTeX code sequences (e.g. `\alpha`) with corresponding
@@ -154,3 +162,21 @@ inoremap <expr> <F7> LaTeXtoUnicode#Toggle()
 ```
 
 and then use the `<F7>` key to quickly turn the feature on and off.
+
+## Block-wise movements and block text-objects
+
+This plug-in defines mappings to move around julia blocks (e.g. `if/end`, `function/end` etc.) and to
+manipulate them as a whole (analogously to the standard `w`, `b` etc. commands to move on words, and to
+the `aw`, `iw` commands which allow to manipulate them). These require the `matchit` plugin, which is usually
+distributed with ViM but must be explicitly enabled, e.g. adding this to your `.vimrc` file:
+
+```vim
+runtime macros/matchit.vim
+```
+
+Or you can use the code at [https://github.com/edsono/matchit] and install it as a plug-in.
+
+The default mappings use `]]`, `][`, `[[`, `[]`, `]j`, `]J`, `[j`, and `[J` for the movements
+and `aj`, `ij` for the selections. These can be disabled collectively by setting `g:julia_blocks` to `0`,
+or they can be remapped and/or disabled individually by defining a `g:julia_blocks_mapping` variable.
+See the documentation for details.
