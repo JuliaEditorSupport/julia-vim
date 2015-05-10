@@ -299,6 +299,7 @@ function! s:moveto_block_delim(toend, backwards, ...)
   let ret = 0
   for c in range(cnt)
     if a:toend && a:backwards && s:on_end()
+      normal! l
       normal! bh
     endif
     while 1
@@ -534,7 +535,9 @@ function! julia_blocks#moveblock_P()
     endif
 
     if s:moveto_block_delim(1, 1, 1)
-      normal! he
+      " NOTE: normal! he does not work unless &whichwrap inlcudes h
+      normal! h
+      normal! e
       let ret = 1
     else
       call setpos('.', last_seen_pos)
