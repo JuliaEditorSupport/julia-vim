@@ -24,8 +24,6 @@ function! s:getmapchars(function)
   endif
 endfunction
 
-let b:jlblk_mapped = {}
-
 function! s:map_move(function, toend, backwards)
   let chars = s:getmapchars(a:function)
   if empty(chars)
@@ -214,6 +212,7 @@ let s:julia_blocks_functions = {
       \  }
 
 function! julia_blocks#init_mappings()
+  let b:jlblk_mapped = {}
   for f in keys(s:julia_blocks_functions)
     if f =~# "^move"
       let [te, bw] = s:julia_blocks_functions[f]
@@ -236,9 +235,11 @@ function! julia_blocks#init_mappings()
 endfunction
 
 function! julia_blocks#remove_mappings()
-  for f in keys(s:julia_blocks_functions)
-    call s:unmap(f)
-  endfor
+  if exists("b:jlblk_mapped")
+    for f in keys(s:julia_blocks_functions)
+      call s:unmap(f)
+    endfor
+  endif
   unlet! b:jlblk_save_pos b:jlblk_count b:jlblk_abort_calls_esc
   unlet! b:jlblk_inwrapper b:jlblk_did_select b:jlblk_doing_select
   unlet! b:jlblk_last_start_pos b:jlblk_last_end_pos b:jlblk_last_mode
