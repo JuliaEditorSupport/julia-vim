@@ -275,7 +275,17 @@ function! s:on_end()
 endfunction
 
 function! s:on_begin()
-  return getline('.')[col('.')-1] =~# '\k' && expand("<cword>") =~# b:julia_begin_keywords
+  let [l,c] = [line('.'), col('.')]
+  normal! ^
+  let patt = '\%<'.(c+1).'c' . b:julia_begin_keywordsm . '\%>'.(c-1).'c'
+  let n = search(patt, 'Wnc', l)
+  call cursor(l, c)
+  return n > 0
+endfunction
+
+function! s:move_before_begin()
+  call search(b:julia_begin_keywordsm, 'Wbc')
+  normal! h
 endfunction
 
 function! s:cycle_until_end()
@@ -293,9 +303,12 @@ function! s:cycle_until_end()
 endfunction
 
 function! s:moveto_block_delim(toend, backwards, ...)
-  let pattern = a:toend ? b:julia_end_keywords : b:julia_begin_keywords
+  let pattern = a:toend ? b:julia_end_keywords : b:julia_begin_keywordsm
   let flags = a:backwards ? 'Wb' : 'W'
   let cnt = a:0 > 0 ? a:1 : b:jlblk_count
+  if !a:toend && a:backwards && s:on_begin()
+    call s:move_before_begin()
+  endif
   let ret = 0
   for c in range(cnt)
     if a:toend && a:backwards && s:on_end()
@@ -394,7 +407,7 @@ function! s:moveto_currentblock_end()
     normal! b
   endif
 
-  let ret = searchpair(b:julia_begin_keywords, '', b:julia_end_keywords, flags, b:match_skip)
+  let ret = searchpair(b:julia_begin_keywordsm, '', b:julia_end_keywords, flags, b:match_skip)
   if ret <= 0
     return s:abort()
   endif
@@ -483,7 +496,7 @@ function! julia_blocks#moveblock_p()
   for c in range(b:jlblk_count)
     let last_seen_pos = getpos('.')
     if s:on_begin()
-      normal! lbh
+      call s:move_before_begin()
       if s:on_end()
 	normal! l
       endif
@@ -574,7 +587,7 @@ function! s:find_block(current_mode)
     normal! l
     normal! b
   endif
-  let searchret = searchpair(b:julia_begin_keywords, '', b:julia_end_keywords, flags, b:match_skip)
+  let searchret = searchpair(b:julia_begin_keywordsm, '', b:julia_end_keywords, flags, b:match_skip)
   if searchret <= 0
     if !b:jlblk_did_select
       return s:abort()

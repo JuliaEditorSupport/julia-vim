@@ -35,19 +35,36 @@ if exists("loaded_matchit")
   " note: begin_keywords must contain all blocks in order
   " for nested-structures-skipping to work properly
   let b:julia_begin_keywords = '\%(\.\s*\)\@<!\<\%(\%(staged\)\?function\|macro\|begin\|type\|immutable\|let\|do\|\%(bare\)\?module\|quote\|if\|for\|while\|try\)\>'
+  let s:macro_regex = '@\S\+\s\+'
+  let s:nomacro = '\%(' . s:macro_regex . '\)\@<!' 
+  let s:yesmacro = s:nomacro . '\%('. s:macro_regex . '\)\+'
+  let b:julia_begin_keywordsm = '\%(' . s:yesmacro . b:julia_begin_keywords . '\)\|'
+        \ . '\%(' . s:nomacro . b:julia_begin_keywords . '\)'
   let b:julia_end_keywords = '\<end\>'
 
   " note: this function relies heavily on the syntax file
   function! JuliaGetMatchWords()
-    let s:attr = synIDattr(synID(line("."),col("."),1),"name")
-    if s:attr == 'juliaConditional'
-      return b:julia_begin_keywords . ':\<\%(elseif\|else\)\>:' . b:julia_end_keywords
-    elseif s:attr =~ '\<\%(juliaRepeat\|juliaRepKeyword\)\>'
-      return b:julia_begin_keywords . ':\<\%(break\|continue\)\>:' . b:julia_end_keywords
-    elseif s:attr == 'juliaBlKeyword'
-      return b:julia_begin_keywords . ':' . b:julia_end_keywords
-    elseif s:attr == 'juliaException'
-      return b:julia_begin_keywords . ':\<\%(catch\|finally\)\>:' . b:julia_end_keywords
+    let [l,c] = [line('.'),col('.')]
+    let attr = synIDattr(synID(l, c, 1),"name")
+    let c1 = c
+    while attr == 'juliaMacro'
+      normal! W
+      if line('.') > l || col('.') == c1
+        call cursor(l, c)
+        return ''
+      endif
+      let attr = synIDattr(synID(l, col('.'), 1),"name")
+      let c1 = col('.')
+    endwhile
+    call cursor(l, c)
+    if attr == 'juliaConditional'
+      return b:julia_begin_keywordsm . ':\<\%(elseif\|else\)\>:' . b:julia_end_keywords
+    elseif attr =~ '\<\%(juliaRepeat\|juliaRepKeyword\)\>'
+      return b:julia_begin_keywordsm . ':\<\%(break\|continue\)\>:' . b:julia_end_keywords
+    elseif attr == 'juliaBlKeyword'
+      return b:julia_begin_keywordsm . ':' . b:julia_end_keywords
+    elseif attr == 'juliaException'
+      return b:julia_begin_keywordsm . ':\<\%(catch\|finally\)\>:' . b:julia_end_keywords
     endif
     return ''
   endfunction

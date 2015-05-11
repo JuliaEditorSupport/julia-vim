@@ -55,7 +55,7 @@ BLOCK-WISE MOVEMENTS AND BLOCK TEXT OBJECTS              *julia-vim-blocks*
 In Julia, all blocks start with a keyword (`module`, `function`, `if`, `for`,
 `while`, `type`, etc.) and end with the `end` keyword.
 
-This plug-in adds support for the matchit plugin, such that pressing |%| while
+This plug-in adds support for the "matchit" plugin, such that pressing |%| while
 on a block keyword will jump to the other keywords pertaining to the same
 block. For example, if the cursor is at the beginning of the following code:
 >
@@ -91,6 +91,15 @@ operator-pending mode, see |julia-vim-block-objects|.
 
 The block movements and block objects mappings can be collectively disabled,
 see |g:julia_blocks|, and customized, see |g:julia_blocks_mappings|.
+
+NOTE: in all cases, macros at the beginning of a block are considered as part
+of the block itself. For example, in this code:
+>
+    @inbounds for i = 1:5
+      s += v[i]
+    end
+<
+the block begins at `@inbounds`.
 
 ------------------------------------------------------------------------------
 KEYWORD-ORIENTED MOVEMENTS                          *julia-vim-blocks-move*
@@ -129,7 +138,7 @@ For example, given the following code (with line annotations):
 <
 if the cursor is on line 2, these movements will ignore the inner
 `if/end` block (lines 3 to 5). You would then be able to jump directly
-to lines 1, 6, 7, or 9.
+to lines 1 (with `[[`), 6 (with `][`), 7 (with `]]`), or 9 (with `2][`).
 
 The following movements are provided:
 
