@@ -278,7 +278,7 @@ endfunction
 function! s:on_begin()
   let [l,c] = [line('.'), col('.')]
   normal! ^
-  let patt = '\%<'.(c+1).'c' . b:julia_begin_keywordsm . '\%>'.(c-1).'c'
+  let patt = '\%<'.(c+1).'c\(' . b:julia_begin_keywordsm . '\)\%>'.(c-1).'c'
   let n = search(patt, 'Wnc', l)
   call cursor(l, c)
   return n > 0
