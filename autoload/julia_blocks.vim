@@ -240,7 +240,7 @@ function! julia_blocks#remove_mappings()
       call s:unmap(f)
     endfor
   endif
-  unlet! b:jlblk_save_pos b:jlblk_count b:jlblk_abort_calls_esc
+  unlet! b:jlblk_save_pos b:jlblk_topline b:jlblk_count b:jlblk_abort_calls_esc
   unlet! b:jlblk_inwrapper b:jlblk_did_select b:jlblk_doing_select
   unlet! b:jlblk_last_start_pos b:jlblk_last_end_pos b:jlblk_last_mode
   augroup JuliaBlocks
@@ -253,8 +253,16 @@ function! julia_blocks#remove_mappings()
   endif
 endfunction
 
+function! s:restore_view()
+  let newtopline = winsaveview()["topline"]
+  if line('.') >= b:jlblk_topline - &l:scrolloff && newtopline > b:jlblk_topline
+    exe ":normal! " . (newtopline - b:jlblk_topline) . "\<C-Y>"
+  endif
+endfunction
+
 function! s:abort()
   call setpos('.', b:jlblk_save_pos)
+  call s:restore_view()
   if get(b:, "jlblk_abort_calls_esc", 1)
     call feedkeys("\<Esc>", 'n')
   endif
@@ -269,6 +277,7 @@ function! s:get_save_pos(...)
   if !exists("b:jlblk_save_pos") || (a:0 == 0) || (a:0 > 0 && a:1)
     let b:jlblk_save_pos = getpos('.')
   endif
+  let b:jlblk_topline = winsaveview()["topline"]
 endfunction
 
 function! s:on_end()
@@ -532,6 +541,7 @@ function! julia_blocks#moveblock_p()
   endif
 
   call s:set_mark_tick()
+  call s:restore_view()
 
   return 1
 endfunction
@@ -563,6 +573,7 @@ function! julia_blocks#moveblock_P()
   endif
 
   call s:set_mark_tick()
+  call s:restore_view()
 
   return 1
 endfunction
