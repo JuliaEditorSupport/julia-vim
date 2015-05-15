@@ -254,10 +254,25 @@ function! julia_blocks#remove_mappings()
 endfunction
 
 function! s:restore_view()
+  "redraw! " would ensure correct behaviour, but is annoying
   let newtopline = winsaveview()["topline"]
-  if line('.') >= b:jlblk_topline - &l:scrolloff && newtopline > b:jlblk_topline
-    exe ":normal! " . (newtopline - b:jlblk_topline) . "\<C-Y>"
+  let pos = getpos('.')
+  let l = pos[1]
+  if l >= b:jlblk_topline + &l:scrolloff && l <= b:jlblk_topline + winheight(0) - 1 - &l:scrolloff
+    if newtopline > b:jlblk_topline
+      exe ":normal! " . (newtopline - b:jlblk_topline) . "\<C-Y>"
+    elseif newtopline < b:jlblk_topline
+      exe ":normal! " . (b:jlblk_topline - newtopline) . "\<C-E>"
+    endif
+  " these reduce the scrolling to the minimum (which is maybe not
+  " standard ViM behaviour?)
+  elseif newtopline < b:jlblk_topline && (l - newtopline - &l:scrolloff) > 0
+    exe ":normal! " . (l - newtopline - &l:scrolloff) . "\<C-E>"
+  elseif newtopline > b:jlblk_topline && (newtopline + &l:scrolloff - l) > 0
+    exe ":normal! " . (l - newtopline - &l:scrolloff) . "\<C-E>"
   endif
+  call setpos('.', pos) " make sure we didn't screw up
+                        " (since winsaveview may not be up to date)
 endfunction
 
 function! s:abort()
