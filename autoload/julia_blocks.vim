@@ -110,7 +110,7 @@ function! s:unmap(function)
     " shouldn't happen
     return
   endif
-  let mapids = (a:function =~# "^move" ? ["n", "x", "o"] : ["x"])
+  let mapids = a:function =~# "^move" ? ["n", "x", "o"] : ["x", "o"]
   let fn = "julia_blocks#" . a:function
   let cmd = "<buffer> " . chars
   for m in mapids
