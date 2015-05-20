@@ -239,7 +239,7 @@ function! julia_blocks#remove_mappings()
       call s:unmap(f)
     endfor
   endif
-  unlet! b:jlblk_save_pos b:jlblk_topline b:jlblk_count b:jlblk_abort_calls_esc
+  unlet! b:jlblk_save_pos b:jlblk_view b:jlblk_count b:jlblk_abort_calls_esc
   unlet! b:jlblk_inwrapper b:jlblk_did_select b:jlblk_doing_select
   unlet! b:jlblk_last_start_pos b:jlblk_last_end_pos b:jlblk_last_mode
   augroup JuliaBlocks
@@ -254,20 +254,25 @@ endfunction
 
 function! s:restore_view()
   "redraw! " would ensure correct behaviour, but is annoying
-  let newtopline = winsaveview()["topline"]
   let pos = getpos('.')
+  if pos == b:jlblk_save_pos
+    call winrestview(b:jlblk_view)
+    return
+  endif
+  let oldtopline = b:jlblk_view["topline"]
+  let newtopline = winsaveview()["topline"]
   let l = pos[1]
-  if l >= b:jlblk_topline + &l:scrolloff && l <= b:jlblk_topline + winheight(0) - 1 - &l:scrolloff
-    if newtopline > b:jlblk_topline
-      exe ":normal! " . (newtopline - b:jlblk_topline) . "\<C-Y>"
-    elseif newtopline < b:jlblk_topline
-      exe ":normal! " . (b:jlblk_topline - newtopline) . "\<C-E>"
+  if l >= oldtopline + &l:scrolloff && l <= oldtopline + winheight(0) - 1 - &l:scrolloff
+    if newtopline > oldtopline
+      exe ":normal! " . (newtopline - oldtopline) . "\<C-Y>"
+    elseif newtopline < oldtopline
+      exe ":normal! " . (oldtopline - newtopline) . "\<C-E>"
     endif
   " these reduce the scrolling to the minimum (which is maybe not
   " standard ViM behaviour?)
-  elseif newtopline < b:jlblk_topline && (l - newtopline - &l:scrolloff) > 0
+  elseif newtopline < oldtopline && (l - newtopline - &l:scrolloff) > 0
     exe ":normal! " . (l - newtopline - &l:scrolloff) . "\<C-E>"
-  elseif newtopline > b:jlblk_topline && (newtopline + &l:scrolloff - l) > 0
+  elseif newtopline > oldtopline && (newtopline + &l:scrolloff - l) > 0
     exe ":normal! " . (l - newtopline - &l:scrolloff) . "\<C-E>"
   endif
   call setpos('.', pos) " make sure we didn't screw up
@@ -291,7 +296,7 @@ function! s:get_save_pos(...)
   if !exists("b:jlblk_save_pos") || (a:0 == 0) || (a:0 > 0 && a:1)
     let b:jlblk_save_pos = getpos('.')
   endif
-  let b:jlblk_topline = winsaveview()["topline"]
+  let b:jlblk_view = winsaveview()
 endfunction
 
 function! s:on_end()
