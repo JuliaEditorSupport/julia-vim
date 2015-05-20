@@ -121,7 +121,6 @@ endfunction
 
 function! s:escape(chars)
   let c = a:chars
-  let c = substitute(c, '<', '<LT>', 'g')
   let c = substitute(c, '|', '<Bar>', 'g')
   return c
 endfunction
