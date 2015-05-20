@@ -652,7 +652,7 @@ function! s:repeated_find(ai_mode)
   return [start_pos, end_pos]
 endfunction
 
-function! julia_blocks#select_a(...)
+function! julia_blocks#select_a()
   call s:get_save_pos(!b:jlblk_did_select)
   let current_pos = getpos('.')
   let ret_find_block = s:repeated_find('a')
