@@ -276,7 +276,7 @@ function! LaTeXtoUnicode#ommnifunc(findstart, base)
     " completion not found
     if col0 == -1
       let b:l2u_found_completion = 0
-      call feedkeys(s:l2u_esc_sequence)
+      call feedkeys(s:l2u_esc_sequence, 'n')
       let col0 = -2
     endif
     return col0
@@ -309,7 +309,7 @@ function! LaTeXtoUnicode#ommnifunc(findstart, base)
       " the completion is successful: reset the last completion info...
       call s:L2U_ResetLastCompletionInfo()
       " ...force our way out of completion mode...
-      call feedkeys(s:l2u_esc_sequence)
+      call feedkeys(s:l2u_esc_sequence, 'n')
       " ...return the Unicode symbol
       return [g:l2u_symbols_dict[a:base]]
     endif
@@ -321,7 +321,7 @@ function! LaTeXtoUnicode#ommnifunc(findstart, base)
       call sort(partmatches, "s:L2U_partmatches_sort")
     endif
     if empty(partmatches)
-      call feedkeys(s:l2u_esc_sequence)
+      call feedkeys(s:l2u_esc_sequence, 'n')
       let b:l2u_found_completion = 0
     endif
     return partmatches
