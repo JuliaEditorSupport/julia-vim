@@ -14,6 +14,8 @@ let s:default_mappings = {
   \
   \  "select_a" : "aj",
   \  "select_i" : "ij",
+  \
+  \  "whereami" : "",
   \  }
 
 function! s:getmapchars(function)
@@ -110,7 +112,9 @@ function! s:unmap(function)
     " shouldn't happen
     return
   endif
-  let mapids = a:function =~# "^move" ? ["n", "x", "o"] : ["x", "o"]
+  let mapids = a:function =~# "^move" ? ["n", "x", "o"] :
+	\      a:function =~# "^select" ? ["x", "o"] :
+	\      ["n"]
   let fn = "julia_blocks#" . a:function
   let cmd = "<buffer> " . chars
   for m in mapids
@@ -195,6 +199,17 @@ function! julia_blocks#vwrapper_select(function)
   let b:jlblk_inwrapper = 0
 endfunction
 
+function! s:map_aux(function)
+  let chars = s:getmapchars(a:function)
+  if empty(chars)
+    return
+  endif
+  let fn = "julia_blocks#" . a:function
+  let lhs = "<buffer> <nowait> <silent> " . chars . " "
+  exe "nnoremap " . lhs . ":<C-U>echo " . fn . "()<CR>"
+  let b:jlblk_mapped[a:function] = 1
+endfunction
+
 let s:julia_blocks_functions = {
       \  "moveblock_N": [1, 0],
       \  "moveblock_n": [0, 0],
@@ -208,6 +223,8 @@ let s:julia_blocks_functions = {
       \
       \  "select_a": [],
       \  "select_i": [],
+      \
+      \  "whereami": [],
       \  }
 
 function! julia_blocks#init_mappings()
@@ -216,8 +233,10 @@ function! julia_blocks#init_mappings()
     if f =~# "^move"
       let [te, bw] = s:julia_blocks_functions[f]
       call s:map_move(f, te, bw)
-    else
+    elseif f =~# "^select"
       call s:map_select(f)
+    else
+      call s:map_aux(f)
     endif
   endfor
   call julia_blocks#select_reset()
@@ -604,6 +623,30 @@ function! julia_blocks#moveblock_P()
   return 1
 endfunction
 
+function! julia_blocks#whereami()
+  let b:jlblk_count = v:count1
+  let save_redraw = &lazyredraw
+  setlocal lazyredraw
+  let pos = getpos('.')
+  let ret = julia_blocks#select_a('w')
+  if empty(ret)
+    call setpos('.', pos)
+    let &l:lazyredraw = save_redraw
+    return ""
+  end
+  let [start_pos, end_pos] = ret
+  let m = getline(start_pos[1])[start_pos[2]-1:]
+
+  " If cursor_moved was not forced from select_a, we force it now
+  " (TODO: this is *really* ugly)
+  if end_pos != pos
+    call s:cursor_moved(1)
+  endif
+  call setpos('.', pos)
+  call s:restore_view()
+  let &l:lazyredraw = save_redraw
+  return m
+endfunction
 
 " Block text objects
 
@@ -664,10 +707,11 @@ function! s:repeated_find(ai_mode)
   return [start_pos, end_pos]
 endfunction
 
-function! julia_blocks#select_a()
+function! julia_blocks#select_a(...)
+  let mode_flag = a:0 > 0 ? a:1 : ''
   call s:get_save_pos(!b:jlblk_did_select)
   let current_pos = getpos('.')
-  let ret_find_block = s:repeated_find('a')
+  let ret_find_block = s:repeated_find('a' . mode_flag)
   if empty(ret_find_block)
     return 0
   endif
