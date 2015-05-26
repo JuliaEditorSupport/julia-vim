@@ -289,7 +289,14 @@ function! s:abort()
 endfunction
 
 function! s:set_mark_tick(...)
-  call setpos("''", b:jlblk_save_pos)
+  " This could be a one-liner:
+  "   call setpos("''", b:jlblk_save_pos)
+  " but we want to append to the jumplist,
+  " which setpos doesn't do
+  let p = getpos('.')
+  call setpos('.', b:jlblk_save_pos)
+  normal! m'
+  call setpos('.', p)
 endfunction
 
 function! s:get_save_pos(...)
