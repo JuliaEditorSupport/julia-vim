@@ -167,7 +167,7 @@ Use |g:julia_blocks_mappings| to customize the mappings.
 BLOCK TEXT OBJECTS                               *julia-vim-blocks-objects*
 
 The julia-vim plug-in extends the ViM |text-objects| by defining special
-mappings which allow to operate on whole blocks as a whole when in visual mode
+mappings which allow to operate on blocks as a whole when in visual mode
 or operator-pending mode. The default mappings use `aj` and `ij` to refer to
 these objects.
 For example, given the following code (with line annotations):
@@ -184,7 +184,8 @@ inner `if` block (lines 3 to 5), and pressing `aj` again will select the whole
 `while` block (lines 1 to 6). The same effect could have been obtained with a
 counter, i.e. using `v2aj`. If the cursor were initially on line 2, the whole
 `while` block would have been selected with the first `vaj`. Using `daj` would
-delete a block, `caj` would delete it and leave ViM in insert mode, etc.
+delete a block, `caj` would delete it and leave ViM in insert mode, `=aj`
+would indent it, etc.
 Starting from line 2, pressing `vij` wuold only select the inner part of the
 `while` block (lines 2 to 5).
 
@@ -204,6 +205,20 @@ select_i : same as select_a, but only selects the lines included between the
            `v3ajij`, or `vajajajij`.
 
 Use |g:julia_blocks_mappings| to customize the mappings.
+
+The following auxiliary function is only mapped to normal mode:
+
+                                                           *julia_whereami*
+whereami : this mapping prints the first line of the current block on the
+           command line. If invoked repeatedly, or if given a count, it prints
+           the first line of the enclosing blocks, like `select_a`. If followed
+           by `select_a`, the selection, or operation, will refer to the last
+           block printed. By default, it is not mapped to any key, but a
+           mapping can be easily provided in |g:julia_blocks_mappings|. It is
+           possible to obtain the string, instead of having it printed, by
+           calling the function `julia_blocks#whereami()`. In such case, use
+           the function `julia_blocks#select_reset()` to reset the block
+           nesting level.
 
 ------------------------------------------------------------------------------
 VARIABLES                                      *julia-vim-blocks-variables*
@@ -241,14 +256,17 @@ g:julia_blocks_mappings
                     \
                     \  "select_a" : "aj",
                     \  "select_i" : "ij",
+                    \
+                    \  "whereami" : "",
                     \  }
 <
                 You can change individual mappings by writing something like
                 this in your |.vimrc| file:
 >
                   let g:julia_blocks_mappings = {
-                    \  "move_N" : "]n",
-                    \  "move_P" : "[n",
+                    \  "move_N"   : "]n",
+                    \  "move_P"   : "[n",
+                    \  "whereami" : "<Leader>j",
                     \  }
 <
                 Or you can disable individual mappings by writing something like
