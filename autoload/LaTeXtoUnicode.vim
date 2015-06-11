@@ -120,7 +120,7 @@ function! LaTeXtoUnicode#Enable()
     let b:prev_omnifunc = &omnifunc
   endif
 
-  setlocal omnifunc=LaTeXtoUnicode#ommnifunc
+  setlocal omnifunc=LaTeXtoUnicode#omnifunc
 
   let b:l2u_enabled = 1
 
@@ -240,7 +240,7 @@ endfunction
 "  *) either returns a list of completions if a partial match is found, or a
 "     Unicode char if an exact match is found
 "  *) forces its way out of completion mode through a hack in some cases
-function! LaTeXtoUnicode#ommnifunc(findstart, base)
+function! LaTeXtoUnicode#omnifunc(findstart, base)
   if a:findstart
     " first stage
     " avoid infinite loop if the fallback happens to call omnicompletion
