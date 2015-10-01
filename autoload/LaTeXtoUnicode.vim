@@ -115,13 +115,6 @@ function! LaTeXtoUnicode#Enable()
 
   call s:L2U_ResetLastCompletionInfo()
 
-  " Backup the previous omnifunc (the check is probably not really needed)
-  if get(b:, "prev_omnifunc", "") != "LaTeXtoUnicode#omnifunc"
-    let b:prev_omnifunc = &omnifunc
-  endif
-
-  setlocal omnifunc=LaTeXtoUnicode#omnifunc
-
   let b:l2u_enabled = 1
 
   " If we're editing the first file upon opening vim, this will only init the
@@ -139,7 +132,6 @@ function! LaTeXtoUnicode#Disable()
   if !b:l2u_enabled
     return ""
   endif
-  exec "set omnifunc=" . get(b:, "prev_omnifunc", "")
   let b:l2u_enabled = 0
   call LaTeXtoUnicode#Init()
   return ""
@@ -467,6 +459,13 @@ function! s:L2U_SetTab(wait_insert_enter)
   if !get(g:, "latex_to_unicode_tab", 1) || !b:l2u_enabled
     return
   endif
+
+  " Backup the previous omnifunc (the check is probably not really needed)
+  if get(b:, "prev_omnifunc", "") != "LaTeXtoUnicode#omnifunc"
+    let b:prev_omnifunc = &omnifunc
+  endif
+  setlocal omnifunc=LaTeXtoUnicode#omnifunc
+
   call s:L2U_SetFallbackMapping('<Tab>', s:l2u_fallback_trigger)
   imap <buffer> <Tab> <Plug>L2UTab
   inoremap <buffer><expr> <Plug>L2UTab LaTeXtoUnicode#Tab()
@@ -489,6 +488,7 @@ function! s:L2U_UnsetTab()
   if !b:l2u_tab_set
     return
   endif
+  exec "setlocal omnifunc=" . get(b:, "prev_omnifunc", "")
   iunmap <buffer> <Tab>
   if empty(maparg("<Tab>", "i"))
     call s:L2U_SetFallbackMapping(s:l2u_fallback_trigger, '<Tab>')
