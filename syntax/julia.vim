@@ -11,8 +11,10 @@ endif
 
 scriptencoding utf-8
 
-if !exists("g:julialang_version")
-    let g:julialang_version = "0.3"
+if !exists("g:julia_version") || g:julia_version == "release"
+    let g:julia_version = "0.3"
+elseif g:julia_version == "development"
+    let g:julia_version = "0.4"
 end
 
 syntax cluster juliaExpressions		contains=@juliaParItems,@juliaStringItems,@juliaKeywordItems,@juliaBlocksItems,@juliaTypesItems,@juliaConstItems,@juliaMacroItems,@juliaOperatorItems,@juliaNumberItems,@juliaQuotedItems,@juliaCommentItems,@juliaErrorItems
@@ -226,8 +228,8 @@ hi def link juliaBuiltinTypeSpecial	Type
 hi def link juliaBuiltinTypeRandom	Type
 hi def link juliaBuiltinTypeDisplay	Type
 hi def link juliaBuiltinTypeOther	Type
-if g:julialang_version >= "0.4"
-    hi def link julia03DeprecatedTypes	juliaError
+if g:julia_version >= "0.4"
+    hi def link julia03DeprecatedTypes	juliaDeprecated
 else
     hi def link julia03DeprecatedTypes	Type
 end
@@ -312,6 +314,8 @@ hi def link juliaErrorSemicol		juliaError
 hi def link juliaErrorPrintfFmt		juliaError
 
 hi def link juliaError			Error
+
+hi def link juliaDeprecated		Todo
 
 syntax sync fromstart
 
