@@ -180,3 +180,27 @@ The default mappings use `]]`, `][`, `[[`, `[]`, `]j`, `]J`, `[j`, and `[J` for 
 and `aj`, `ij` for the selections. These can be disabled collectively by setting `g:julia_blocks` to `0`,
 or they can be remapped and/or disabled individually by defining a `g:julia_blocks_mapping` variable.
 See the documentation for details.
+
+## Changing syntax highlighting depending on the Julia version
+
+The pluign supports syntax highlighting different versions of Julia. By default, the highlighting scheme assumes
+the latest stable release of Julia (currently, version 0.4), but the previous one and the latest version under
+development are also supported. You can set a global default in your `.vimrc`, e.g. if you follow Julia's master
+you can use:
+
+```
+let g:default_julia_version = "devel"
+```
+
+or if you are still using Julia 0.3 you can use:
+
+```
+let g:default_julia_versoin = "0.3"
+```
+
+You can also switch version for a particular buffer, by using the `julia#set_syntax_version()` function, e.g.
+by typing in Vim:
+
+```
+:call julia#set_syntax_version("0.3")
+```
