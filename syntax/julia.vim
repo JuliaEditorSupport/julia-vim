@@ -35,11 +35,11 @@ syntax cluster juliaParItems		contains=juliaParBlock,juliaSqBraBlock,juliaCurBra
 syntax cluster juliaKeywordItems	contains=juliaKeyword,juliaRepKeyword,juliaTypedef
 syntax cluster juliaBlocksItems		contains=juliaConditionalBlock,juliaRepeatBlock,juliaBeginBlock,juliaFunctionBlock,juliaMacroBlock,juliaQuoteBlock,juliaTypeBlock,juliaImmutableBlock,juliaExceptionBlock,juliaLetBlock,juliaDoBlock,juliaModuleBlock
 if b:julia_syntax_version == 3
-  syntax cluster juliaTypesItems	contains=@juliaTypesItemsAll,juliaTypesItems03
+  syntax cluster juliaTypesItems	contains=@juliaTypesItemsAll,@juliaTypesItems03
 elseif b:julia_syntax_version == 4
-  syntax cluster juliaTypesItems	contains=@juliaTypesItemsAll,juliaTypesItems03,juliaTypesItems0405
+  syntax cluster juliaTypesItems	contains=@juliaTypesItemsAll,@juliaTypesItems03,@juliaTypesItems0405
 else
-  syntax cluster juliaTypesItems	contains=@juliaTypesItemsAll,juliaTypesItems03,juliaTypesItems0405,juliaTypesItems05
+  syntax cluster juliaTypesItems	contains=@juliaTypesItemsAll,@juliaTypesItems03,@juliaTypesItems0405,@juliaTypesItems05
 endif
 syntax cluster juliaTypesItemsAll	contains=juliaBaseTypeBasic,juliaBaseTypeNum,juliaBaseTypeC,juliaBaseTypeError,juliaBaseTypeIter,juliaBaseTypeString,juliaBaseTypeArray,juliaBaseTypeDict,juliaBaseTypeSet,juliaBaseTypeIO,juliaBaseTypeProcess,juliaBaseTypeRange,juliaBaseTypeRegex,juliaBaseTypeFact,juliaBaseTypeFact,juliaBaseTypeSort,juliaBaseTypeRound,juliaBaseTypeSpecial,juliaBaseTypeRandom,juliaBaseTypeDisplay,juliaBaseTypeOther
 syntax cluster juliaTypesItems03	contains=juliaBaseTypeBasic03,juliaBaseTypeNum03,juliaBaseTypeError03,juliaBaseTypeString03,juliaBaseTypeArray03,juliaBaseTypeIO03,juliaBaseTypeOther03
