@@ -530,7 +530,7 @@ function! LaTeXtoUnicode#AutoSub(...)
     return ''
   endif
   call feedkeys("\<C-G>u", 'n')
-  call feedkeys(repeat("\b", len(base) + bs) . unicode . vc . s:l2u_esc_sequence, 't')
+  call feedkeys(repeat("\b", len(base) + bs) . unicode . vc . s:l2u_esc_sequence, 'nt')
   call feedkeys("\<C-G>u", 'n')
   return ''
 endfunction
