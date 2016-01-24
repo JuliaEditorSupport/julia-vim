@@ -3,6 +3,7 @@ LaTeXtoUnicode#Disable()	julia-vim-L2U.txt	/*LaTeXtoUnicode#Disable()*
 LaTeXtoUnicode#Enable()	julia-vim-L2U.txt	/*LaTeXtoUnicode#Enable()*
 LaTeXtoUnicode#Init()	julia-vim-L2U.txt	/*LaTeXtoUnicode#Init()*
 LaTeXtoUnicode#Toggle()	julia-vim-L2U.txt	/*LaTeXtoUnicode#Toggle()*
+g:default_julia_version	julia-vim.txt	/*g:default_julia_version*
 g:julia_blocks	julia-vim.txt	/*g:julia_blocks*
 g:julia_blocks_mappings	julia-vim.txt	/*g:julia_blocks_mappings*
 g:latex_to_unicode_auto	julia-vim-L2U.txt	/*g:latex_to_unicode_auto*
@@ -11,6 +12,7 @@ g:latex_to_unicode_file_types	julia-vim-L2U.txt	/*g:latex_to_unicode_file_types*
 g:latex_to_unicode_file_types_blacklist	julia-vim-L2U.txt	/*g:latex_to_unicode_file_types_blacklist*
 g:latex_to_unicode_suggestions	julia-vim-L2U.txt	/*g:latex_to_unicode_suggestions*
 g:latex_to_unicode_tab	julia-vim-L2U.txt	/*g:latex_to_unicode_tab*
+julia#set_syntax_version()	julia-vim.txt	/*julia#set_syntax_version()*
 julia-vim	julia-vim.txt	/*julia-vim*
 julia-vim-L2U	julia-vim-L2U.txt	/*julia-vim-L2U*
 julia-vim-L2U-as-you-type	julia-vim-L2U.txt	/*julia-vim-L2U-as-you-type*
@@ -30,6 +32,7 @@ julia-vim-blocks-moveblock	julia-vim.txt	/*julia-vim-blocks-moveblock*
 julia-vim-blocks-objects	julia-vim.txt	/*julia-vim-blocks-objects*
 julia-vim-blocks-variables	julia-vim.txt	/*julia-vim-blocks-variables*
 julia-vim-introduction	julia-vim.txt	/*julia-vim-introduction*
+julia-vim-version	julia-vim.txt	/*julia-vim-version*
 julia-vim.txt	julia-vim.txt	/*julia-vim.txt*
 julia_[J	julia-vim.txt	/*julia_[J*
 julia_[[	julia-vim.txt	/*julia_[[*
