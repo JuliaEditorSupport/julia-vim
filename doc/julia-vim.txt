@@ -84,6 +84,21 @@ julia#set_syntax_version(`julia_version`)
                 `b:julia_syntax_version`, which uses a numeric scheme, i.e.
                 `3` for version `0.3` etc).
 
+                                       *g:julia_syntax_highlight_deprecated*
+g:julia_syntax_highlight_deprecated
+
+                Determines whether to highlight deprecated syntax, according
+                to the Julia version in use (see |g:default_julia_verison|).
+                By default, it is off (set to `0`).
+
+                                          *julia#toggle_deprecated_syntax()*
+julia#toggle_deprecated_syntax()
+
+                This function allows to switch on or off the highlighting of
+                deprecaed syntax (see |g:julia_syntax_highlight_deprecated|).
+                The current status is stored in the variable
+                `b:julia_syntax_highlight_deprecated`.
+
 
 ==============================================================================
 BLOCK-WISE MOVEMENTS AND BLOCK TEXT OBJECTS              *julia-vim-blocks*

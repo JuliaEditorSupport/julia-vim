@@ -14,6 +14,9 @@ scriptencoding utf-8
 if !exists("b:julia_syntax_version")
   let b:julia_syntax_version = get(g:, "default_julia_version", "current")
 endif
+if !exists("b:julia_syntax_highlight_deprecated")
+  let b:julia_syntax_highlight_deprecated = get(g:, "julia_syntax_highlight_deprecated", 0)
+endif
 
 if b:julia_syntax_version =~? '\<\%(curr\%(ent\)\?\|release\|4\|0\.4\)\>'
   let b:julia_syntax_version = 4
@@ -384,7 +387,11 @@ hi def link juliaErrorPrintfFmt		juliaError
 
 hi def link juliaError			Error
 
-hi def link juliaDeprecated		Todo
+if b:julia_syntax_highlight_deprecated == 1
+  hi! def link juliaDeprecated		Todo
+else
+  hi! def link juliaDeprecated          NONE
+end
 
 syntax sync fromstart
 
