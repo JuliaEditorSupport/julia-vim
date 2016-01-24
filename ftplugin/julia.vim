@@ -66,7 +66,7 @@ if exists("loaded_matchit")
     elseif attr == 'juliaException'
       return b:julia_begin_keywordsm . ':\<\%(catch\|finally\)\>:' . b:julia_end_keywords
     endif
-    return ''
+    return '\<\>:\<\>'
   endfunction
 
   let b:match_words = 'JuliaGetMatchWords()'
