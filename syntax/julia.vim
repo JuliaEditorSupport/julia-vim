@@ -44,7 +44,7 @@ endif
 syntax cluster juliaTypesItemsAll	contains=juliaBaseTypeBasic,juliaBaseTypeNum,juliaBaseTypeC,juliaBaseTypeError,juliaBaseTypeIter,juliaBaseTypeString,juliaBaseTypeArray,juliaBaseTypeDict,juliaBaseTypeSet,juliaBaseTypeIO,juliaBaseTypeProcess,juliaBaseTypeRange,juliaBaseTypeRegex,juliaBaseTypeFact,juliaBaseTypeFact,juliaBaseTypeSort,juliaBaseTypeRound,juliaBaseTypeSpecial,juliaBaseTypeRandom,juliaBaseTypeDisplay,juliaBaseTypeOther
 syntax cluster juliaTypesItems03	contains=juliaBaseTypeBasic03,juliaBaseTypeNum03,juliaBaseTypeError03,juliaBaseTypeString03,juliaBaseTypeArray03,juliaBaseTypeIO03,juliaBaseTypeOther03
 syntax cluster juliaTypesItems0405	contains=juliaBaseTypeBasic0405,juliaBaseTypeNum0405,juliaBaseTypeC0405,juliaBaseTypeError0405,juliaBaseTypeIter0405,juliaBaseTypeString0405,juliaBaseTypeArray0405,juliaBaseTypeIO0405,juliaBaseTypeProcess0405,juliaBaseTypeSort0405,juliaBaseTypeRound0405,juliaBaseTypeRandom0405,juliaBaseTypeDisplay0405,juliaBaseTypeTime0405,juliaBaseTypeOther0405
-syntax cluster juliaTypesItems05	contains=juliaBaseTypeArray05
+syntax cluster juliaTypesItems05	contains=juliaBaseTypeArray05,juliaBaseTypeOther05
 if b:julia_syntax_version == 3
   syntax cluster juliaConstItems	contains=@juliaConstItemsAll,@juliaConstItems03
 else
@@ -123,6 +123,7 @@ syntax match   juliaBaseTypeSet		display "\<\%(Int\)\?Set\>"
 syntax match   juliaBaseTypeIO		display "\<\%(IO\%(Stream\|Buffer\)\?\|RawFD\|StatStruct\|DevNull\|FileMonitor\|PollingFileWatcher\|Timer\)\>"
 syntax match   juliaBaseTypeIO03	display "\<\%(CFILE\|Base64Pipe\|UdpSocket\)\>"
 syntax match   juliaBaseTypeIO0405	display "\<\%(Base64\%(Decode\|Encode\)Pipe\|\%(UDP\|TCP\)Socket\|\%(Abstract\)\?Channel\|BufferStream\|ReentrantLock\)\>"
+syntax match   juliaBaseTypeIO05	display "\<IOContext\>"
 syntax match   juliaBaseTypeProcess	display "\<\%(ProcessGroup\|PipeBuffer\|Cmd\)\>"
 syntax match   juliaBaseTypeProcess0405	display "\<Pipe\>"
 syntax match   juliaBaseTypeRange	display "\<\%(Dims\|Range\%(Index\)\?\|\%(Ordinal\|Step\|Unit\|Float\)Range\|Colon\)\>"
@@ -141,6 +142,7 @@ syntax match   juliaBaseTypeTime0405	display "\<\%(Date\%(Time\)\?\)\>"
 syntax match   juliaBaseTypeOther	display "\<\%(RemoteRef\|Task\|Condition\|VersionNumber\|IPv[46]\)\>"
 syntax match   juliaBaseTypeOther03	display "\<TmStruct\>"
 syntax match   juliaBaseTypeOther0405	display "\<\%(SerializationState\|WorkerConfig\)\>"
+syntax match   juliaBaseTypeOther05	display "\<\%(Future\|RemoteChannel\|IPAddr\)\>"
 
 syntax match   juliaConstNum		display "\<\%(NaN\%(16\|32\)\?\|Inf\%(16\|32\)\?\|eu\?\|pi\|π\|eulergamma\|γ\|catalan\|φ\|golden\)\>"
 syntax match   juliaConstNum0405	display "\<\%(NaN64\|Inf64\)\>"
@@ -280,7 +282,7 @@ hi def link juliaBaseTypeSpecial	Type
 hi def link juliaBaseTypeRandom		Type
 hi def link juliaBaseTypeDisplay	Type
 hi def link juliaBaseTypeOther		Type
-for t in ["Array"]
+for t in ["Array","Other","IO"]
   let h = b:julia_syntax_version >= 5 ? "Type" : "NONE"
   exec "hi! def link juliaBaseType" . t . "05 	" . h
 endfor
