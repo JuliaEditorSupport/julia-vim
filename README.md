@@ -174,7 +174,7 @@ distributed with ViM but must be explicitly enabled, e.g. adding this to your `.
 runtime macros/matchit.vim
 ```
 
-Or you can use the code at [https://github.com/edsono/matchit] and install it as a plug-in.
+Or you can use the code at [https://github.com/edsono/vim-matchit] and install it as a plug-in.
 
 The default mappings use `]]`, `][`, `[[`, `[]`, `]j`, `]J`, `[j`, and `[J` for the movements
 and `aj`, `ij` for the selections. These can be disabled collectively by setting `g:julia_blocks` to `0`,
