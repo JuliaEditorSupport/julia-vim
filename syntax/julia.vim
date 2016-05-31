@@ -80,10 +80,14 @@ syntax match   juliaErrorSemicol	display contained ";"
 syntax match   juliaQuotedEnd		display ":\@<=end\>"
 syntax match   juliaRangeEnd		display contained "\<end\>"
 
-syntax region  juliaParBlock		matchgroup=juliaParDelim start="(" end=")" contains=@juliaExpressions
+if b:julia_syntax_version >= 5
+  syntax region  juliaParBlock		matchgroup=juliaParDelim start="(" end=")" contains=@juliaExpressions,juliaComprehensionFor
+else
+  syntax region  juliaParBlock		matchgroup=juliaParDelim start="(" end=")" contains=@juliaExpressions
+endif
 syntax region  juliaParBlockInRange	matchgroup=juliaParDelim contained start="(" end=")" contains=@juliaExpressions,juliaParBlockInRange,juliaRangeEnd
 syntax region  juliaSqBraBlock		matchgroup=juliaParDelim start="\[" end="\]" contains=@juliaExpressions,juliaParBlockInRange,juliaRangeEnd,juliaComprehensionFor
-syntax region  juliaCurBraBlock		matchgroup=juliaParDelim start="{" end="}" contains=@juliaExpressions,juliaComprehensionFor
+syntax region  juliaCurBraBlock		matchgroup=juliaParDelim start="{" end="}" contains=@juliaExpressions
 
 syntax match   juliaKeyword		"\<\%(return\|local\|global\|import\%(all\)\?\|export\|using\|const\|in\)\>"
 syntax match   juliaRepKeyword		"\<\%(break\|continue\)\>"
