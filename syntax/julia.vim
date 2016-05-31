@@ -109,7 +109,7 @@ syntax match   juliaComprehensionFor	contained "\<for\>"
 
 syntax match   juliaBaseTypeBasic	display "\<\%(Tuple\|NTuple\|Symbol\|\%(Intrinsic\)\?Function\|Union\|Type\%(Name\|Constructor\|Var\)\?\|Any\|ANY\|Vararg\|Top\|None\|Nothing\|Ptr\|Void\|Exception\|Module\|Box\|Expr\|LambdaStaticData\|\%(Data\|Union\)Type\|\%(LineNumber\|Label\|Goto\|Quote\|Top\|Symbol\|Getfield\)Node\|WeakRef\|Associative\|Method\(Table\)\?\)\>"
 syntax match   juliaBaseTypeBasic03	display "\<\%(Top\|None\|Nothing\)\>"
-syntax match   juliaBaseTypeBasic0405	display "\<\%(UnionType\|GetfieldNode\|Nullable\|Pair\|Val\)\>"
+syntax match   juliaBaseTypeBasic0405	display "\<\%(UnionType\|GetfieldNode\|Nullable\|Pair\|Ref\|Val\)\>"
 syntax match   juliaBaseTypeNum		display "\<\%(Int\%(eger\|8\|16\|32\|64\|128\)\?\|Float\%(16\|32\|64\)\|Complex\%(32\|64\|128\)\?\|Bool\|Char\|Number\|Signed\|Unsigned\|Real\|Rational\|BigInt\|BigFloat\|MathConst\)\>"
 syntax match   juliaBaseTypeNum03	display "\<\%(Uint\%(\|8\|16\|32\|64\|128\)\|FloatingPoint\|MathConst\)\>"
 syntax match   juliaBaseTypeNum0405	display "\<\%(UInt\%(\|8\|16\|32\|64\|128\)\|AbstractFloat\|Irrational\|Enum\)\>"
