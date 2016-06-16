@@ -307,7 +307,7 @@ function GetJuliaIndent()
     " Second scenario: some multiline bracketed expression was closed in the
     " previous line. But since we know we are still in a bracketed expression,
     " we need to find the line where the bracket was open
-    elseif last_closed_bracket != -1  && exists("loaded_matchit")
+    elseif last_closed_bracket != -1 " && exists("loaded_matchit")
       " we use the % command to skip back (this is buggy without matchit, and
       " is potentially a disaster if % got remapped)
       call cursor(lnum, last_closed_bracket)
