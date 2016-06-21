@@ -64,7 +64,7 @@ syntax cluster juliaConstItems0405	contains=juliaConstNum0405
 syntax cluster juliaConstItems05	contains=juliaConstEnv05
 syntax cluster juliaMacroItems		contains=juliaMacro,juliaDollarVar,juliaPrintfMacro
 syntax cluster juliaNumberItems		contains=juliaNumbers
-syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliabString,juliavString,juliaipString,juliabigString,juliaMIMEString,juliaTriString,juliaShellString,juliaRegEx
+syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliabString,juliasString,juliavString,juliaipString,juliabigString,juliaMIMEString,juliaTriString,juliaShellString,juliaRegEx
 syntax cluster juliaPrintfItems		contains=juliaPrintfParBlock,juliaPrintfString
 syntax cluster juliaOperatorItems	contains=juliaArithOperator,juliaBitOperator,juliaRedirOperator,juliaBoolOperator,juliaCompOperator,juliaAssignOperator,juliaRangeOperator,juliaTypeOperator,juliaFuncOperator,juliaCTransOperator,juliaVarargOperator,juliaTernaryRegion
 syntax cluster juliaQuotedItems		contains=juliaQuotedEnd,juliaQuotedBlockKeyword,juliaQuotedQuestion
@@ -223,6 +223,7 @@ syntax match   juliaCTransOperator	"[])}[:alnum:]_]\@<=\.\?'"
 
 syntax region  juliaString		matchgroup=juliaStringDelim start=+"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaStringVars,@juliaSpecialChars
 syntax region  juliabString		matchgroup=juliaStringDelim start=+\<b"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaSpecialChars
+syntax region  juliasString		matchgroup=juliaStringDelim start=+\<s"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaSpecialChars
 syntax region  juliavString		matchgroup=juliaStringDelim start=+\<v"+ skip=+\%(\\\\\)*\\"+ end=+"+
 syntax region  juliaipString		matchgroup=juliaStringDelim start=+\<ip"+ skip=+\%(\\\\\)*\\"+ end=+"+
 syntax region  juliabigString		matchgroup=juliaStringDelim start=+\<big"+ skip=+\%(\\\\\)*\\"+ end=+"+
@@ -358,6 +359,7 @@ hi def link juliaChar			Character
 
 hi def link juliaString			String
 hi def link juliabString		String
+hi def link juliasString		String
 hi def link juliavString		String
 hi def link juliarString		String
 hi def link juliaipString		String
