@@ -181,6 +181,8 @@ and `aj`, `ij` for the selections. These can be disabled collectively by setting
 or they can be remapped and/or disabled individually by defining a `g:julia_blocks_mapping` variable.
 See the documentation for details.
 
+Note that this feature requires Vim version 7.4 or higher.
+
 ## Changing syntax highlighting depending on the Julia version
 
 The pluign supports syntax highlighting different versions of Julia. By default, the highlighting scheme assumes
