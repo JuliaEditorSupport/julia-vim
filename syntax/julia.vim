@@ -69,12 +69,13 @@ syntax cluster juliaPrintfItems		contains=juliaPrintfParBlock,juliaPrintfString
 syntax cluster juliaOperatorItems	contains=juliaArithOperator,juliaBitOperator,juliaRedirOperator,juliaBoolOperator,juliaCompOperator,juliaAssignOperator,juliaRangeOperator,juliaTypeOperator,juliaFuncOperator,juliaCTransOperator,juliaVarargOperator,juliaTernaryRegion
 syntax cluster juliaQuotedItems		contains=juliaQuotedEnd,juliaQuotedBlockKeyword,juliaQuotedQuestion
 syntax cluster juliaCommentItems	contains=juliaCommentL,juliaCommentM
-syntax cluster juliaErrorItems		contains=juliaErrorPar,juliaErrorEnd,juliaErrorElse
+syntax cluster juliaErrorItems		contains=juliaErrorPar,juliaErrorEnd,juliaErrorElse,juliaErrorCatch,juliaErrorFinally
 
 syntax match   juliaErrorPar		display "[])}]"
 syntax match   juliaErrorEnd		display "\<end\>"
 syntax match   juliaErrorElse		display "\<\%(else\|elseif\)\>"
 syntax match   juliaErrorCatch		display "\<catch\>"
+syntax match   juliaErrorFinally	display "\<finally\>"
 syntax match   juliaErrorSemicol	display contained ";"
 
 syntax match   juliaQuotedEnd		display ":\@<=end\>"
@@ -96,7 +97,7 @@ syntax region  juliaConditionalEIBlock	matchgroup=juliaConditional transparent c
 syntax region  juliaConditionalEBlock	matchgroup=juliaConditional transparent contained start="\<else\>" end="\<end\>"me=s-1 contains=@juliaExpressions
 syntax region  juliaRepeatBlock		matchgroup=juliaRepeat start="\<\%(while\|for\)\>" end="\<end\>" contains=@juliaExpressions fold
 syntax region  juliaBeginBlock		matchgroup=juliaBlKeyword start="\<begin\>" end="\<end\>" contains=@juliaExpressions fold
-syntax region  juliaFunctionBlock	matchgroup=juliaBlKeyword start="\<\%(staged\)\?function\>" end="\<end\>" contains=@juliaExpressions fold
+syntax region  juliaFunctionBlock	matchgroup=juliaBlKeyword start="\<function\>" end="\<end\>" contains=@juliaExpressions fold
 syntax region  juliaMacroBlock		matchgroup=juliaBlKeyword start="\<macro\>" end="\<end\>" contains=@juliaExpressions fold
 syntax region  juliaQuoteBlock		matchgroup=juliaBlKeyword start="\<quote\>" end="\<end\>" contains=@juliaExpressions fold
 syntax region  juliaTypeBlock		matchgroup=juliaBlKeyword start="\<type\>" end="\<end\>" contains=@juliaExpressions fold
@@ -208,7 +209,7 @@ syntax match   juliaRangeOperator	":"
 syntax match   juliaTypeOperator	"[<:]:"
 syntax match   juliaFuncOperator	"->"
 syntax match   juliaVarargOperator	"\.\{3\}"
-syntax region  juliaTernaryRegion	matchgroup=juliaTernaryOperator start="?" skip="::" end=":" contains=@juliaExpressions,juliaErrorSemicol
+syntax region  juliaTernaryRegion	matchgroup=juliaTernaryOperator start="?" skip=":\(:\|\s*[^:[:space:]'"({[]\+\s*\ze:\)" end=":" contains=@juliaExpressions,juliaErrorSemicol
 
 " TODO: this is very greedy. Improve?
 syntax match   juliaDollarVar		contained "[[:alnum:]_]\@<!$[_[:alpha:]][_[:alnum:]!]*"
@@ -261,9 +262,9 @@ syntax match   juliaPrintfFmt		display contained "%%"
 syntax match   juliaPrintfFmt		display contained "\\%\%(\d\+\$\)\=[-+' #0]*\%(\d*\|\*\|\*\d\+\$\)\%(\.\%(\d*\|\*\|\*\d\+\$\)\)\=\%([hlLjqzt]\|ll\|hh\)\=[aAbdiuoxXDOUfFeEgGcCsSpn]"hs=s+1
 syntax match   juliaPrintfFmt		display contained "\\%%"hs=s+1
 
-syntax match   juliaQuotedBlockKeyword	display ":\s*\%(if\|elseif\|else\|while\|for\|begin\|\%(staged\)\?function\|macro\|quote\|type\|immutable\|try\|catch\|let\|\%(bare\)\?module\|do\)\>"he=s+1 contains=juliaInQuote
-syntax match   juliaQuotedQuestion      display ":\s*\%(?\|(\s*?\s*)\)"he=s+1 contains=juliaInQuote
-syntax match   juliaInQuote             display contained ":\zs\s*[^])}[:space:],;]\+"
+syntax match   juliaQuotedBlockKeyword	display ":\%(if\|elseif\|else\|while\|for\|begin\|function\|macro\|quote\|type\|immutable\|try\|catch\|let\|\%(bare\)\?module\|do\)\>"he=s+1 contains=juliaInQuote
+syntax match   juliaQuotedQuestion      display ":\%(?\|(\s*?\s*)\)"he=s+1 contains=juliaInQuote
+syntax match   juliaInQuote             display contained ":\zs[^])}[:space:],;]\+"
 
 syntax region  juliaCommentL		matchgroup=juliaCommentDelim start="#\ze\%([^=]\|$\)" end="$" keepend contains=juliaTodo,@spell
 syntax region  juliaCommentM		matchgroup=juliaCommentDelim start="#=\ze\%([^#]\|$\)" end="=#" contains=juliaTodo,juliaCommentM,@spell
@@ -414,6 +415,7 @@ hi def link juliaErrorPar		juliaError
 hi def link juliaErrorEnd		juliaError
 hi def link juliaErrorElse		juliaError
 hi def link juliaErrorCatch		juliaError
+hi def link juliaErrorFinally		juliaError
 hi def link juliaErrorSemicol		juliaError
 hi def link juliaErrorPrintfFmt		juliaError
 
