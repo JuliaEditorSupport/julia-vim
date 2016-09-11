@@ -110,7 +110,12 @@ syntax region  juliaCatchBlock		matchgroup=juliaException transparent contained 
 syntax region  juliaFinallyBlock	matchgroup=juliaException transparent contained start="\<finally\>" end="\<end\>"me=s-1 contains=@juliaExpressions
 syntax match   juliaTypedef		"\<\%(abstract\|typealias\|bitstype\)\>"
 
-syntax match   juliaComprehensionFor	contained "\<for\>"
+if b:julia_syntax_version >= 5
+  syntax region  juliaComprehensionFor	matchgroup=juliaBlKeyword transparent contained start="[^,;([{[:space:]]\s*\zs\<for\>" end="\ze[]);]" contains=@juliaExpressions,juliaComprehensionIf
+  syntax match   juliaComprehensionIf	contained "\<if\>"
+else
+  syntax match   juliaComprehensionFor	contained "\<for\>"
+endif
 
 syntax match   juliaBaseTypeBasic	display "\<\%(Tuple\|NTuple\|Symbol\|\%(Intrinsic\)\?Function\|Union\|Type\%(Name\|Constructor\|Var\)\?\|Any\|ANY\|Vararg\|Top\|None\|Nothing\|Ptr\|Void\|Exception\|Module\|Box\|Expr\|LambdaStaticData\|\%(Data\|Union\)Type\|\%(LineNumber\|Label\|Goto\|Quote\|Top\|Symbol\|Getfield\)Node\|WeakRef\|Associative\|Method\(Table\)\?\)\>"
 syntax match   juliaBaseTypeBasic03	display "\<\%(Top\|None\|Nothing\)\>"
@@ -346,7 +351,10 @@ for t in ["Env","MMap","C"]
   exec "hi! def link juliaConst" . t . "03	" . h
 endfor
 
-hi def link juliaComprehensionFor	Keyword
+if b:julia_syntax_version >= 5
+  hi def link juliaComprehensionFor	Keyword
+endif
+hi def link juliaComprehensionIf	Keyword
 
 hi def link juliaDollarVar		Identifier
 
