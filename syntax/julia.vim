@@ -111,7 +111,7 @@ syntax region  juliaFinallyBlock	matchgroup=juliaException transparent contained
 syntax match   juliaTypedef		"\<\%(abstract\|typealias\|bitstype\)\>"
 
 if b:julia_syntax_version >= 5
-  syntax region  juliaComprehensionFor	matchgroup=juliaBlKeyword transparent contained start="[^[:space:],;({[]\@1<=\s*\zs\<for\>" end="\ze[]);]" contains=@juliaExpressions,juliaComprehensionIf
+  syntax region  juliaComprehensionFor	matchgroup=juliaComprehensionFor transparent contained start="[^[:space:],;({[]\@1<=\s*\zs\<for\>" end="\ze[]);]" contains=@juliaExpressions,juliaComprehensionIf
   syntax match   juliaComprehensionIf	contained "\<if\>"
 else
   syntax match   juliaComprehensionFor	contained "\<for\>"
@@ -351,9 +351,7 @@ for t in ["Env","MMap","C"]
   exec "hi! def link juliaConst" . t . "03	" . h
 endfor
 
-if b:julia_syntax_version >= 5
-  hi def link juliaComprehensionFor	Keyword
-endif
+hi def link juliaComprehensionFor	Keyword
 hi def link juliaComprehensionIf	Keyword
 
 hi def link juliaDollarVar		Identifier
