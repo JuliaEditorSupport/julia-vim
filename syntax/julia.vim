@@ -111,7 +111,7 @@ syntax region  juliaFinallyBlock	matchgroup=juliaException transparent contained
 syntax match   juliaTypedef		"\<\%(abstract\|typealias\|bitstype\)\>"
 
 if b:julia_syntax_version >= 5
-  syntax region  juliaComprehensionFor	matchgroup=juliaComprehensionFor transparent contained start="[^[:space:],;({[]\@1<=\s*\zs\<for\>" end="\ze[]);]" contains=@juliaExpressions,juliaComprehensionIf
+  syntax region  juliaComprehensionFor	matchgroup=juliaComprehensionFor transparent contained start="[^[:space:],;({[]\@1<=\s*\zs\<for\>" end="\ze[]);]" contains=@juliaExpressions,juliaComprehensionIf,juliaComprehensionFor
   syntax match   juliaComprehensionIf	contained "\<if\>"
 else
   syntax match   juliaComprehensionFor	contained "\<for\>"
