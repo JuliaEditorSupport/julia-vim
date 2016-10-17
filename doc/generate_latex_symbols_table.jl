@@ -3,7 +3,7 @@
 const filename = "julia-vim-L2U-table"
 const sourcefile = joinpath(JULIA_HOME, "..", "..", "doc", "manual", "unicode-input-table.rst")
 
-isreadable(sourcefile) || error("unable to find source file $sourcefile")
+isfile(sourcefile) || error("unable to find source file $sourcefile")
 
 function fix_compose_chars(uni)
   u = uni[1]
