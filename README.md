@@ -5,7 +5,7 @@
 ``` bash
 cd ~/.vim
 mkdir -p bundle && cd bundle
-git clone git://github.com/JuliaLang/julia-vim.git
+git clone git://github.com/JuliaEditorSupport/julia-vim.git
 ```
 
 ### Using [vundle]
@@ -13,7 +13,7 @@ git clone git://github.com/JuliaLang/julia-vim.git
 Add a new plugin line to your `.vimrc`:
 
 ``` vim
-Plugin 'JuliaLang/julia-vim'
+Plugin 'JuliaEditorSupport/julia-vim'
 ```
 
 Run `vim` and update your bundles:
@@ -30,7 +30,7 @@ Run `vim` and update your bundles:
 Copy (or symlink) the contents of this repository into the vim application support directory:
 
 ``` bash
-git clone git://github.com/JuliaLang/julia-vim.git
+git clone git://github.com/JuliaEditorSupport/julia-vim.git
 cd julia-vim
 mkdir -p ~/.vim
 cp -R * ~/.vim
@@ -194,15 +194,15 @@ you can use:
 let g:default_julia_version = "devel"
 ```
 
-or if you are still using Julia 0.3 you can use:
+or if you are still using Julia 0.4 you can use:
 
 ```
-let g:default_julia_versoin = "0.3"
+let g:default_julia_versoin = "0.4"
 ```
 
 You can also switch version for a particular buffer, by using the `julia#set_syntax_version()` function, e.g.
 by typing in Vim:
 
 ```
-:call julia#set_syntax_version("0.3")
+:call julia#set_syntax_version("0.4")
 ```

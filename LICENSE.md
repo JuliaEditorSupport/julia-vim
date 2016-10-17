@@ -1,8 +1,8 @@
 The julia-vim plug-in is licensed under the MIT License:
 
-> Copyright (c) 2012-2014: Carlo Baldassi and other contributors:
+> Copyright (c) 2012-2016: Carlo Baldassi and other contributors:
 >
-> https://github.com/JuliaLang/julia-vim/contributors
+> https://github.com/JuliaEditorSupport/julia-vim/contributors
 >
 > Permission is hereby granted, free of charge, to any person obtaining
 > a copy of this software and associated documentation files (the

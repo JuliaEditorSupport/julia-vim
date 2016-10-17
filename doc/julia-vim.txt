@@ -335,6 +335,6 @@ ABOUT                                                     *julia-vim-about*
 
 Grab the latest version or report a bug on GitHub:
 
-http://github.com/JuliaLang/julia-vim
+http://github.com/JuliaEditorSupport/julia-vim
 
  vim:tw=78:et:ft=help:norl:
