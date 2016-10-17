@@ -284,7 +284,7 @@ hi def link juliaBlKeyword		Keyword
 hi def link juliaConditional		Conditional
 hi def link juliaRepeat			Repeat
 hi def link juliaException		Exception
-hi def link juliaTypedef		Typedef
+hi def link juliaTypedef		Keyword
 hi def link juliaBaseTypeBasic		Type
 hi def link juliaBaseTypeNum		Type
 hi def link juliaBaseTypeC		Type
