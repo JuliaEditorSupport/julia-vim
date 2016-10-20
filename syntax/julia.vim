@@ -280,6 +280,8 @@ endfor
 for t in ["String"]
   let h = b:julia_syntax_version > 4 ? "juliaDeprecated" : "Type"
   exec "hi! def link juliaBaseType" . t . "04 " . h
+  let h = b:julia_syntax_version > 4 ? "Type" : "juliaDeprecated"
+  exec "hi! def link juliaBaseType" . t . "0506 " . h
 endfor
 
 hi def link juliaConstNum		Constant
