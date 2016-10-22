@@ -29,6 +29,28 @@ else
   let b:julia_syntax_version = 5
 endif
 
+" characters which cannot be used in identifiers ('?' is sort of valid but
+" let's just pretend it isn't)
+" note: \U5B and \U5D are '[' and ']'
+let s:nonidclass = "[:space:]" . "\U01-\U20" .
+      \            "\"#$'(),.:;=?@`\\U5B\\U5D{}" .
+      \            "\U80-\UA1" . "\UA7\UA8\UAB\UAD\UAF\UB4" . "\UB6-\UB8" . "\UBB\UBF"
+
+" the following excludes '!' since it can be used as an identifier.
+" note that \U2D is '-'
+let s:unioperators = "+\\U2D~¬√∛∜"
+
+" note: why are 4 backslashes needed in front of \U2D ??
+let s:binoperators = "←→↔↚↛↠↣↦↮⇎⇏⇒⇔⇴⇶⇷⇸⇹⇺⇻⇼⇽⇾⇿⟵⟶⟷⟷⟹⟺⟻⟼⟽⟾⟿⤀⤁⤂⤃⤄⤅⤆⤇⤌⤍⤎⤏⤐⤑⤔⤕⤖⤗⤘⤝⤞⤟⤠⥄⥅⥆⥇⥈⥊⥋⥎⥐⥒⥓⥖⥗⥚⥛⥞⥟⥢⥤⥦⥧⥨⥩⥪⥫⥬⥭⥰⧴⬱⬰⬲⬳⬴⬵⬶⬷⬸⬹⬺⬻⬼⬽⬾⬿⭀⭁⭂⭃⭄⭇⭈⭉⭊⭋⭌￩￫" .
+      \              "><≥≤=≡≠≢∈∉∋∌⊆⊈⊂⊄⊊∝∊∍∥∦∷∺∻∽∾≁≃≄≅≆≇≈≉≊≋≌≍≎≐≑≒≓≔≕≖≗≘≙≚≛≜≝≞≟≣≦≧≨≩≪≫≬≭≮≯≰≱≲≳≴≵≶≷≸≹≺≻≼≽≾≿⊀⊁⊃⊅⊇⊉⊋⊏⊐⊑⊒⊜⊩⊬⊮⊰⊱⊲⊳⊴⊵⊶⊷⋍⋐⋑⋕⋖⋗⋘⋙⋚⋛⋜⋝⋞⋟⋠⋡⋢⋣⋤⋥⋦⋧⋨⋩⋪⋫⋬⋭⋲⋳⋴⋵⋶⋷⋸⋹⋺⋻⋼⋽⋾⋿⟈⟉⟒⦷⧀⧁⧡⧣⧤⧥⩦⩧⩪⩫⩬⩭⩮⩯⩰⩱⩲⩳⩴⩵⩶⩷⩸⩹⩺⩻⩼⩽⩾⩿⪀⪁⪂⪃⪄⪅⪆⪇⪈⪉⪊⪋⪌⪍⪎⪏⪐⪑⪒⪓⪔⪕⪖⪗⪘⪙⪚⪛⪜⪝⪞⪟⪠⪡⪢⪣⪤⪥⪦⪧⪨⪩⪪⪫⪬⪭⪮⪯⪰⪱⪲⪳⪴⪵⪶⪷⪸⪹⪺⪻⪼⪽⪾⪿⫀⫁⫂⫃⫄⫅⫆⫇⫈⫉⫊⫋⫌⫍⫎⫏⫐⫑⫒⫓⫔⫕⫖⫗⫘⫙⫷⫸⫹⫺⊢⊣" .
+      \              "+\\\\U2D|⊕⊖⊞⊟∪∨⊔±∓∔∸≂≏⊎⊻⊽⋎⋓⧺⧻⨈⨢⨣⨤⨥⨦⨧⨨⨩⨪⨫⨬⨭⨮⨹⨺⩁⩂⩅⩊⩌⩏⩐⩒⩔⩖⩗⩛⩝⩡⩢⩣" .
+      \              "*/÷%&⋅∘×\\∩∧⊗⊘⊙⊚⊛⊠⊡⊓∗∙∤⅋≀⊼⋄⋆⋇⋉⋊⋋⋌⋏⋒⟑⦸⦼⦾⦿⧶⧷⨇⨰⨱⨲⨳⨴⨵⨶⨷⨸⨻⨼⨽⩀⩃⩄⩋⩍⩎⩑⩓⩕⩘⩚⩜⩞⩟⩠⫛⊍▷⨝⟕⟖⟗" .
+      \              "^↑↓⇵⟰⟱⤈⤉⤊⤋⤒⤓⥉⥌⥍⥏⥑⥔⥕⥘⥙⥜⥝⥠⥡⥣⥥⥮⥯￪￬"
+      \              "."
+
+" a Julia identifier, sort of
+let idregex = '[^' . s:nonidclass . '0-9!' . s:unioperators . s:binoperators . '][^' . s:nonidclass . s:unioperators . s:binoperators . ']*'
+
 syn case match
 
 syntax cluster juliaExpressions		contains=@juliaParItems,@juliaStringItems,@juliaKeywordItems,@juliaBlocksItems,@juliaTypesItems,@juliaConstItems,@juliaMacroItems,@juliaOperatorItems,@juliaNumberItems,@juliaQuotedItems,@juliaCommentItems,@juliaErrorItems
@@ -143,7 +165,7 @@ syntax match   juliaConstIO		display "\<\%(STD\%(OUT\|IN\|ERR\)\)\>"
 syntax match   juliaConstC		display "\<\%(WORD_SIZE\|C_NULL\)\>"
 syntax match   juliaConstGeneric	display "\<\%(nothing\|Main\)\>"
 
-syntax match   juliaMacro		display "@[_[:alpha:]][_[:alnum:]!]*\%(\.[_[:alpha:]][_[:alnum:]!]*\)*"
+exec 'syntax match   juliaMacro		display "@' . idregex . '\%(\.' . idregex . '\)*"'
 
 syntax match   juliaNumbers		display transparent "\<\d\|\.\d\|\<im\>" contains=juliaNumber,juliaFloat,juliaComplexUnit
 
@@ -183,8 +205,8 @@ syntax match   juliaFuncOperator	"->"
 syntax match   juliaVarargOperator	"\.\{3\}"
 syntax region  juliaTernaryRegion	matchgroup=juliaTernaryOperator start="?" skip=":\(:\|\s*[^:[:space:]'"({[]\+\s*\ze:\)" end=":" contains=@juliaExpressions,juliaErrorSemicol
 
-" TODO: this is very greedy. Improve?
-syntax match   juliaDollarVar		contained "[[:alnum:]_]\@<!$[_[:alpha:]][_[:alnum:]!]*"
+" note: why doesn't \zs work, and we need \@<= instead?
+exec 'syntax match   juliaDollarVar	contained "\([' . s:nonidclass . s:unioperators . s:binoperators . '!]\|^\)\@8<=\$' . idregex . '"'
 
 syntax match   juliaChar		display "'\\\?.'" contains=juliaSpecialChar
 syntax match   juliaChar		display "'\\\o\{3\}'" contains=juliaOctalEscapeChar
@@ -192,7 +214,7 @@ syntax match   juliaChar		display "'\\x\x\{2\}'" contains=juliaHexEscapeChar
 syntax match   juliaChar		display "'\\u\x\{1,4\}'" contains=juliaUniCharSmall
 syntax match   juliaChar		display "'\\U\x\{1,8\}'" contains=juliaUniCharLarge
 
-syntax match   juliaCTransOperator	"[])}[:alnum:]_]\@<=\.\?'"
+exec 'syntax match   juliaCTransOperator	"[^' . s:nonidclass . s:unioperators . s:binoperators . '!]\zs\.\?' . "'" . '"'
 
 syntax region  juliaString		matchgroup=juliaStringDelim start=+"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaStringVars,@juliaSpecialChars
 syntax region  juliabString		matchgroup=juliaStringDelim start=+\<b"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaSpecialChars
@@ -215,7 +237,7 @@ syntax cluster juliaStringVars		contains=juliaStringVarsPar,juliaStringVarsSqBra
 syntax region  juliaStringVarsPar	contained matchgroup=juliaStringVarDelim start="$(" end=")" contains=@juliaExpressions
 syntax region  juliaStringVarsSqBra	contained matchgroup=juliaStringVarDelim start="$\[" end="\]" contains=@juliaExpressions
 syntax region  juliaStringVarsCurBra	contained matchgroup=juliaStringVarDelim start="${" end="}" contains=@juliaExpressions
-syntax match   juliaStringVarsPla	contained "$[_[:alpha:]][_[:alnum:]]*"
+exec 'syntax match   juliaStringVarsPla	contained "\$' . idregex . '"'
 
 " TODO improve RegEx
 syntax region  juliaRegEx		matchgroup=juliaStringDelim start=+\<r"+ skip=+\%(\\\\\)*\\"+ end=+"[imsx]*+
@@ -235,7 +257,7 @@ syntax match   juliaPrintfFmt		display contained "\\%\%(\d\+\$\)\=[-+' #0]*\%(\d
 syntax match   juliaPrintfFmt		display contained "\\%%"hs=s+1
 
 syntax match   juliaQuotedBlockKeyword	display ":\%(if\|elseif\|else\|while\|for\|begin\|function\|macro\|quote\|type\|immutable\|try\|catch\|let\|\%(bare\)\?module\|do\)\>"he=s+1 contains=juliaInQuote
-syntax match   juliaQuotedQuestion      display ":\%(?\|(\s*?\s*)\)"he=s+1 contains=juliaInQuote
+syntax match   juliaQuotedQuestion      display ":\%(?\s*\)"he=s+1 contains=juliaInQuote
 syntax match   juliaInQuote             display contained ":\zs[^])}[:space:],;]\+"
 
 syntax region  juliaCommentL		matchgroup=juliaCommentDelim start="#\ze\%([^=]\|$\)" end="$" keepend contains=juliaTodo,@spell
