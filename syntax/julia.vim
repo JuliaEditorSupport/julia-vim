@@ -67,7 +67,7 @@ let s:operators = '\%(' . '\.\?\%([-+*/^÷%|&]\|//\|\\\\\|<<\|>>>\?\)\?=' .
 
 syn case match
 
-syntax cluster juliaExpressions		contains=@juliaParItems,@juliaStringItems,@juliaKeywordItems,@juliaBlocksItems,@juliaTypesItems,@juliaConstItems,@juliaMacroItems,@juliaSymbolItems,@juliaOperatorItems,@juliaNumberItems,@juliaQuotedItems,@juliaCommentItems,@juliaErrorItems
+syntax cluster juliaExpressions		contains=@juliaParItems,@juliaStringItems,@juliaKeywordItems,@juliaBlocksItems,@juliaTypesItems,@juliaConstItems,@juliaMacroItems,@juliaSymbolItems,@juliaOperatorItems,@juliaNumberItems,@juliaCommentItems,@juliaErrorItems
 syntax cluster juliaExprsPrintf		contains=@juliaExpressions,@juliaPrintfItems
 
 syntax cluster juliaParItems		contains=juliaParBlock,juliaSqBraBlock,juliaCurBraBlock
@@ -93,9 +93,7 @@ syntax cluster juliaSymbolItems		contains=juliaSymbol
 syntax cluster juliaNumberItems		contains=juliaNumbers
 syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliabString,juliasString,juliavString,juliaipString,juliabigString,juliaMIMEString,juliaTriString,juliaShellString,juliaRegEx
 syntax cluster juliaPrintfItems		contains=juliaPrintfParBlock,juliaPrintfString
-"syntax cluster juliaOperatorItems	contains=juliaArithOperator,juliaBitOperator,juliaRedirOperator,juliaBoolOperator,juliaCompOperator,juliaAssignOperator,juliaRangeOperator,juliaTypeOperator,juliaFuncOperator,juliaCTransOperator,juliaVarargOperator,juliaTernaryRegion
 syntax cluster juliaOperatorItems	contains=juliaOperator,juliaRangeOperator,juliaCTransOperator,juliaTernaryRegion
-syntax cluster juliaQuotedItems		contains=juliaQuotedEnd,juliaQuotedBlockKeyword,juliaQuotedQuestion
 syntax cluster juliaCommentItems	contains=juliaCommentL,juliaCommentM
 syntax cluster juliaErrorItems		contains=juliaErrorPar,juliaErrorEnd,juliaErrorElse,juliaErrorCatch,juliaErrorFinally
 
@@ -106,7 +104,6 @@ syntax match   juliaErrorCatch		display "\<catch\>"
 syntax match   juliaErrorFinally	display "\<finally\>"
 syntax match   juliaErrorSemicol	display contained ";"
 
-syntax match   juliaQuotedEnd		display ":\@<=end\>"
 syntax match   juliaRangeEnd		display contained "\<end\>"
 
 if b:julia_syntax_version >= 5
@@ -264,10 +261,6 @@ syntax match   juliaPrintfFmt		display contained "%%"
 syntax match   juliaPrintfFmt		display contained "\\%\%(\d\+\$\)\=[-+' #0]*\%(\d*\|\*\|\*\d\+\$\)\%(\.\%(\d*\|\*\|\*\d\+\$\)\)\=\%([hlLjqzt]\|ll\|hh\)\=[aAbdiuoxXDOUfFeEgGcCsSpn]"hs=s+1
 syntax match   juliaPrintfFmt		display contained "\\%%"hs=s+1
 
-"syntax match   juliaQuotedBlockKeyword	display ":\%(if\|elseif\|else\|while\|for\|begin\|function\|macro\|quote\|type\|immutable\|try\|catch\|let\|\%(bare\)\?module\|do\)\>"he=s+1 contains=juliaInQuote
-"syntax match   juliaQuotedQuestion      display ":?\s*"he=s+1 contains=juliaInQuote
-"syntax match   juliaInQuote             display contained ":\zs[^])}[:space:],;]\+"
-
 " note: why '\@<=' and not '\zs'? (same as juliaDollarVar)
 " note: the distinction between these two is that juliaSymbolS only works
 " within whitespace-sensitive contexts, such as in macro calls without
@@ -386,9 +379,6 @@ hi def link juliaOperator		juliaOperatorHL
 hi def link juliaRangeOperator		juliaOperatorHL
 hi def link juliaCTransOperator		juliaOperatorHL
 hi def link juliaTernaryOperator	juliaOperatorHL
-
-hi def link juliaQuotedBlockKeyword	juliaOperatorHL
-hi def link juliaQuotedQuestion 	juliaOperatorHL
 
 hi def link juliaCommentL		Comment
 hi def link juliaCommentM		Comment
