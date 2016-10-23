@@ -37,10 +37,10 @@ endif
 " Despite these shortcomings, it seems to do a decent job.
 " note: \U5B and \U5D are '[' and ']'
 let s:nonid_chars = "\U01-\U07" . "\U0E-\U1F" .
-      \             "\"#$'(),.:;=?@`\\U5B\\U5D{}" .
+      \             "\"#$'(,.:;=?@`\\U5B{" .
       \             "\U80-\UA1" . "\UA7\UA8\UAB\UAD\UAF\UB4" . "\UB6-\UB8" . "\UBB\UBF"
 
-let s:nonidS_chars = "[:space:]" . s:nonid_chars
+let s:nonidS_chars = "[:space:])\\U5D}" . s:nonid_chars
 
 " the following excludes '!' since it can be used as an identifier,
 " and '$' since it can be used in interpolations
@@ -180,30 +180,45 @@ syntax match   juliaConstGeneric	display "\<\%(nothing\|Main\)\>"
 
 exec 'syntax match   juliaMacro		display "@' . s:idregex . '\%(\.' . s:idregex . '\)*"'
 exec 'syntax region  juliaMacroCallP	transparent start="@' . s:idregex . '\%(\.' . s:idregex . '\)*(" end=")\@1<=" contains=juliaMacro,juliaParBlock nextgroup=juliaMacro'
-exec 'syntax region  juliaMacroCall	transparent start="\(@' . s:idregex . '\%(\.' . s:idregex . '\)*\)\@=\1\%([^(]\|$\)" end="\ze\%([])};]\|$\)" contains=@juliaExpressions,juliaMacro,juliaSymbolS nextgroup=juliaMacro'
+exec 'syntax region  juliaMacroCall	transparent start="\(@' . s:idregex . '\%(\.' . s:idregex . '\)*\)\@=\1\%([^(]\|$\)" end="\ze\%([])};#]\|$\)" contains=@juliaExpressions,juliaMacro,juliaSymbolS nextgroup=juliaMacro'
 
 syntax match   juliaNumbers		display transparent "\<\d\|\.\d\|\<im\>" contains=juliaNumber,juliaFloat,juliaComplexUnit
 
-"decimal number
-syntax match   juliaNumber		display contained "\d\%(_\?\d\)*\%(\>\|im\>\|\ze\D\)" contains=juliaComplexUnit
-"hex number
-syntax match   juliaNumber		display contained "0x\x\%(_\?\x\)*\%(\>\|im\>\|\ze\X\)" contains=juliaComplexUnit
-"bin number
-syntax match   juliaNumber		display contained "0b[01]\%(_\?[01]\)*\%(\>\|im\>\|\ze[^01]\)" contains=juliaComplexUnit
-"oct number
-syntax match   juliaNumber		display contained "0o\o\%(_\?\o\)*\%(\>\|im\>\|\ze\O\)" contains=juliaComplexUnit
-"floating point number, starting with a dot, optional exponent
-syntax match   juliaFloat		display contained "\.\d\%(_\?\d\)*\%([eEf][-+]\?\d\+\)\?\%(\>\|im\>\|\ze\D\)" contains=juliaComplexUnit
-"floating point number, with dot, optional exponent
-syntax match   juliaFloat		display contained "\d\%(_\?\d\)*\.\%(\d\%(_\?\d\)*\)\?\%([eEf][-+]\?\d\+\)\?\%(\>\|im\>\|\ze\D\)" contains=juliaComplexUnit
-"floating point number, without dot, with exponent
-syntax match   juliaFloat		display contained "\d\%(_\?\d\)*[eEf][-+]\?\d\+\%(\>\|im\>\|\ze\D\)" contains=juliaComplexUnit
+"integer regexes
+let s:dec_regex = '\d\%(_\?\d\)*\%(\>\|im\>\|\ze\D\)'
+let s:hex_regex = '0x\x\%(_\?\x\)*\%(\>\|im\>\|\ze\X\)'
+let s:bin_regex = '0b[01]\%(_\?[01]\)*\%(\>\|im\>\|\ze[^01]\)'
+let s:oct_regex = '0o\o\%(_\?\o\)*\%(\>\|im\>\|\ze\O\)'
 
-"hex floating point number, starting with a dot
-syntax match   juliaFloat		display contained "0x\.\%\(\x\%(_\?\x\)*\)\?[pP][-+]\?\d\+\%(\>\|im\>\|\ze\X\)" contains=juliaComplexUnit
-"hex floating point number, starting with a digit
-syntax match   juliaFloat		display contained "0x\x\%(_\?\x\)*\%\(\.\%\(\x\%(_\?\x\)*\)\?\)\?[pP][-+]\?\d\+\%(\>\|im\>\|\ze\X\)" contains=juliaComplexUnit
+let s:int_regex = '\%(' . s:hex_regex .
+      \           '\|'  . s:bin_regex .
+      \           '\|'  . s:oct_regex .
+      \           '\|'  . s:dec_regex .
+      \           '\)'
 
+"floating point regexes
+"  starting with a dot, optional exponent
+let s:float_regex1 = '\.\d\%(_\?\d\)*\%([eEf][-+]\?\d\+\)\?\%(\>\|im\>\|\ze\D\)'
+"  with dot, optional exponent
+let s:float_regex2 = '\d\%(_\?\d\)*\.\%(\d\%(_\?\d\)*\)\?\%([eEf][-+]\?\d\+\)\?\%(\>\|im\>\|\ze\D\)'
+"  without dot, with exponent
+let s:float_regex3 = '\d\%(_\?\d\)*[eEf][-+]\?\d\+\%(\>\|im\>\|\ze\D\)'
+
+"hex floating point numbers
+"  starting with a dot
+let s:hexfloat_regex1 = '0x\.\%\(\x\%(_\?\x\)*\)\?[pP][-+]\?\d\+\%(\>\|im\>\|\ze\X\)'
+"  starting with a digit
+let s:hexfloat_regex2 = '0x\x\%(_\?\x\)*\%\(\.\%\(\x\%(_\?\x\)*\)\?\)\?[pP][-+]\?\d\+\%(\>\|im\>\|\ze\X\)'
+
+let s:float_regex = '\%(' . s:float_regex3 .
+      \             '\|'  . s:float_regex2 .
+      \             '\|'  . s:float_regex1 .
+      \             '\|'  . s:hexfloat_regex2 .
+      \             '\|'  . s:hexfloat_regex1 .
+      \             '\)'
+
+exec 'syntax match   juliaNumber	display contained "' . s:int_regex . '" contains=juliaComplexUnit'
+exec 'syntax match   juliaFloat		display contained "' . s:float_regex . '" contains=juliaComplexUnit'
 syntax match   juliaComplexUnit		display	contained "\<im\>"
 
 exec 'syntax match   juliaOperator	"' . s:operators . '"'
@@ -261,12 +276,14 @@ syntax match   juliaPrintfFmt		display contained "%%"
 syntax match   juliaPrintfFmt		display contained "\\%\%(\d\+\$\)\=[-+' #0]*\%(\d*\|\*\|\*\d\+\$\)\%(\.\%(\d*\|\*\|\*\d\+\$\)\)\=\%([hlLjqzt]\|ll\|hh\)\=[aAbdiuoxXDOUfFeEgGcCsSpn]"hs=s+1
 syntax match   juliaPrintfFmt		display contained "\\%%"hs=s+1
 
+let s:quotable = '\%(' . s:idregex . '\|[-+]\?\%(' . s:float_regex . '\|' . s:int_regex . '\)\|' . s:operators . '\|?\)'
+
 " note: why '\@<=' and not '\zs'? (same as juliaDollarVar)
 " note: the distinction between these two is that juliaSymbolS only works
 " within whitespace-sensitive contexts, such as in macro calls without
 " parentheses and within square brackets
-exec 'syntax match   juliaSymbol	display "\%(\%([' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\|^\)!*\s*\)\@16<=:\%(' . s:idregex . '\|' . s:operators . '\|?\)"'
-exec 'syntax match   juliaSymbolS	contained display "\%(\%([' . s:nonidS_chars . s:uniop_chars . s:binop_chars . ']\|^\)!*\)\@16<=:\%(' . s:idregex . '\|' . s:operators . '\|?\)"'
+exec 'syntax match   juliaSymbol	display "\%(\%([' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\|^\)!*\s*\)\@16<=:' . s:quotable . '"'
+exec 'syntax match   juliaSymbolS	contained display "\%(\%([' . s:nonidS_chars . s:uniop_chars . s:binop_chars . ']\|^\)!*\)\@16<=:' . s:quotable . '"'
 
 " force precedence over Symbols
 syntax match   juliaOperator		display "::"
