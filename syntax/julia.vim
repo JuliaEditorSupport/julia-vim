@@ -30,30 +30,44 @@ else
 endif
 
 " characters which cannot be used in identifiers ('?' is sort of valid but
-" let's just pretend it isn't)
+" let's just pretend it isn't). This list is very incomplete:
+" 1) it only cares about charactes below 256
+" 2) it doesn't distinguish between what's allowed as the 1st char vs in the
+"    rest of an identifier
+" Despite these shortcomings, it seems to do a decent job.
 " note: \U5B and \U5D are '[' and ']'
-let s:nonidclass = "[:space:]" . "\U01-\U20" .
-      \            "\"#$'(),.:;=?@`\\U5B\\U5D{}" .
-      \            "\U80-\UA1" . "\UA7\UA8\UAB\UAD\UAF\UB4" . "\UB6-\UB8" . "\UBB\UBF"
+let s:nonid_chars = "\U01-\U07" . "\U0E-\U1F" .
+      \             "\"#$'(),.:;=?@`\\U5B\\U5D{}" .
+      \             "\U80-\UA1" . "\UA7\UA8\UAB\UAD\UAF\UB4" . "\UB6-\UB8" . "\UBB\UBF"
 
-" the following excludes '!' since it can be used as an identifier.
+let s:nonidS_chars = "[:space:]" . s:nonid_chars
+
+" the following excludes '!' since it can be used as an identifier,
+" and '$' since it can be used in interpolations
 " note that \U2D is '-'
-let s:unioperators = "+\\U2D~¬√∛∜"
+let s:uniop_chars = "+\\U2D~¬√∛∜"
 
-" note: why are 4 backslashes needed in front of \U2D ??
-let s:binoperators = "←→↔↚↛↠↣↦↮⇎⇏⇒⇔⇴⇶⇷⇸⇹⇺⇻⇼⇽⇾⇿⟵⟶⟷⟷⟹⟺⟻⟼⟽⟾⟿⤀⤁⤂⤃⤄⤅⤆⤇⤌⤍⤎⤏⤐⤑⤔⤕⤖⤗⤘⤝⤞⤟⤠⥄⥅⥆⥇⥈⥊⥋⥎⥐⥒⥓⥖⥗⥚⥛⥞⥟⥢⥤⥦⥧⥨⥩⥪⥫⥬⥭⥰⧴⬱⬰⬲⬳⬴⬵⬶⬷⬸⬹⬺⬻⬼⬽⬾⬿⭀⭁⭂⭃⭄⭇⭈⭉⭊⭋⭌￩￫" .
-      \              "><≥≤=≡≠≢∈∉∋∌⊆⊈⊂⊄⊊∝∊∍∥∦∷∺∻∽∾≁≃≄≅≆≇≈≉≊≋≌≍≎≐≑≒≓≔≕≖≗≘≙≚≛≜≝≞≟≣≦≧≨≩≪≫≬≭≮≯≰≱≲≳≴≵≶≷≸≹≺≻≼≽≾≿⊀⊁⊃⊅⊇⊉⊋⊏⊐⊑⊒⊜⊩⊬⊮⊰⊱⊲⊳⊴⊵⊶⊷⋍⋐⋑⋕⋖⋗⋘⋙⋚⋛⋜⋝⋞⋟⋠⋡⋢⋣⋤⋥⋦⋧⋨⋩⋪⋫⋬⋭⋲⋳⋴⋵⋶⋷⋸⋹⋺⋻⋼⋽⋾⋿⟈⟉⟒⦷⧀⧁⧡⧣⧤⧥⩦⩧⩪⩫⩬⩭⩮⩯⩰⩱⩲⩳⩴⩵⩶⩷⩸⩹⩺⩻⩼⩽⩾⩿⪀⪁⪂⪃⪄⪅⪆⪇⪈⪉⪊⪋⪌⪍⪎⪏⪐⪑⪒⪓⪔⪕⪖⪗⪘⪙⪚⪛⪜⪝⪞⪟⪠⪡⪢⪣⪤⪥⪦⪧⪨⪩⪪⪫⪬⪭⪮⪯⪰⪱⪲⪳⪴⪵⪶⪷⪸⪹⪺⪻⪼⪽⪾⪿⫀⫁⫂⫃⫄⫅⫆⫇⫈⫉⫊⫋⫌⫍⫎⫏⫐⫑⫒⫓⫔⫕⫖⫗⫘⫙⫷⫸⫹⫺⊢⊣" .
-      \              "+\\\\U2D|⊕⊖⊞⊟∪∨⊔±∓∔∸≂≏⊎⊻⊽⋎⋓⧺⧻⨈⨢⨣⨤⨥⨦⨧⨨⨩⨪⨫⨬⨭⨮⨹⨺⩁⩂⩅⩊⩌⩏⩐⩒⩔⩖⩗⩛⩝⩡⩢⩣" .
-      \              "*/÷%&⋅∘×\\∩∧⊗⊘⊙⊚⊛⊠⊡⊓∗∙∤⅋≀⊼⋄⋆⋇⋉⋊⋋⋌⋏⋒⟑⦸⦼⦾⦿⧶⧷⨇⨰⨱⨲⨳⨴⨵⨶⨷⨸⨻⨼⨽⩀⩃⩄⩋⩍⩎⩑⩓⩕⩘⩚⩜⩞⩟⩠⫛⊍▷⨝⟕⟖⟗" .
-      \              "^↑↓⇵⟰⟱⤈⤉⤊⤋⤒⤓⥉⥌⥍⥏⥑⥔⥕⥘⥙⥜⥝⥠⥡⥣⥥⥮⥯￪￬"
-      \              "."
+let s:binop_chars = "←→↔↚↛↠↣↦↮⇎⇏⇒⇔⇴⇶⇷⇸⇹⇺⇻⇼⇽⇾⇿⟵⟶⟷⟷⟹⟺⟻⟼⟽⟾⟿⤀⤁⤂⤃⤄⤅⤆⤇⤌⤍⤎⤏⤐⤑⤔⤕⤖⤗⤘⤝⤞⤟⤠⥄⥅⥆⥇⥈⥊⥋⥎⥐⥒⥓⥖⥗⥚⥛⥞⥟⥢⥤⥦⥧⥨⥩⥪⥫⥬⥭⥰⧴⬱⬰⬲⬳⬴⬵⬶⬷⬸⬹⬺⬻⬼⬽⬾⬿⭀⭁⭂⭃⭄⭇⭈⭉⭊⭋⭌￩￫" .
+      \             "><≥≤=≡≠≢∈∉∋∌⊆⊈⊂⊄⊊∝∊∍∥∦∷∺∻∽∾≁≃≄≅≆≇≈≉≊≋≌≍≎≐≑≒≓≔≕≖≗≘≙≚≛≜≝≞≟≣≦≧≨≩≪≫≬≭≮≯≰≱≲≳≴≵≶≷≸≹≺≻≼≽≾≿⊀⊁⊃⊅⊇⊉⊋⊏⊐⊑⊒⊜⊩⊬⊮⊰⊱⊲⊳⊴⊵⊶⊷⋍⋐⋑⋕⋖⋗⋘⋙⋚⋛⋜⋝⋞⋟⋠⋡⋢⋣⋤⋥⋦⋧⋨⋩⋪⋫⋬⋭⋲⋳⋴⋵⋶⋷⋸⋹⋺⋻⋼⋽⋾⋿⟈⟉⟒⦷⧀⧁⧡⧣⧤⧥⩦⩧⩪⩫⩬⩭⩮⩯⩰⩱⩲⩳⩴⩵⩶⩷⩸⩹⩺⩻⩼⩽⩾⩿⪀⪁⪂⪃⪄⪅⪆⪇⪈⪉⪊⪋⪌⪍⪎⪏⪐⪑⪒⪓⪔⪕⪖⪗⪘⪙⪚⪛⪜⪝⪞⪟⪠⪡⪢⪣⪤⪥⪦⪧⪨⪩⪪⪫⪬⪭⪮⪯⪰⪱⪲⪳⪴⪵⪶⪷⪸⪹⪺⪻⪼⪽⪾⪿⫀⫁⫂⫃⫄⫅⫆⫇⫈⫉⫊⫋⫌⫍⫎⫏⫐⫑⫒⫓⫔⫕⫖⫗⫘⫙⫷⫸⫹⫺⊢⊣" .
+      \             "+\\U2D|⊕⊖⊞⊟∪∨⊔±∓∔∸≂≏⊎⊻⊽⋎⋓⧺⧻⨈⨢⨣⨤⨥⨦⨧⨨⨩⨪⨫⨬⨭⨮⨹⨺⩁⩂⩅⩊⩌⩏⩐⩒⩔⩖⩗⩛⩝⩡⩢⩣" .
+      \             "*/÷%&⋅∘×\\∩∧⊗⊘⊙⊚⊛⊠⊡⊓∗∙∤⅋≀⊼⋄⋆⋇⋉⋊⋋⋌⋏⋒⟑⦸⦼⦾⦿⧶⧷⨇⨰⨱⨲⨳⨴⨵⨶⨷⨸⨻⨼⨽⩀⩃⩄⩋⩍⩎⩑⩓⩕⩘⩚⩜⩞⩟⩠⫛⊍▷⨝⟕⟖⟗" .
+      \             "^↑↓⇵⟰⟱⤈⤉⤊⤋⤒⤓⥉⥌⥍⥏⥑⥔⥕⥘⥙⥜⥝⥠⥡⥣⥥⥮⥯￪￬"
+      \             "."
 
 " a Julia identifier, sort of
-let idregex = '[^' . s:nonidclass . '0-9!' . s:unioperators . s:binoperators . '][^' . s:nonidclass . s:unioperators . s:binoperators . ']*'
+let s:idregex = '[^' . s:nonidS_chars . '0-9!' . s:uniop_chars . s:binop_chars . '][^' . s:nonidS_chars . s:uniop_chars . s:binop_chars . ']*'
+
+
+let s:operators = '\%(' . '\.\?\%([-+*/^÷%|&]\|//\|\\\\\|<<\|>>>\?\)\?=' .
+      \           '\|'  . '[:>~$]\?=' .
+      \           '\|'  . '\%(||\|&&\||>\|<|\|<:\|:>\|::\|<<\|>>>\?\|//\|->\|\.\{3\}\)' .
+      \           '\|'  . '\.\?[' . s:binop_chars . ']' .
+      \           '\|'  . '[' . s:uniop_chars . '!$]' .
+      \           '\)'
 
 syn case match
 
-syntax cluster juliaExpressions		contains=@juliaParItems,@juliaStringItems,@juliaKeywordItems,@juliaBlocksItems,@juliaTypesItems,@juliaConstItems,@juliaMacroItems,@juliaOperatorItems,@juliaNumberItems,@juliaQuotedItems,@juliaCommentItems,@juliaErrorItems
+syntax cluster juliaExpressions		contains=@juliaParItems,@juliaStringItems,@juliaKeywordItems,@juliaBlocksItems,@juliaTypesItems,@juliaConstItems,@juliaMacroItems,@juliaSymbolItems,@juliaOperatorItems,@juliaNumberItems,@juliaQuotedItems,@juliaCommentItems,@juliaErrorItems
 syntax cluster juliaExprsPrintf		contains=@juliaExpressions,@juliaPrintfItems
 
 syntax cluster juliaParItems		contains=juliaParBlock,juliaSqBraBlock,juliaCurBraBlock
@@ -74,11 +88,13 @@ else
 endif
 syntax cluster juliaConstItemsAll	contains=juliaConstNum,juliaConstBool,juliaConstEnv,juliaConstIO,juliaConstMMap,juliaConstC,juliaConstGeneric
 syntax cluster juliaConstItems0506	contains=juliaConstEnv0506
-syntax cluster juliaMacroItems		contains=juliaMacro,juliaDollarVar,juliaPrintfMacro
+syntax cluster juliaMacroItems		contains=juliaMacroCall,juliaMacroCallP,juliaDollarVar,juliaPrintfMacro
+syntax cluster juliaSymbolItems		contains=juliaSymbol
 syntax cluster juliaNumberItems		contains=juliaNumbers
 syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliabString,juliasString,juliavString,juliaipString,juliabigString,juliaMIMEString,juliaTriString,juliaShellString,juliaRegEx
 syntax cluster juliaPrintfItems		contains=juliaPrintfParBlock,juliaPrintfString
-syntax cluster juliaOperatorItems	contains=juliaArithOperator,juliaBitOperator,juliaRedirOperator,juliaBoolOperator,juliaCompOperator,juliaAssignOperator,juliaRangeOperator,juliaTypeOperator,juliaFuncOperator,juliaCTransOperator,juliaVarargOperator,juliaTernaryRegion
+"syntax cluster juliaOperatorItems	contains=juliaArithOperator,juliaBitOperator,juliaRedirOperator,juliaBoolOperator,juliaCompOperator,juliaAssignOperator,juliaRangeOperator,juliaTypeOperator,juliaFuncOperator,juliaCTransOperator,juliaVarargOperator,juliaTernaryRegion
+syntax cluster juliaOperatorItems	contains=juliaOperator,juliaRangeOperator,juliaCTransOperator,juliaTernaryRegion
 syntax cluster juliaQuotedItems		contains=juliaQuotedEnd,juliaQuotedBlockKeyword,juliaQuotedQuestion
 syntax cluster juliaCommentItems	contains=juliaCommentL,juliaCommentM
 syntax cluster juliaErrorItems		contains=juliaErrorPar,juliaErrorEnd,juliaErrorElse,juliaErrorCatch,juliaErrorFinally
@@ -99,7 +115,7 @@ else
   syntax region  juliaParBlock		matchgroup=juliaParDelim start="(" end=")" contains=@juliaExpressions
 endif
 syntax region  juliaParBlockInRange	matchgroup=juliaParDelim contained start="(" end=")" contains=@juliaExpressions,juliaParBlockInRange,juliaRangeEnd,juliaComprehensionFor
-syntax region  juliaSqBraBlock		matchgroup=juliaParDelim start="\[" end="\]" contains=@juliaExpressions,juliaParBlockInRange,juliaRangeEnd,juliaComprehensionFor
+syntax region  juliaSqBraBlock		matchgroup=juliaParDelim start="\[" end="\]" contains=@juliaExpressions,juliaParBlockInRange,juliaRangeEnd,juliaComprehensionFor,juliaSymbolS
 syntax region  juliaCurBraBlock		matchgroup=juliaParDelim start="{" end="}" contains=@juliaExpressions
 
 syntax match   juliaKeyword		"\<\%(return\|local\|global\|import\%(all\)\?\|export\|using\|const\|in\)\>"
@@ -123,7 +139,7 @@ syntax region  juliaFinallyBlock	matchgroup=juliaException transparent contained
 syntax match   juliaTypedef		"\<\%(abstract\|typealias\|bitstype\)\>"
 
 if b:julia_syntax_version >= 5
-  syntax region  juliaComprehensionFor	matchgroup=juliaComprehensionFor transparent contained start="[^[:space:],;({[]\@1<=\s*\zs\<for\>" end="\ze[]);]" contains=@juliaExpressions,juliaComprehensionIf,juliaComprehensionFor
+  syntax region  juliaComprehensionFor	matchgroup=juliaComprehensionFor transparent contained start="[^[:space:],;:({[]\@1<=\s*\zs\<for\>" end="\ze[]);]" contains=@juliaExpressions,juliaComprehensionIf,juliaComprehensionFor
   syntax match   juliaComprehensionIf	contained "\<if\>"
 else
   syntax match   juliaComprehensionFor	contained "\<for\>"
@@ -165,7 +181,9 @@ syntax match   juliaConstIO		display "\<\%(STD\%(OUT\|IN\|ERR\)\)\>"
 syntax match   juliaConstC		display "\<\%(WORD_SIZE\|C_NULL\)\>"
 syntax match   juliaConstGeneric	display "\<\%(nothing\|Main\)\>"
 
-exec 'syntax match   juliaMacro		display "@' . idregex . '\%(\.' . idregex . '\)*"'
+exec 'syntax match   juliaMacro		display "@' . s:idregex . '\%(\.' . s:idregex . '\)*"'
+exec 'syntax region  juliaMacroCallP	transparent start="@' . s:idregex . '\%(\.' . s:idregex . '\)*(" end=")\@1<=" contains=juliaMacro,juliaParBlock nextgroup=juliaMacro'
+exec 'syntax region  juliaMacroCall	transparent start="\(@' . s:idregex . '\%(\.' . s:idregex . '\)*\)\@=\1\%([^(]\|$\)" end="\ze\%([])};]\|$\)" contains=@juliaExpressions,juliaMacro,juliaSymbolS nextgroup=juliaMacro'
 
 syntax match   juliaNumbers		display transparent "\<\d\|\.\d\|\<im\>" contains=juliaNumber,juliaFloat,juliaComplexUnit
 
@@ -191,22 +209,12 @@ syntax match   juliaFloat		display contained "0x\x\%(_\?\x\)*\%\(\.\%\(\x\%(_\?\
 
 syntax match   juliaComplexUnit		display	contained "\<im\>"
 
-syntax match   juliaArithOperator	"\%(//\|√\|∛\|\.\?\%(//\|\\\|[-+*%/^÷⋅×⊛⊖⊗⊘⊙⊚⊛⫽]\)\)"
-syntax match   juliaSetOperator		"[∪∩∈∉∋∌⊆⊈⊊]"
-syntax match   juliaCompOperator	"\.\?[<>]"
-syntax match   juliaBitOperator		"\%(<<\|>>>\|>>\|&\||\|\~\|\$\)"
-syntax match   juliaRedirOperator	"\%(|>\|<|\)"
-syntax match   juliaBoolOperator	"\%(&&\|||\|[∧∨!]\)"
-syntax match   juliaCompOperator	"\%(\.\?\%([<>!=]=\|[≤≥≠≡≢]\)\|[≈≉]\)"
-syntax match   juliaAssignOperator	"\%([$|\&*/\\%+-.]\|<<\|>>>\?\)\?="
-syntax match   juliaRangeOperator	":"
-syntax match   juliaTypeOperator	"[<:]:"
-syntax match   juliaFuncOperator	"->"
-syntax match   juliaVarargOperator	"\.\{3\}"
-syntax region  juliaTernaryRegion	matchgroup=juliaTernaryOperator start="?" skip=":\(:\|\s*[^:[:space:]'"({[]\+\s*\ze:\)" end=":" contains=@juliaExpressions,juliaErrorSemicol
+exec 'syntax match   juliaOperator	"' . s:operators . '"'
+syntax match   juliaRangeOperator	display ":"
+syntax region  juliaTernaryRegion	matchgroup=juliaTernaryOperator start="?" skip=":\(:\|[^:[:space:]'"({[]\+\s*\ze:\)" end=":" contains=@juliaExpressions,juliaErrorSemicol
 
 " note: why doesn't \zs work, and we need \@<= instead?
-exec 'syntax match   juliaDollarVar	contained "\([' . s:nonidclass . s:unioperators . s:binoperators . '!]\|^\)\@8<=\$' . idregex . '"'
+exec 'syntax match   juliaDollarVar	contained "\([' . s:nonidS_chars . s:uniop_chars . s:binop_chars . '!]\|^\)\@8<=\$' . s:idregex . '"'
 
 syntax match   juliaChar		display "'\\\?.'" contains=juliaSpecialChar
 syntax match   juliaChar		display "'\\\o\{3\}'" contains=juliaOctalEscapeChar
@@ -214,7 +222,7 @@ syntax match   juliaChar		display "'\\x\x\{2\}'" contains=juliaHexEscapeChar
 syntax match   juliaChar		display "'\\u\x\{1,4\}'" contains=juliaUniCharSmall
 syntax match   juliaChar		display "'\\U\x\{1,8\}'" contains=juliaUniCharLarge
 
-exec 'syntax match   juliaCTransOperator	"[^' . s:nonidclass . s:unioperators . s:binoperators . '!]\zs\.\?' . "'" . '"'
+exec 'syntax match   juliaCTransOperator	"[^' . s:nonidS_chars . s:uniop_chars . s:binop_chars . '!]\zs\.\?' . "'" . '"'
 
 syntax region  juliaString		matchgroup=juliaStringDelim start=+"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaStringVars,@juliaSpecialChars
 syntax region  juliabString		matchgroup=juliaStringDelim start=+\<b"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaSpecialChars
@@ -235,9 +243,9 @@ syntax region  juliaShellString		matchgroup=juliaStringDelim start=+`+ skip=+\%(
 
 syntax cluster juliaStringVars		contains=juliaStringVarsPar,juliaStringVarsSqBra,juliaStringVarsCurBra,juliaStringVarsPla
 syntax region  juliaStringVarsPar	contained matchgroup=juliaStringVarDelim start="$(" end=")" contains=@juliaExpressions
-syntax region  juliaStringVarsSqBra	contained matchgroup=juliaStringVarDelim start="$\[" end="\]" contains=@juliaExpressions
+syntax region  juliaStringVarsSqBra	contained matchgroup=juliaStringVarDelim start="$\[" end="\]" contains=@juliaExpressions,juliaComprehensionFor,juliaSymbolS
 syntax region  juliaStringVarsCurBra	contained matchgroup=juliaStringVarDelim start="${" end="}" contains=@juliaExpressions
-exec 'syntax match   juliaStringVarsPla	contained "\$' . idregex . '"'
+exec 'syntax match   juliaStringVarsPla	contained "\$' . s:idregex . '"'
 
 " TODO improve RegEx
 syntax region  juliaRegEx		matchgroup=juliaStringDelim start=+\<r"+ skip=+\%(\\\\\)*\\"+ end=+"[imsx]*+
@@ -256,9 +264,19 @@ syntax match   juliaPrintfFmt		display contained "%%"
 syntax match   juliaPrintfFmt		display contained "\\%\%(\d\+\$\)\=[-+' #0]*\%(\d*\|\*\|\*\d\+\$\)\%(\.\%(\d*\|\*\|\*\d\+\$\)\)\=\%([hlLjqzt]\|ll\|hh\)\=[aAbdiuoxXDOUfFeEgGcCsSpn]"hs=s+1
 syntax match   juliaPrintfFmt		display contained "\\%%"hs=s+1
 
-syntax match   juliaQuotedBlockKeyword	display ":\%(if\|elseif\|else\|while\|for\|begin\|function\|macro\|quote\|type\|immutable\|try\|catch\|let\|\%(bare\)\?module\|do\)\>"he=s+1 contains=juliaInQuote
-syntax match   juliaQuotedQuestion      display ":\%(?\s*\)"he=s+1 contains=juliaInQuote
-syntax match   juliaInQuote             display contained ":\zs[^])}[:space:],;]\+"
+"syntax match   juliaQuotedBlockKeyword	display ":\%(if\|elseif\|else\|while\|for\|begin\|function\|macro\|quote\|type\|immutable\|try\|catch\|let\|\%(bare\)\?module\|do\)\>"he=s+1 contains=juliaInQuote
+"syntax match   juliaQuotedQuestion      display ":?\s*"he=s+1 contains=juliaInQuote
+"syntax match   juliaInQuote             display contained ":\zs[^])}[:space:],;]\+"
+
+" note: why '\@<=' and not '\zs'? (same as juliaDollarVar)
+" note: the distinction between these two is that juliaSymbolS only works
+" within whitespace-sensitive contexts, such as in macro calls without
+" parentheses and within square brackets
+exec 'syntax match   juliaSymbol	display "\%(\%([' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\|^\)!*\s*\)\@16<=:\%(' . s:idregex . '\|' . s:operators . '\|?\)"'
+exec 'syntax match   juliaSymbolS	contained display "\%(\%([' . s:nonidS_chars . s:uniop_chars . s:binop_chars . ']\|^\)!*\)\@16<=:\%(' . s:idregex . '\|' . s:operators . '\|?\)"'
+
+" force precedence over Symbols
+syntax match   juliaOperator		display "::"
 
 syntax region  juliaCommentL		matchgroup=juliaCommentDelim start="#\ze\%([^=]\|$\)" end="$" keepend contains=juliaTodo,@spell
 syntax region  juliaCommentM		matchgroup=juliaCommentDelim start="#=\ze\%([^#]\|$\)" end="=#" contains=juliaTodo,juliaCommentM,@spell
@@ -293,7 +311,7 @@ hi def link juliaBaseTypeRound		Type
 hi def link juliaBaseTypeSpecial	Type
 hi def link juliaBaseTypeRandom		Type
 hi def link juliaBaseTypeDisplay	Type
-hi def link juliaBaseTypeTime   	Type
+hi def link juliaBaseTypeTime		Type
 hi def link juliaBaseTypeOther		Type
 for t in ["Array","Range","Other","IO"]
   let h = b:julia_syntax_version >= 5 ? "Type" : "NONE"
@@ -309,7 +327,7 @@ endfor
 hi def link juliaConstNum		Constant
 hi def link juliaConstEnv		Constant
 hi def link juliaConstIO		Constant
-hi def link juliaConstC 		Constant
+hi def link juliaConstC			Constant
 hi def link juliaConstLimits		Constant
 hi def link juliaConstGeneric		Constant
 hi def link juliaRangeEnd		Constant
@@ -325,6 +343,8 @@ hi def link juliaComprehensionIf	Keyword
 hi def link juliaDollarVar		Identifier
 
 hi def link juliaMacro			Macro
+hi def link juliaSymbol			Identifier
+hi def link juliaSymbolS		Identifier
 
 hi def link juliaNumber			Number
 hi def link juliaFloat			Float
@@ -358,27 +378,17 @@ hi def link juliaUniCharLarge		SpecialChar
 hi def link juliaPrintfFmt		SpecialChar
 
 if exists("g:julia_highlight_operators")
-  hi! def link juliaOperator		Operator
+  hi! def link juliaOperatorHL		Operator
 else
-  hi! def link juliaOperator		juliaNone
+  hi! def link juliaOperatorHL		juliaNone
 endif
-hi def link juliaArithOperator		juliaOperator
-hi def link juliaSetOperator		juliaOperator
-hi def link juliaBitOperator		juliaOperator
-hi def link juliaRedirOperator		juliaOperator
-hi def link juliaBoolOperator		juliaOperator
-hi def link juliaCompOperator		juliaOperator
-hi def link juliaAssignOperator		juliaOperator
-hi def link juliaRangeOperator		juliaOperator
-hi def link juliaTypeOperator		juliaOperator
-hi def link juliaFuncOperator		juliaOperator
-hi def link juliaCTransOperator		juliaOperator
-hi def link juliaVarargOperator		juliaOperator
-hi def link juliaTernaryOperator	juliaOperator
+hi def link juliaOperator		juliaOperatorHL
+hi def link juliaRangeOperator		juliaOperatorHL
+hi def link juliaCTransOperator		juliaOperatorHL
+hi def link juliaTernaryOperator	juliaOperatorHL
 
-"hi def link juliaQuotedEnd              juliaOperator
-hi def link juliaQuotedBlockKeyword	juliaOperator
-hi def link juliaQuotedQuestion 	juliaOperator
+hi def link juliaQuotedBlockKeyword	juliaOperatorHL
+hi def link juliaQuotedQuestion 	juliaOperatorHL
 
 hi def link juliaCommentL		Comment
 hi def link juliaCommentM		Comment
@@ -398,7 +408,7 @@ hi def link juliaError			Error
 if b:julia_syntax_highlight_deprecated == 1
   hi! def link juliaDeprecated		Todo
 else
-  hi! def link juliaDeprecated          NONE
+  hi! def link juliaDeprecated		NONE
 end
 
 syntax sync fromstart
