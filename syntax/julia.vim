@@ -276,15 +276,22 @@ syntax match   juliaPrintfFmt		display contained "%%"
 syntax match   juliaPrintfFmt		display contained "\\%\%(\d\+\$\)\=[-+' #0]*\%(\d*\|\*\|\*\d\+\$\)\%(\.\%(\d*\|\*\|\*\d\+\$\)\)\=\%([hlLjqzt]\|ll\|hh\)\=[aAbdiuoxXDOUfFeEgGcCsSpn]"hs=s+1
 syntax match   juliaPrintfFmt		display contained "\\%%"hs=s+1
 
-let s:quotable = '\%(' . s:idregex . '\|[-+]\?\%(' . s:float_regex . '\|' . s:int_regex . '\)\|' . s:operators . '\|?\)'
+let s:quotable = '\%(' . s:idregex . '\|' . s:operators . '\|?\)'
 
-" note: why '\@<=' and not '\zs'? (same as juliaDollarVar)
-" note: juliaSymbolS only works within whitespace-sensitive contexts,
-" such as in macro calls without parentheses, or within square brackets
-exec 'syntax match   juliaSymbol	display "^\s*:' . s:quotable . '"'
-exec 'syntax match   juliaSymbol	display "\s\{3,\}:' . s:quotable . '"'
-exec 'syntax match   juliaSymbol	display "\%([' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\s*\)\@3<=:' . s:quotable . '"'
-exec 'syntax match   juliaSymbolS	contained display "\%([])}[:space:]]\)\@1<=:' . s:quotable . '"'
+"" The following is more correct and would recognize ranges of the form `a :b`
+"" outside of whitespace-sensitive contexts. Unfortunately, it seems too slow
+"" and buggy...
+""
+"" " note: why '\@<=' and not '\zs'? (same as juliaDollarVar)
+"" " note: juliaSymbolS only works within whitespace-sensitive contexts,
+"" " such as in macro calls without parentheses, or within square brackets
+"" "exec 'syntax match   juliaSymbol	display "^\s*:' . s:quotable . '"'
+"" "exec 'syntax match   juliaSymbol	display "\s\{3,\}:' . s:quotable . '"'
+"" "exec 'syntax match   juliaSymbol	display "\%([' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\s*\)\@3<=:' . s:quotable . '"'
+"" "exec 'syntax match   juliaSymbolS	contained display "\%([])}[:space:]]\)\@1<=:' . s:quotable . '"'
+
+exec 'syntax match   juliaSymbol	display "\%(^\|\s\):' . s:quotable . '"'
+exec 'syntax match   juliaSymbol	display "\%([' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\)\@1<=:' . s:quotable . '"'
 
 " force precedence over Symbols
 syntax match   juliaOperator		display "::"
