@@ -178,7 +178,7 @@ syntax match   juliaConstIO		display "\<\%(STD\%(OUT\|IN\|ERR\)\)\>"
 syntax match   juliaConstC		display "\<\%(WORD_SIZE\|C_NULL\)\>"
 syntax match   juliaConstGeneric	display "\<\%(nothing\|Main\)\>"
 
-exec 'syntax match   juliaMacro		display "@' . s:idregex . '\%(\.' . s:idregex . '\)*"'
+exec 'syntax match   juliaMacro		contained display "@' . s:idregex . '\%(\.' . s:idregex . '\)*"'
 exec 'syntax region  juliaMacroCallP	transparent start="@' . s:idregex . '\%(\.' . s:idregex . '\)*(" end=")\@1<=" contains=juliaMacro,juliaParBlock nextgroup=juliaMacro'
 exec 'syntax region  juliaMacroCall	transparent start="\(@' . s:idregex . '\%(\.' . s:idregex . '\)*\)\@=\1\%([^(]\|$\)" end="\ze\%([])};#]\|$\)" contains=@juliaExpressions,juliaMacro,juliaSymbolS nextgroup=juliaMacro'
 
@@ -279,11 +279,12 @@ syntax match   juliaPrintfFmt		display contained "\\%%"hs=s+1
 let s:quotable = '\%(' . s:idregex . '\|[-+]\?\%(' . s:float_regex . '\|' . s:int_regex . '\)\|' . s:operators . '\|?\)'
 
 " note: why '\@<=' and not '\zs'? (same as juliaDollarVar)
-" note: the distinction between these two is that juliaSymbolS only works
-" within whitespace-sensitive contexts, such as in macro calls without
-" parentheses and within square brackets
-exec 'syntax match   juliaSymbol	display "\%(\%([' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\|^\)!*\s*\)\@16<=:' . s:quotable . '"'
-exec 'syntax match   juliaSymbolS	contained display "\%(\%([' . s:nonidS_chars . s:uniop_chars . s:binop_chars . ']\|^\)!*\)\@16<=:' . s:quotable . '"'
+" note: juliaSymbolS only works within whitespace-sensitive contexts,
+" such as in macro calls without parentheses, or within square brackets
+exec 'syntax match   juliaSymbol	display "^\s*:' . s:quotable . '"'
+exec 'syntax match   juliaSymbol	display "\s\{3,\}:' . s:quotable . '"'
+exec 'syntax match   juliaSymbol	display "\%([' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\s*\)\@3<=:' . s:quotable . '"'
+exec 'syntax match   juliaSymbolS	contained display "\%([])}[:space:]]\)\@1<=:' . s:quotable . '"'
 
 " force precedence over Symbols
 syntax match   juliaOperator		display "::"
