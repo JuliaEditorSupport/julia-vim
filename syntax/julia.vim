@@ -285,10 +285,11 @@ let s:quotable = '\%(' . s:idregex . '\|?\|' . s:operators . '\|' . s:float_rege
 " ranges rather than symbols in those contexts.
 " (Note that such `a :b` expressions only allows at most 5 spaces between
 " the identifier and the colon anyway.)
-exec 'syntax match   juliaSymbol	display "^\s*:' . s:quotable . '"'
-exec 'syntax match   juliaSymbol	display "\s\{6,\}:' . s:quotable . '"'
-exec 'syntax match   juliaSymbol	display "\%([' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\s*\)\@6<=:' . s:quotable . '"'
-exec 'syntax match   juliaSymbolS	contained display "\%([])}[:space:]]\)\@1<=:' . s:quotable . '"'
+" (note: `display` here causes problems.)
+exec 'syntax match   juliaSymbol	"^\s*:' . s:quotable . '"'
+exec 'syntax match   juliaSymbol	"\s\{6,\}:' . s:quotable . '"'
+exec 'syntax match   juliaSymbol	"\%([' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\s*\)\@6<=:' . s:quotable . '"'
+exec 'syntax match   juliaSymbolS	contained "\%([])}[:space:]]\)\@1<=:' . s:quotable . '"'
 
 "" " Greedier version of the above
 ""
