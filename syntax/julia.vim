@@ -223,7 +223,7 @@ syntax match   juliaComplexUnit		display	contained "\<im\>"
 
 exec 'syntax match   juliaOperator	"' . s:operators . '"'
 syntax match   juliaRangeOperator	display ":"
-syntax region  juliaTernaryRegion	matchgroup=juliaTernaryOperator start="?" skip=":\(:\|[^:[:space:]'"({[]\+\s*\ze:\)" end=":" contains=@juliaExpressions,juliaErrorSemicol
+syntax region  juliaTernaryRegion	matchgroup=juliaTernaryOperator start="?" skip="\%(:\(:\|[^:[:space:]'"({[]\+\s*\ze:\)\|^\s*:\|\%(?\s*\)\@6<=:(\)" end=":" contains=@juliaExpressions,juliaErrorSemicol
 
 exec 'syntax match   juliaDollarVar	display contained "\([' . s:nonidS_chars . s:uniop_chars . s:binop_chars . '!]\|^\)\@1<=\$' . s:idregex . '"'
 
@@ -247,7 +247,7 @@ syntax region  juliaMIMEString		matchgroup=juliaStringDelim start=+\<MIME"+ skip
 
 syntax region  juliaTriString		matchgroup=juliaStringDelim start=+"""+ skip=+\%(\\\\\)*\\"+ end=+"""+ contains=@juliaStringVars,@juliaSpecialChars
 
-syntax region  juliaPrintfMacro		transparent start="@s\?printf(" end=")\@<=" contains=juliaMacro,juliaPrintfParBlock
+syntax region  juliaPrintfMacro		transparent start="@s\?printf(" end=")\@1<=" contains=juliaMacro,juliaPrintfParBlock
 syntax region  juliaPrintfMacro		transparent start="@s\?printf\s\+" end="\n" contains=@juliaExprsPrintf
 syntax region  juliaPrintfParBlock	contained matchgroup=juliaParDelim start="(" end=")" contains=@juliaExprsPrintf
 syntax region  juliaPrintfString	contained matchgroup=juliaStringDelim start=+"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaSpecialChars,@juliaPrintfChars
