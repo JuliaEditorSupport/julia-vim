@@ -115,7 +115,9 @@ syntax region  juliaParBlockInRange	matchgroup=juliaParDelim contained start="("
 syntax region  juliaSqBraBlock		matchgroup=juliaParDelim start="\[" end="\]" contains=@juliaExpressions,juliaParBlockInRange,juliaRangeEnd,juliaComprehensionFor,juliaSymbolS,juliaQuotedParBlockS,juliaQuotedQMarkParS
 syntax region  juliaCurBraBlock		matchgroup=juliaParDelim start="{" end="}" contains=@juliaExpressions
 
-syntax match   juliaKeyword		display "\<\%(return\|local\|global\|import\%(all\)\?\|export\|using\|const\|in\)\>"
+let s:keywords = '\<\%(return\|local\|global\|import\%(all\)\?\|export\|using\|const\|in\)\>'
+
+exec 'syntax match   juliaKeyword		display "' . s:keywords . '"'
 syntax match   juliaRepKeyword		display "\<\%(break\|continue\)\>"
 syntax region  juliaConditionalBlock	matchgroup=juliaConditional start="\<if\>" end="\<end\>" contains=@juliaExpressions,juliaConditionalEIBlock,juliaConditionalEBlock fold
 syntax region  juliaConditionalEIBlock	matchgroup=juliaConditional transparent contained start="\<elseif\>" end="\<\%(end\|else\|elseif\)\>"me=s-1 contains=@juliaExpressions,juliaConditionalEIBlock,juliaConditionalEBlock
@@ -286,9 +288,12 @@ let s:quotable = '\%(' . s:idregex . '\|?\|' . s:operators . '\|' . s:float_rege
 " (Note that such `a :b` expressions only allows at most 5 spaces between
 " the identifier and the colon anyway.)
 " (note: `display` here causes problems.)
+
+
 exec 'syntax match   juliaSymbol	"^\s*:' . s:quotable . '"'
 exec 'syntax match   juliaSymbol	"\s\{6,\}:' . s:quotable . '"'
 exec 'syntax match   juliaSymbol	"\%([' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\s*\)\@6<=:' . s:quotable . '"'
+exec 'syntax match   juliaSymbol	"\%(' . s:keywords . '\s*\)\@9<=:' . s:quotable . '"'
 exec 'syntax match   juliaSymbolS	contained "\%([])}[:space:]]\)\@1<=:' . s:quotable . '"'
 
 "" " Greedier version of the above
@@ -300,7 +305,7 @@ exec 'syntax match   juliaSymbolS	contained "\%([])}[:space:]]\)\@1<=:' . s:quot
 " force precedence over Symbols
 syntax match   juliaOperator		display "::"
 
-exec 'syntax region   juliaQuotedParBlock	matchgroup=juliaQParDelim start="\%(^\s*\|\s\{6,\}\|\%([' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\s*\)\@6<=\)\zs:(" end=")" contains=@juliaExpressions'
+exec 'syntax region   juliaQuotedParBlock	matchgroup=juliaQParDelim start="\%(^\s*\|\s\{6,\}\|\%([' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\s*\)\@6<=\|\%(' . s:keywords . '\s*\)\@9<=\)\zs:(" end=")" contains=@juliaExpressions'
 exec 'syntax match    juliaQuotedQMarkPar	"\%(^\s*\|\s\{6,\}\|\%([' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\s*\)\@6<=\)\zs:(\s*?\s*)" contains=juliaQuotedQMark'
 exec 'syntax region   juliaQuotedParBlockS	matchgroup=juliaQParDelim contained start="\%([])}[:space:]]\)\@1<=:(" end=")" contains=@juliaExpressions'
 exec 'syntax match    juliaQuotedQMarkParS	contained "\%([])}[:space:]]\)\@1<=:(\s*?\s*)" contains=juliaQuotedQMark'
