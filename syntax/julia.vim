@@ -280,6 +280,8 @@ syntax match   juliaPrintfFmt		display contained "\\%\%(\d\+\$\)\=[-+' #0]*\%(\d
 syntax match   juliaPrintfFmt		display contained "\\%%"hs=s+1
 
 let s:quotable = '\%(' . s:idregex . '\|?\|' . s:operators . '\|' . s:float_regex . '\|' . s:int_regex . '\)'
+let s:quoting_colon = '\%(^\s*\|\s\{6,\}\|\%([' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\s*\)\@6<=\|\%(' . s:keywords . '\s*\)\@9<=\)\zs:'
+let s:quoting_colonS = '\%([])}[:space:]]\)\@1<=:'
 
 " note: juliaSymbolS only works within whitespace-sensitive contexts,
 " such as in macro calls without parentheses, or within square brackets.
@@ -289,27 +291,19 @@ let s:quotable = '\%(' . s:idregex . '\|?\|' . s:operators . '\|' . s:float_rege
 " the identifier and the colon anyway.)
 " (note: `display` here causes problems.)
 
+exec 'syntax match   juliaSymbol	"' .s:quoting_colon . s:quotable . '"'
+exec 'syntax match   juliaSymbolS	contained "' . s:quoting_colonS . s:quotable . '"'
 
-exec 'syntax match   juliaSymbol	"^\s*:' . s:quotable . '"'
-exec 'syntax match   juliaSymbol	"\s\{6,\}:' . s:quotable . '"'
-exec 'syntax match   juliaSymbol	"\%([' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\s*\)\@6<=:' . s:quotable . '"'
-exec 'syntax match   juliaSymbol	"\%(' . s:keywords . '\s*\)\@9<=:' . s:quotable . '"'
-exec 'syntax match   juliaSymbolS	contained "\%([])}[:space:]]\)\@1<=:' . s:quotable . '"'
-
-"" " Greedier version of the above
-""
-"" let s:quotable = '\%(' . s:idregex . '\|' . s:operators . '\|?\)'
-"" exec 'syntax match   juliaSymbol	display "\%(^\|\s\):' . s:quotable . '"'
-"" exec 'syntax match   juliaSymbol	display "\%([' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\)\@1<=:' . s:quotable . '"'
+" same as above for quoted expressions such as :(expr)
+" (includes :(?) as a special case, although it really shouldn't work...)
+exec 'syntax region   juliaQuotedParBlock	matchgroup=juliaQParDelim start="' . s:quoting_colon . '(" end=")" contains=@juliaExpressions'
+exec 'syntax match    juliaQuotedQMarkPar	"' . s:quoting_colon . '(\s*?\s*)" contains=juliaQuotedQMark'
+exec 'syntax region   juliaQuotedParBlockS	matchgroup=juliaQParDelim contained start="' . s:quoting_colonS . '(" end=")" contains=@juliaExpressions'
+exec 'syntax match    juliaQuotedQMarkParS	contained "' . s:quoting_colonS . '(\s*?\s*)" contains=juliaQuotedQMark'
+syntax match   juliaQuotedQMark         contained "?"
 
 " force precedence over Symbols
 syntax match   juliaOperator		display "::"
-
-exec 'syntax region   juliaQuotedParBlock	matchgroup=juliaQParDelim start="\%(^\s*\|\s\{6,\}\|\%([' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\s*\)\@6<=\|\%(' . s:keywords . '\s*\)\@9<=\)\zs:(" end=")" contains=@juliaExpressions'
-exec 'syntax match    juliaQuotedQMarkPar	"\%(^\s*\|\s\{6,\}\|\%([' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\s*\)\@6<=\)\zs:(\s*?\s*)" contains=juliaQuotedQMark'
-exec 'syntax region   juliaQuotedParBlockS	matchgroup=juliaQParDelim contained start="\%([])}[:space:]]\)\@1<=:(" end=")" contains=@juliaExpressions'
-exec 'syntax match    juliaQuotedQMarkParS	contained "\%([])}[:space:]]\)\@1<=:(\s*?\s*)" contains=juliaQuotedQMark'
-syntax match   juliaQuotedQMark         contained "?"
 
 syntax region  juliaCommentL		matchgroup=juliaCommentDelim start="#\ze\%([^=]\|$\)" end="$" keepend contains=juliaTodo,@spell
 syntax region  juliaCommentM		matchgroup=juliaCommentDelim start="#=\ze\%([^#]\|$\)" end="=#" contains=juliaTodo,juliaCommentM,@spell
