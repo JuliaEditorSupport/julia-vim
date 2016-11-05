@@ -97,6 +97,8 @@ syntax cluster juliaOperatorItems	contains=juliaOperator,juliaRangeOperator,juli
 syntax cluster juliaCommentItems	contains=juliaCommentL,juliaCommentM
 syntax cluster juliaErrorItems		contains=juliaErrorPar,juliaErrorEnd,juliaErrorElse,juliaErrorCatch,juliaErrorFinally
 
+syntax match   juliaSemicolon           display ";"
+
 syntax match   juliaErrorPar		display "[])}]"
 syntax match   juliaErrorEnd		display "\<end\>"
 syntax match   juliaErrorElse		display "\<\%(else\|elseif\)\>"
@@ -304,8 +306,6 @@ syntax match   juliaQuotedQMark         contained "?"
 
 " force precedence over Symbols
 syntax match   juliaOperator		display "::"
-
-syntax match   juliaSemicolon           display ";"
 
 syntax region  juliaCommentL		matchgroup=juliaCommentDelim start="#\ze\%([^=]\|$\)" end="$" keepend contains=juliaTodo,@spell
 syntax region  juliaCommentM		matchgroup=juliaCommentDelim start="#=\ze\%([^#]\|$\)" end="=#" contains=juliaTodo,juliaCommentM,@spell
