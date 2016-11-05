@@ -93,7 +93,7 @@ syntax cluster juliaSymbolItems		contains=juliaSymbol
 syntax cluster juliaNumberItems		contains=juliaNumbers
 syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliabString,juliasString,juliavString,juliaipString,juliabigString,juliaMIMEString,juliaTriString,juliaShellString,juliaRegEx
 syntax cluster juliaPrintfItems		contains=juliaPrintfParBlock,juliaPrintfString
-syntax cluster juliaOperatorItems	contains=juliaOperator,juliaRangeOperator,juliaCTransOperator,juliaTernaryRegion
+syntax cluster juliaOperatorItems	contains=juliaOperator,juliaRangeOperator,juliaCTransOperator,juliaTernaryRegion,juliaSemicolon
 syntax cluster juliaCommentItems	contains=juliaCommentL,juliaCommentM
 syntax cluster juliaErrorItems		contains=juliaErrorPar,juliaErrorEnd,juliaErrorElse,juliaErrorCatch,juliaErrorFinally
 
@@ -305,12 +305,18 @@ syntax match   juliaQuotedQMark         contained "?"
 " force precedence over Symbols
 syntax match   juliaOperator		display "::"
 
+syntax match   juliaSemicolon           display ";"
+
 syntax region  juliaCommentL		matchgroup=juliaCommentDelim start="#\ze\%([^=]\|$\)" end="$" keepend contains=juliaTodo,@spell
 syntax region  juliaCommentM		matchgroup=juliaCommentDelim start="#=\ze\%([^#]\|$\)" end="=#" contains=juliaTodo,juliaCommentM,@spell
 syntax keyword juliaTodo		contained TODO FIXME XXX
 
 
+" the following are disabled by default, but
+" can be enabled by entering e.g.
+"   :hi link juliaParDelim Delimiter
 hi def link juliaParDelim		juliaNone
+hi def link juliaSemicolon		juliaNone
 
 
 hi def link juliaKeyword		Keyword
