@@ -253,7 +253,7 @@ function GetJuliaNestingBrackets(lnum, c)
   return [last_open_bracket, last_closed_bracket]
 endfunction
 
-let s:bracketBlocks = '\<julia\%(\%(\%(Printf\)\?Par\|SqBra\|CurBra\)Block\|ParBlockInRange\|StringVars\%(Par\|SqBra\|CurBra\)\)\>'
+let s:bracketBlocks = '\<julia\%(\%(\%(Printf\)\?Par\|SqBra\|CurBra\)Block\|ParBlockInRange\|StringVars\%(Par\|SqBra\|CurBra\)\|Dollar\%(Par\|SqBra\)\)\>'
 
 function IsInBrackets(lnum, c)
   let stack = map(synstack(a:lnum, a:c), 'synIDattr(v:val, "name")')

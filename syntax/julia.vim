@@ -88,7 +88,7 @@ else
 endif
 syntax cluster juliaConstItemsAll	contains=juliaConstNum,juliaConstBool,juliaConstEnv,juliaConstIO,juliaConstMMap,juliaConstC,juliaConstGeneric
 syntax cluster juliaConstItems0506	contains=juliaConstEnv0506
-syntax cluster juliaMacroItems		contains=juliaMacroCall,juliaMacroCallP,juliaDollarVar,juliaPrintfMacro
+syntax cluster juliaMacroItems		contains=juliaMacroCall,juliaMacroCallP,juliaDollarVar,juliaDollarPar,juliaDollarSqBra,juliaPrintfMacro
 syntax cluster juliaSymbolItems		contains=juliaSymbol
 syntax cluster juliaNumberItems		contains=juliaNumbers
 syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliabString,juliasString,juliavString,juliaipString,juliabigString,juliaMIMEString,juliaTriString,juliaShellString,juliaRegEx
@@ -229,7 +229,11 @@ exec 'syntax match   juliaOperator	"' . s:operators . '"'
 syntax match   juliaRangeOperator	display ":"
 syntax region  juliaTernaryRegion	matchgroup=juliaTernaryOperator start="?" skip="\%(:\(:\|[^:[:space:]'"({[]\+\s*\ze:\)\|^\s*:\|\%(?\s*\)\@6<=:(\)" end=":" contains=@juliaExpressions,juliaErrorSemicol
 
-exec 'syntax match   juliaDollarVar	display contained "\([' . s:nonidS_chars . s:uniop_chars . s:binop_chars . '!]\|^\)\@1<=\$' . s:idregex . '"'
+let s:interp_dollar = '\([' . s:nonidS_chars . s:uniop_chars . s:binop_chars . '!]\|^\)\@1<=\$'
+
+exec 'syntax match   juliaDollarVar	display contained "' . s:interp_dollar . s:idregex . '"'
+exec 'syntax region  juliaDollarPar	matchgroup=juliaDollarVar contained start="' .s:interp_dollar . '(" end=")" contains=@juliaExpressions'
+exec 'syntax region  juliaDollarSqBra	matchgroup=juliaDollarVar contained start="' .s:interp_dollar . '\[" end="\]" contains=@juliaExpressions,juliaComprehensionFor,juliaSymbolS,juliaQuotedParBlockS,juliaQuotedQMarkParS'
 
 " for some reason, using 'display' in the next line creates problems
 " (according to the documentation, it really shouldn't...)
