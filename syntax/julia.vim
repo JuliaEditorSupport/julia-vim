@@ -188,7 +188,7 @@ syntax match   juliaConstGeneric	display "\<\%(nothing\|Main\)\>"
 
 exec 'syntax match   juliaMacro		contained display "@' . s:idregex . '\%(\.' . s:idregex . '\)*"'
 exec 'syntax region  juliaMacroCallP	transparent start="@' . s:idregex . '\%(\.' . s:idregex . '\)*(" end=")\@1<=" contains=juliaMacro,juliaParBlock nextgroup=juliaMacro'
-exec 'syntax region  juliaMacroCall	transparent start="\(@' . s:idregex . '\%(\.' . s:idregex . '\)*\)\@=\1\%([^(]\|$\)" end="\ze\%([])};#]\|$\)" contains=@juliaExpressions,juliaMacro,juliaSymbolS,juliaQuotedParBlockS,juliaQuotedQMarkParS nextgroup=juliaMacro'
+exec 'syntax region  juliaMacroCall	transparent start="@' . s:idregex . '\%(\.' . s:idregex . '\)*\%([^(]\|\s*$\)" end="\ze\%([])};#]\|$\)" contains=@juliaExpressions,juliaMacro,juliaSymbolS,juliaQuotedParBlockS,juliaQuotedQMarkParS nextgroup=juliaMacro'
 
 syntax match   juliaNumbers		display transparent "\<\d\|\.\d\|\<im\>" contains=juliaNumber,juliaFloat,juliaComplexUnit
 
