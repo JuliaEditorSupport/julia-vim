@@ -248,7 +248,7 @@ syntax match   juliaChar		display "'\\x\x\{2\}'" contains=juliaHexEscapeChar
 syntax match   juliaChar		display "'\\u\x\{1,4\}'" contains=juliaUniCharSmall
 syntax match   juliaChar		display "'\\U\x\{1,8\}'" contains=juliaUniCharLarge
 
-exec 'syntax match   juliaCTransOperator	"[^' . s:nonidS_chars . s:uniop_chars . s:binop_chars . '!]\zs\.\?' . "'" . '"'
+exec 'syntax match   juliaCTransOperator	"[[:space:]}' . s:nonid_chars . s:uniop_chars . s:binop_chars . '!]\@1<!\.\?' . "'" . '"'
 
 syntax region  juliaString		matchgroup=juliaStringDelim start=+"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaStringVars,@juliaSpecialChars
 syntax region  juliabString		matchgroup=juliaStringDelim start=+\<b"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaSpecialChars
