@@ -93,15 +93,16 @@ endif
 syntax cluster juliaConstItemsAll	contains=juliaConstNum,juliaConstBool,juliaConstEnv,juliaConstIO,juliaConstMMap,juliaConstC,juliaConstGeneric
 syntax cluster juliaConstItems0506	contains=juliaConstEnv0506
 syntax cluster juliaMacroItems		contains=juliaMacroCall,juliaMacroCallP,juliaDollarVar,juliaDollarPar,juliaDollarSqBra,juliaPrintfMacro
-syntax cluster juliaSymbolItems		contains=juliaSymbol
+syntax cluster juliaSymbolItems		contains=juliaPossibleSymbol
 syntax cluster juliaNumberItems		contains=juliaNumbers
 syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliabString,juliasString,juliavString,juliaipString,juliabigString,juliaMIMEString,juliaTriString,juliaShellString,juliaRegEx
 syntax cluster juliaPrintfItems		contains=juliaPrintfParBlock,juliaPrintfString
-syntax cluster juliaOperatorItems	contains=juliaOperator,juliaRangeOperator,juliaCTransOperator,juliaTernaryRegion,juliaSemicolon
+syntax cluster juliaOperatorItems	contains=juliaOperator,juliaRangeOperator,juliaCTransOperator,juliaTernaryRegion,juliaColon,juliaSemicolon
 syntax cluster juliaCommentItems	contains=juliaCommentL,juliaCommentM
 syntax cluster juliaErrorItems		contains=juliaErrorPar,juliaErrorEnd,juliaErrorElse,juliaErrorCatch,juliaErrorFinally
 
-syntax match   juliaSemicolon           display ";"
+syntax match   juliaSemicolon		display ";"
+syntax match   juliaColon		display ":"
 
 syntax match   juliaErrorPar		display "[])}]"
 syntax match   juliaErrorEnd		display "\<end\>"
@@ -289,8 +290,12 @@ syntax match   juliaPrintfFmt		display contained "%%"
 syntax match   juliaPrintfFmt		display contained "\\%\%(\d\+\$\)\=[-+' #0]*\%(\d*\|\*\|\*\d\+\$\)\%(\.\%(\d*\|\*\|\*\d\+\$\)\)\=\%([hlLjqzt]\|ll\|hh\)\=[aAbdiuoxXDOUfFeEgGcCsSpn]"hs=s+1
 syntax match   juliaPrintfFmt		display contained "\\%%"hs=s+1
 
+" this is used to restrict the search for Symbols to when colons appear at all
+" (for performance reasons)
+syntax match   juliaPossibleSymbol      transparent ":\ze[^:]" contains=juliaSymbol,juliaQuotedParBlock,juliaQuotedQMarkPar,juliaColon
+
 let s:quotable = '\%(' . s:idregex . '\|?\|' . s:operators . '\|' . s:float_regex . '\|' . s:int_regex . '\)'
-let s:quoting_colon = '\%(^\s*\|\s\{6,\}\|\%([' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\s*\)\@6<=\|\%(' . s:keywords . '\s*\)\@9<=\)\zs:'
+let s:quoting_colon = '\%(\%(^\s*\|\s\{6,\}\|[' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\s*\)\@6<=\|\%(\<return\s\*\)\@9<=\)\zs:'
 let s:quoting_colonS = '\%([])}[:space:]]\)\@1<=:'
 
 " note: juliaSymbolS only works within whitespace-sensitive contexts,
@@ -301,7 +306,7 @@ let s:quoting_colonS = '\%([])}[:space:]]\)\@1<=:'
 " the identifier and the colon anyway.)
 " (note: `display` here causes problems.)
 
-exec 'syntax match   juliaSymbol	"' .s:quoting_colon . s:quotable . '"'
+exec 'syntax match   juliaSymbol	contained "' .s:quoting_colon . s:quotable . '"'
 exec 'syntax match   juliaSymbolS	contained "' . s:quoting_colonS . s:quotable . '"'
 
 " same as above for quoted expressions such as :(expr)
@@ -325,6 +330,8 @@ syntax keyword juliaTodo		contained TODO FIXME XXX
 "   :hi link juliaParDelim Delimiter
 hi def link juliaParDelim		juliaNone
 hi def link juliaSemicolon		juliaNone
+
+hi def link juliaColon			juliaOperator
 
 
 hi def link juliaKeyword		Keyword
