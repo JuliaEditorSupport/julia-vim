@@ -92,7 +92,7 @@ else
 endif
 syntax cluster juliaConstItemsAll	contains=juliaConstNum,juliaConstBool,juliaConstEnv,juliaConstIO,juliaConstMMap,juliaConstC,juliaConstGeneric
 syntax cluster juliaConstItems0506	contains=juliaConstEnv0506
-syntax cluster juliaMacroItems		contains=juliaMacroCall,juliaMacroCallP,juliaDollarVar,juliaDollarPar,juliaDollarSqBra,juliaPrintfMacro
+syntax cluster juliaMacroItems		contains=juliaPossibleMacro,juliaDollarVar,juliaDollarPar,juliaDollarSqBra
 syntax cluster juliaSymbolItems		contains=juliaPossibleSymbol
 syntax cluster juliaNumberItems		contains=juliaNumbers
 syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliabString,juliasString,juliavString,juliaipString,juliabigString,juliaMIMEString,juliaTriString,juliaShellString,juliaRegEx
@@ -187,9 +187,11 @@ syntax match   juliaConstIO		display "\<\%(STD\%(OUT\|IN\|ERR\)\)\>"
 syntax match   juliaConstC		display "\<\%(WORD_SIZE\|C_NULL\)\>"
 syntax match   juliaConstGeneric	display "\<\%(nothing\|Main\)\>"
 
+syntax match   juliaPossibleMacro	transparent "@" contains=juliaMacroCall,juliaMacroCallP,juliaPrintfMacro
+
 exec 'syntax match   juliaMacro		contained display "@' . s:idregex . '\%(\.' . s:idregex . '\)*"'
-exec 'syntax region  juliaMacroCallP	transparent start="@' . s:idregex . '\%(\.' . s:idregex . '\)*(" end=")\@1<=" contains=juliaMacro,juliaParBlock nextgroup=juliaMacro'
-exec 'syntax region  juliaMacroCall	transparent start="@' . s:idregex . '\%(\.' . s:idregex . '\)*\%([^(]\|\s*$\)" end="\ze\%([])};#]\|$\)" contains=@juliaExpressions,juliaMacro,juliaSymbolS,juliaQuotedParBlockS,juliaQuotedQMarkParS nextgroup=juliaMacro'
+exec 'syntax region  juliaMacroCallP	contained transparent start="@' . s:idregex . '\%(\.' . s:idregex . '\)*(" end=")\@1<=" contains=juliaMacro,juliaParBlock'
+exec 'syntax region  juliaMacroCall	contained transparent start="\(@' . s:idregex . '\%(\.' . s:idregex . '\)*\)\@=\1\%([^(]\|$\)" end="\ze\%([])};#]\|$\)" contains=@juliaExpressions,juliaMacro,juliaSymbolS,juliaQuotedParBlockS,juliaQuotedQMarkParS'
 
 syntax match   juliaNumbers		display transparent "\<\d\|\.\d\|\<im\>" contains=juliaNumber,juliaFloat,juliaComplexUnit
 
@@ -260,8 +262,8 @@ syntax region  juliaMIMEString		matchgroup=juliaStringDelim start=+\<MIME"+ skip
 
 syntax region  juliaTriString		matchgroup=juliaStringDelim start=+"""+ skip=+\%(\\\\\)*\\"+ end=+"""+ contains=@juliaStringVars,@juliaSpecialChars
 
-syntax region  juliaPrintfMacro		transparent start="@s\?printf(" end=")\@1<=" contains=juliaMacro,juliaPrintfParBlock
-syntax region  juliaPrintfMacro		transparent start="@s\?printf\s\+" end="\n" contains=@juliaExprsPrintf
+syntax region  juliaPrintfMacro		contained transparent start="@s\?printf(" end=")\@1<=" contains=juliaMacro,juliaPrintfParBlock
+syntax region  juliaPrintfMacro		contained transparent start="@s\?printf\s\+" end="\n" contains=@juliaExprsPrintf
 syntax region  juliaPrintfParBlock	contained matchgroup=juliaParDelim start="(" end=")" contains=@juliaExprsPrintf
 syntax region  juliaPrintfString	contained matchgroup=juliaStringDelim start=+"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaSpecialChars,@juliaPrintfChars
 
