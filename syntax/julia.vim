@@ -12,11 +12,11 @@ endif
 if version < 704
   " this is used to disable regex syntax like `\@3<='
   " on older vim versions
-  function s:d(x)
+  function! s:d(x)
     return ''
   endfunction
 else
-  function s:d(x)
+  function! s:d(x)
     return string(a:x)
   endfunction
 endif
