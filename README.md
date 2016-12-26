@@ -215,7 +215,7 @@ let g:default_julia_version = "devel"
 or if you are still using Julia 0.4 you can use:
 
 ```
-let g:default_julia_versoin = "0.4"
+let g:default_julia_version = "0.4"
 ```
 
 You can also switch version for a particular buffer, by using the `julia#set_syntax_version()` function, e.g.
