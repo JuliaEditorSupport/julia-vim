@@ -134,7 +134,11 @@ syntax region  juliaParBlockInRange	matchgroup=juliaParDelim contained start="("
 syntax region  juliaSqBraBlock		matchgroup=juliaParDelim start="\[" end="\]" contains=@juliaExpressions,juliaParBlockInRange,juliaRangeEnd,juliaComprehensionFor,juliaSymbolS,juliaQuotedParBlockS,juliaQuotedQMarkParS
 syntax region  juliaCurBraBlock		matchgroup=juliaParDelim start="{" end="}" contains=@juliaExpressions
 
-let s:keywords = '\<\%(return\|local\|global\|import\%(all\)\?\|export\|using\|const\|in\)\>'
+if b:julia_syntax_version >= 6
+  let s:keywords = '\<\%(return\|local\|global\|import\%(all\)\?\|export\|using\|const\|in\|where\|isa\)\>'
+else
+  let s:keywords = '\<\%(return\|local\|global\|import\%(all\)\?\|export\|using\|const\|in\)\>'
+endif
 
 exec 'syntax match   juliaKeyword		display "' . s:keywords . '"'
 syntax match   juliaRepKeyword		display "\<\%(break\|continue\)\>"
