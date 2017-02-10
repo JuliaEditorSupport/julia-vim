@@ -89,11 +89,12 @@ syntax cluster juliaExprsPrintf		contains=@juliaExpressions,@juliaPrintfItems
 syntax cluster juliaParItems		contains=juliaParBlock,juliaSqBraBlock,juliaCurBraBlock,juliaQuotedParBlock,juliaQuotedQMarkPar
 syntax cluster juliaKeywordItems	contains=juliaKeyword,juliaRepKeyword,juliaTypedef
 if b:julia_syntax_version == 6
-  syntax cluster juliaBlocksItems	contains=@juliaBlocksItemsAll,juliaStructBlock,juliaMutableStructBlock,juliaAbstractBlock,juliaPrimitiveBlock
+  syntax cluster juliaBlocksItems	contains=@juliaBlocksItemsAll,@juliaBlocksItems06
 else
   syntax cluster juliaBlocksItems	contains=@juliaBlocksItemsAll
 endif
 syntax cluster juliaBlocksItemsAll	contains=juliaConditionalBlock,juliaRepeatBlock,juliaBeginBlock,juliaFunctionBlock,juliaMacroBlock,juliaQuoteBlock,juliaTypeBlock,juliaImmutableBlock,juliaExceptionBlock,juliaLetBlock,juliaDoBlock,juliaModuleBlock
+syntax cluster juliaBlocksItems06	contains=juliaStructBlock,juliaMutableStructBlock,juliaAbstractBlock,juliaPrimitiveBlock
 if b:julia_syntax_version == 4
   syntax cluster juliaTypesItems	contains=@juliaTypesItemsAll,@juliaTypesItems04
 else
@@ -158,9 +159,7 @@ syntax region  juliaQuoteBlock		matchgroup=juliaBlKeyword start="\<quote\>" end=
 syntax region  juliaTypeBlock		matchgroup=juliaBlKeyword start="\<type\>" end="\<end\>" contains=@juliaExpressions fold
 syntax region  juliaImmutableBlock	matchgroup=juliaBlKeyword start="\<immutable\>" end="\<end\>" contains=@juliaExpressions fold
 syntax region  juliaStructBlock		matchgroup=juliaBlKeyword start="\<struct\>" end="\<end\>" contains=@juliaExpressions fold
-syntax region  juliaMutableStructBlock		matchgroup=juliaBlKeyword start="\<mutable struct\>" end="\<end\>" contains=@juliaExpressions fold
-syntax region  juliaAbstractBlock		matchgroup=juliaBlKeyword start="\<abstract type\>" end="\<end\>" contains=@juliaExpressions fold
-syntax region  juliaPrimitiveBlock		matchgroup=juliaBlKeyword start="\<primitive type\>" end="\<end\>" contains=@juliaExpressions fold
+syntax region  juliaMutableStructBlock	matchgroup=juliaBlKeyword start="\<mutable struct\>" end="\<end\>" contains=@juliaExpressions fold
 syntax region  juliaLetBlock		matchgroup=juliaBlKeyword start="\<let\>" end="\<end\>" contains=@juliaExpressions fold
 syntax region  juliaDoBlock		matchgroup=juliaBlKeyword start="\<do\>" end="\<end\>" contains=@juliaExpressions fold
 exec 'syntax region  juliaModuleBlock		matchgroup=juliaBlKeyword start="\%(\.\s*\)\@'.s:d(6).'<!\<\%(bare\)\?module\>" end="\<end\>" contains=@juliaExpressions fold'
@@ -168,6 +167,9 @@ syntax region  juliaExceptionBlock	matchgroup=juliaException start="\<try\>" end
 syntax region  juliaCatchBlock		matchgroup=juliaException transparent contained start="\<catch\>" end="\<end\>"me=s-1 contains=@juliaExpressions,juliaFinallyBlock
 syntax region  juliaFinallyBlock	matchgroup=juliaException transparent contained start="\<finally\>" end="\<end\>"me=s-1 contains=@juliaExpressions
 syntax match   juliaTypedef		"\<\%(abstract\|typealias\|bitstype\)\>"
+" AbstractBlock needs to come after to take precedence
+syntax region  juliaAbstractBlock	matchgroup=juliaBlKeyword start="\<abstract type\>" end="\<end\>" fold
+syntax region  juliaPrimitiveBlock	matchgroup=juliaBlKeyword start="\<primitive type\>" end="\<end\>" fold
 
 if b:julia_syntax_version >= 5
   exec 'syntax region  juliaComprehensionFor	matchgroup=juliaComprehensionFor transparent contained start="\%([^[:space:],;:({[]\_s*\)\@'.s:d(80).'<=\<for\>" end="\ze[]);]" contains=@juliaExpressions,juliaComprehensionIf,juliaComprehensionFor'

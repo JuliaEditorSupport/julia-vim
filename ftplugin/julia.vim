@@ -34,7 +34,7 @@ if exists("loaded_matchit")
 
   " note: begin_keywords must contain all blocks in order
   " for nested-structures-skipping to work properly
-  let b:julia_begin_keywords = '\%(\.\s*\)\@<!\<\%(\%(staged\)\?function\|macro\|begin\|type\|immutable\|let\|do\|\%(bare\)\?module\|quote\|if\|for\|while\|try\)\>'
+  let b:julia_begin_keywords = '\%(\.\s*\)\@<!\<\%(\%(staged\)\?function\|macro\|begin\|mutable\s\+struct\|\%(mutable\s\+\)\@<!struct\|\%(abstract\|primitive\)\s\+type\|\%(\(abstract\|primitive\)\s\+\)\@<!type\|immutable\|let\|do\|\%(bare\)\?module\|quote\|if\|for\|while\|try\)\>'
   let s:macro_regex = '@\%(#\@!\S\)\+\s\+'
   let s:nomacro = '\%(' . s:macro_regex . '\)\@<!'
   let s:yesmacro = s:nomacro . '\%('. s:macro_regex . '\)\+'
