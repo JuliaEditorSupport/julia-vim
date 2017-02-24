@@ -1,68 +1,23 @@
-## How to install
+# julia-vim
 
-### Using [pathogen]
+<p align="center"><img src="logo.png" alt="julia-vim logo"/></p>
 
-``` bash
-cd ~/.vim
-mkdir -p bundle && cd bundle
-git clone git://github.com/JuliaEditorSupport/julia-vim.git
-```
+[Julia] support for Vim.
 
-### Using [vundle]
+**[INSTALLATION INSTRUCTIONS]**
 
-Add a new plugin line to your `.vimrc`:
-
-``` vim
-Plugin 'JuliaEditorSupport/julia-vim'
-```
-
-Run `vim` and update your bundles:
-
-``` vim
-:PluginInstall!
-```
-
-### Using [vim-plug]
-
-Add a new plugin line to your `.vimrc`:
-
-``` vim
-Plug 'JuliaEditorSupport/julia-vim'
-```
-
-**Note:** do *not* use the on-demand loading feature of vim-plug.
-Most of the plugin is loaded on-demand anyway.
-
-Run `vim` and update your bundles:
-
-``` vim
-:PlugInstall
-```
-
-[pathogen]: https://github.com/tpope/vim-pathogen
-[vundle]: https://github.com/gmarik/vundle
-[vim-plug]: https://github.com/junegunn/vim-plug
-
-### Manually
-
-Copy (or symlink) the contents of this repository into the vim application support directory:
-
-``` bash
-git clone git://github.com/JuliaEditorSupport/julia-vim.git
-cd julia-vim
-mkdir -p ~/.vim
-cp -R * ~/.vim
-```
-
-Julia should appear as a file type and be automatically detected for files with the `.jl` extension.
+[Julia]: http://julialang.org/
+[Installation instructions]: INSTALL.md
 
 ## Complete documentation
 
-The full documentation is available from Vim. Vundle and other plugin managers will generate the required
-help tags automatically, so that you just need to type `:help julia-vim`. Otherwise use `:help helptags`
-in ViM and see how to generate them.
+The full documentation is available from Vim: after installation, you just need to type `:help julia-vim`.
 
-The remainder of this README will only give an overview of some of the features.
+The remainder of this README will only give an overview of some of the features:
+
+* [Latex-to-Unicode substitutions](#latex-to-unicode-substitutions)
+* [Block-wise movements and block text-objects](#block-wise-movements-and-block-text-objects)
+* [Changing syntax highlighting depending on the Julia version](#changing-syntax-highlighting-depending-on-the-julia-version)
 
 ## LaTeX-to-Unicode substitutions
 
