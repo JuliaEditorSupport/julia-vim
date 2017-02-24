@@ -216,11 +216,11 @@ syntax match   juliaConstGeneric	display "\<\%(nothing\|Main\)\>"
 
 syntax match   juliaPossibleMacro	transparent "@" contains=juliaMacroCall,juliaMacroCallP,juliaPrintfMacro
 
-exec 'syntax match   juliaMacro		contained display "@' . s:idregex . '\%(\.' . s:idregex . '\)*"'
+exec 'syntax match   juliaMacro		contained "@' . s:idregex . '\%(\.' . s:idregex . '\)*"'
 exec 'syntax region  juliaMacroCallP	contained transparent start="@' . s:idregex . '\%(\.' . s:idregex . '\)*(" end=")\@'.s:d(1).'<=" contains=juliaMacro,juliaParBlock'
 exec 'syntax region  juliaMacroCall	contained transparent start="\(@' . s:idregex . '\%(\.' . s:idregex . '\)*\)\@=\1\%([^(]\|$\)" end="\ze\%([])};#]\|$\)" contains=@juliaExpressions,juliaMacro,juliaSymbolS,juliaQuotedParBlockS,juliaQuotedQMarkParS'
 
-syntax match   juliaNumbers		display transparent "\<\d\|\.\d\|\<im\>" contains=juliaNumber,juliaFloat,juliaComplexUnit
+syntax match   juliaNumbers		transparent "\<\d\|\.\d\|\<im\>" contains=juliaNumber,juliaFloat,juliaComplexUnit
 
 "integer regexes
 let s:dec_regex = '\d\%(_\?\d\)*\%(\>\|im\>\|\ze\D\)'
@@ -255,8 +255,8 @@ let s:float_regex = '\%(' . s:float_regex3 .
       \             '\|'  . s:hexfloat_regex1 .
       \             '\)'
 
-exec 'syntax match   juliaNumber	display contained "' . s:int_regex . '" contains=juliaComplexUnit'
-exec 'syntax match   juliaFloat		display contained "' . s:float_regex . '" contains=juliaComplexUnit'
+exec 'syntax match   juliaNumber	contained "' . s:int_regex . '" contains=juliaComplexUnit'
+exec 'syntax match   juliaFloat		contained "' . s:float_regex . '" contains=juliaComplexUnit'
 syntax match   juliaComplexUnit		display	contained "\<im\>"
 
 exec 'syntax match   juliaOperator	"' . s:operators . '"'
@@ -269,8 +269,6 @@ exec 'syntax match   juliaDollarVar	display contained "' . s:interp_dollar . s:i
 exec 'syntax region  juliaDollarPar	matchgroup=juliaDollarVar contained start="' .s:interp_dollar . '(" end=")" contains=@juliaExpressions'
 exec 'syntax region  juliaDollarSqBra	matchgroup=juliaDollarVar contained start="' .s:interp_dollar . '\[" end="\]" contains=@juliaExpressions,juliaComprehensionFor,juliaSymbolS,juliaQuotedParBlockS,juliaQuotedQMarkParS'
 
-" for some reason, using 'display' in the next line creates problems
-" (according to the documentation, it really shouldn't...)
 syntax match   juliaChar		"'\\\?.'" contains=juliaSpecialChar
 syntax match   juliaChar		display "'\\\o\{3\}'" contains=juliaOctalEscapeChar
 syntax match   juliaChar		display "'\\x\x\{2\}'" contains=juliaHexEscapeChar
@@ -333,7 +331,6 @@ let s:quoting_colonS = '\%([])}[:space:]]\)\@'.s:d(1).'<=:'
 " ranges rather than symbols in those contexts.
 " (Note that such `a :b` expressions only allows at most 5 spaces between
 " the identifier and the colon anyway.)
-" (note: `display` here causes problems.)
 
 exec 'syntax match   juliaSymbol	contained "' .s:quoting_colon . s:quotable . '"'
 exec 'syntax match   juliaSymbolS	contained "' . s:quoting_colonS . s:quotable . '"'
