@@ -19,7 +19,7 @@ if exists("*GetJuliaIndent")
   finish
 endif
 
-let s:skipPatterns = '\<julia\%(Comprehension\%(For\|If\)\|RangeEnd\|CommentL\|\%([bsv]\|ip\|big\|MIME\|Shell\|Tri\|Printf\)\=String\|RegEx\|SymbolS\?\)\>'
+let s:skipPatterns = '\<julia\%(Comprehension\%(For\|If\)\|RangeEnd\|CommentL\|\%([bsv]\|ip\|big\|MIME\|Shell\|Printf\)\=String\|RegEx\|SymbolS\?\)\>'
 
 function JuliaMatch(lnum, str, regex, st)
   let s = a:st
