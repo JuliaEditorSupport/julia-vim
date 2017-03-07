@@ -321,11 +321,11 @@ syntax match   juliaPossibleSymbol      transparent ":\ze[^:]" contains=juliaSym
 
 let s:quotable = '\%(' . s:idregex . '\|?\|' . s:operators . '\|' . s:float_regex . '\|' . s:int_regex . '\)'
 let s:quoting_colon = '\%(\%(^\s*\|\s\{6,\}\|[' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\s*\)\@'.s:d(6).'<=\|\%(\<return\s\*\)\@'.s:d(9).'<=\)\zs:'
-let s:quoting_colonS = '\%([])}[:space:]]\)\@'.s:d(1).'<=:'
+let s:quoting_colonS = '\s\@'.s:d(1).'<=:'
 
 " note: juliaSymbolS only works within whitespace-sensitive contexts,
 " such as in macro calls without parentheses, or within square brackets.
-" It is used to overrdire the recognition of expressions like `a :b` as
+" It is used to override the recognition of expressions like `a :b` as
 " ranges rather than symbols in those contexts.
 " (Note that such `a :b` expressions only allows at most 5 spaces between
 " the identifier and the colon anyway.)
