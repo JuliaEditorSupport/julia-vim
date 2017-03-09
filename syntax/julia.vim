@@ -113,7 +113,7 @@ syntax cluster juliaConstItems0506	contains=juliaConstEnv0506
 syntax cluster juliaMacroItems		contains=juliaPossibleMacro,juliaDollarVar,juliaDollarPar,juliaDollarSqBra
 syntax cluster juliaSymbolItems		contains=juliaPossibleSymbol
 syntax cluster juliaNumberItems		contains=juliaNumbers
-syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliabString,juliasString,juliavString,juliaipString,juliabigString,juliaMIMEString,juliaShellString,juliaRegEx
+syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliabString,juliasString,juliavString,juliaipString,juliabigString,juliaMIMEString,juliaShellString,juliaDocString,juliaRegEx
 syntax cluster juliaPrintfItems		contains=juliaPrintfParBlock,juliaPrintfString
 syntax cluster juliaOperatorItems	contains=juliaOperator,juliaRangeOperator,juliaCTransOperator,juliaTernaryRegion,juliaColon,juliaSemicolon
 syntax cluster juliaCommentItems	contains=juliaCommentL,juliaCommentM
@@ -285,6 +285,8 @@ syntax region  juliaipString		matchgroup=juliaStringDelim start=+\<ip\z("\(""\)\
 syntax region  juliabigString		matchgroup=juliaStringDelim start=+\<big\z("\(""\)\?\)+ skip=+\%(\\\\\)*\\"+ end=+\z1+
 syntax region  juliaMIMEString		matchgroup=juliaStringDelim start=+\<MIME\z("\(""\)\?\)+ skip=+\%(\\\\\)*\\"+ end=+\z1+ contains=@juliaSpecialChars
 
+syntax region  juliaDocString		matchgroup=juliaStringDelim start=+^"""+ skip=+\%(\\\\\)*\\"+ end=+"""+ contains=@juliaStringVars,@juliaSpecialChars,@spell
+
 exec 'syntax region  juliaPrintfMacro		contained transparent start="@s\?printf(" end=")\@'.s:d(1).'<=" contains=juliaMacro,juliaPrintfParBlock'
 syntax region  juliaPrintfMacro		contained transparent start="@s\?printf\s\+" end="\ze\%([])};#]\|$\)" contains=@juliaExprsPrintf,juliaMacro,juliaSymbolS,juliaQuotedParBlockS,juliaQuotedQMarkParS
 syntax region  juliaPrintfParBlock	contained matchgroup=juliaParDelim start="(" end=")" contains=@juliaExprsPrintf
@@ -439,6 +441,7 @@ hi def link juliabigString		String
 hi def link juliaMIMEString		String
 hi def link juliaPrintfString		String
 hi def link juliaShellString		String
+hi def link juliaDocString		String
 hi def link juliaStringDelim		String
 hi def link juliaStringVarsPla		Identifier
 hi def link juliaStringVarDelim		Identifier
