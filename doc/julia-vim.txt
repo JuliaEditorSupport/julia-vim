@@ -38,7 +38,8 @@ INTRODUCTION                                       *julia-vim-introduction*
 The julia-vim plug-in provides:
   - basic support for editing Julia files (automatic filetype detection,
     indentation, syntax highlighting)
-  - support for the matchit plugin (https://github.com/edsono/matchit)
+  - support for the matchit plugin
+    (http://www.vim.org/scripts/script.php?script_id=39)
   - support for Julia block-wise movements (i.e. jumping around between
     Julia blocks like if/end, function/end etc.) and block text-objects
   - facilities for conversion of LaTeX entries to Unicode symbols which mimic
