@@ -9,7 +9,7 @@ g:julia_blocks_mappings	julia-vim.txt	/*g:julia_blocks_mappings*
 g:julia_highlight_operators	julia-vim.txt	/*g:julia_highlight_operators*
 g:julia_spellcheck_comments	julia-vim.txt	/*g:julia_spellcheck_comments*
 g:julia_spellcheck_docstings	julia-vim.txt	/*g:julia_spellcheck_docstings*
-g:julia_spellcheck_stings	julia-vim.txt	/*g:julia_spellcheck_stings*
+g:julia_spellcheck_strings	julia-vim.txt	/*g:julia_spellcheck_strings*
 g:julia_syntax_highlight_deprecated	julia-vim.txt	/*g:julia_syntax_highlight_deprecated*
 g:latex_to_unicode_auto	julia-vim-L2U.txt	/*g:latex_to_unicode_auto*
 g:latex_to_unicode_eager	julia-vim-L2U.txt	/*g:latex_to_unicode_eager*
