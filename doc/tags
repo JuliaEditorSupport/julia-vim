@@ -6,6 +6,10 @@ LaTeXtoUnicode#Toggle()	julia-vim-L2U.txt	/*LaTeXtoUnicode#Toggle()*
 g:default_julia_version	julia-vim.txt	/*g:default_julia_version*
 g:julia_blocks	julia-vim.txt	/*g:julia_blocks*
 g:julia_blocks_mappings	julia-vim.txt	/*g:julia_blocks_mappings*
+g:julia_highlight_operators	julia-vim.txt	/*g:julia_highlight_operators*
+g:julia_spellcheck_comments	julia-vim.txt	/*g:julia_spellcheck_comments*
+g:julia_spellcheck_docstings	julia-vim.txt	/*g:julia_spellcheck_docstings*
+g:julia_spellcheck_stings	julia-vim.txt	/*g:julia_spellcheck_stings*
 g:julia_syntax_highlight_deprecated	julia-vim.txt	/*g:julia_syntax_highlight_deprecated*
 g:latex_to_unicode_auto	julia-vim-L2U.txt	/*g:latex_to_unicode_auto*
 g:latex_to_unicode_eager	julia-vim-L2U.txt	/*g:latex_to_unicode_eager*
@@ -34,6 +38,7 @@ julia-vim-blocks-moveblock	julia-vim.txt	/*julia-vim-blocks-moveblock*
 julia-vim-blocks-objects	julia-vim.txt	/*julia-vim-blocks-objects*
 julia-vim-blocks-variables	julia-vim.txt	/*julia-vim-blocks-variables*
 julia-vim-introduction	julia-vim.txt	/*julia-vim-introduction*
+julia-vim-options	julia-vim.txt	/*julia-vim-options*
 julia-vim-version	julia-vim.txt	/*julia-vim-version*
 julia-vim.txt	julia-vim.txt	/*julia-vim.txt*
 julia_[J	julia-vim.txt	/*julia_[J*

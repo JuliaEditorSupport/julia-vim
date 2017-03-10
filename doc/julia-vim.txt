@@ -30,6 +30,7 @@ Block-wise movements/objects        |julia-vim-blocks|
   Block-oriented movements          |julia-vim-blocks-moveblock|
   Block text objects                |julia-vim-blocks-objects|
   Variables                         |julia-vim-blocks-variables|
+Customizations                      |julia-vim-options|
 About                               |julia-vim-about|
 
 ==============================================================================
@@ -330,6 +331,39 @@ g:julia_blocks_mappings
                     \  }
 <
                 All unspecified entries keep their default value.
+
+
+==============================================================================
+CUSTOMIZATIONS                                          *julia-vim-options*
+
+Here is a list of options that can be changed to customize some aspects of the
+plugin.
+
+                                             *g:julia_spellcheck_docstings*
+g:julia_spellcheck_docstings
+
+                Determines whether to enable spell-checking within docstrings,
+                i.e. tri-strings that start at the first column. See |spell|.
+                By default, it is on (set to `1`).
+
+                                                *g:julia_spellcheck_stings*
+g:julia_spellcheck_stings
+
+                Determines whether to enable spell-checking within strings.
+                See |spell|. By default, it is off (set to `0`).
+
+                                              *g:julia_spellcheck_comments*
+g:julia_spellcheck_comments
+
+                Determines whether to enable spell-checking within comments.
+                See |spell|. By default, it is on (set to `1`).
+
+                                              *g:julia_highlight_operators*
+g:julia_highlight_operators
+
+                Determines whether to syntax-highlight operators. By default,
+                it is on (set to `1`).
+
 
 ==============================================================================
 ABOUT                                                     *julia-vim-about*

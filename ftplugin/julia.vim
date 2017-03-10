@@ -18,10 +18,6 @@ setlocal commentstring=#=%s=#
 setlocal cinoptions+=#1
 setlocal define="^\s*macro\>"
 
-" Comment the following line if you don't want operators to be
-" syntax-highlightened
-let g:julia_highlight_operators = 1
-
 let b:julia_vim_loaded = 1
 
 let b:undo_ftplugin = "setlocal include< suffixesadd< comments< commentstring<"

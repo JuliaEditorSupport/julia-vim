@@ -41,6 +41,12 @@ else
   let b:julia_syntax_version = 5
 endif
 
+let s:julia_spellcheck_strings = get(g:, "julia_spellcheck_strings", 0)
+let s:julia_spellcheck_docstrings = get(g:, "julia_spellcheck_docstrings", 1)
+let s:julia_spellcheck_comments = get(g:, "julia_spellcheck_comments", 1)
+
+let s:julia_highlight_operators = get(g:, "julia_highlight_operators", 1)
+
 " characters which cannot be used in identifiers ('?' is sort of valid but
 " let's just pretend it isn't). This list is very incomplete:
 " 1) it only cares about charactes below 256
@@ -118,6 +124,20 @@ syntax cluster juliaPrintfItems		contains=juliaPrintfParBlock,juliaPrintfString
 syntax cluster juliaOperatorItems	contains=juliaOperator,juliaRangeOperator,juliaCTransOperator,juliaTernaryRegion,juliaColon,juliaSemicolon
 syntax cluster juliaCommentItems	contains=juliaCommentL,juliaCommentM
 syntax cluster juliaErrorItems		contains=juliaErrorPar,juliaErrorEnd,juliaErrorElse,juliaErrorCatch,juliaErrorFinally
+
+syntax cluster juliaSpellcheckStrings	        contains=@spell
+syntax cluster juliaSpellcheckDocStrings	contains=@spell
+syntax cluster juliaSpellcheckComments	        contains=@spell
+
+if !s:julia_spellcheck_docstrings
+  syntax cluster juliaSpellcheckDocStrings      remove=@spell
+endif
+if !s:julia_spellcheck_strings
+  syntax cluster juliaSpellcheckStrings remove=@spell
+endif
+if !s:julia_spellcheck_comments
+  syntax cluster juliaSpellcheckComments        remove=@spell
+endif
 
 syntax match   juliaSemicolon		display ";"
 syntax match   juliaColon		display ":"
@@ -277,7 +297,7 @@ syntax match   juliaChar		display "'\\U\x\{1,8\}'" contains=juliaUniCharLarge
 
 exec 'syntax match   juliaCTransOperator	"[[:space:]}' . s:nonid_chars . s:uniop_chars . s:binop_chars . '!]\@'.s:d(1).'<!\.\?' . "'" . '"'
 
-syntax region  juliaString		matchgroup=juliaStringDelim start=+\z("\(""\)\?\)+ skip=+\%(\\\\\)*\\"+ end=+\z1+ contains=@juliaStringVars,@juliaSpecialChars
+syntax region  juliaString		matchgroup=juliaStringDelim start=+\z("\(""\)\?\)+ skip=+\%(\\\\\)*\\"+ end=+\z1+ contains=@juliaStringVars,@juliaSpecialChars,@juliaSpellcheckStrings
 syntax region  juliabString		matchgroup=juliaStringDelim start=+\<b\z("\(""\)\?\)+ skip=+\%(\\\\\)*\\"+ end=+\z1+ contains=@juliaSpecialChars
 syntax region  juliasString		matchgroup=juliaStringDelim start=+\<s\z("\(""\)\?\)+ skip=+\%(\\\\\)*\\"+ end=+\z1+ contains=@juliaSpecialChars
 syntax region  juliavString		matchgroup=juliaStringDelim start=+\<v\z("\(""\)\?\)+ skip=+\%(\\\\\)*\\"+ end=+\z1+
@@ -285,7 +305,7 @@ syntax region  juliaipString		matchgroup=juliaStringDelim start=+\<ip\z("\(""\)\
 syntax region  juliabigString		matchgroup=juliaStringDelim start=+\<big\z("\(""\)\?\)+ skip=+\%(\\\\\)*\\"+ end=+\z1+
 syntax region  juliaMIMEString		matchgroup=juliaStringDelim start=+\<MIME\z("\(""\)\?\)+ skip=+\%(\\\\\)*\\"+ end=+\z1+ contains=@juliaSpecialChars
 
-syntax region  juliaDocString		matchgroup=juliaStringDelim start=+^"""+ skip=+\%(\\\\\)*\\"+ end=+"""+ contains=@juliaStringVars,@juliaSpecialChars,@spell
+syntax region  juliaDocString		matchgroup=juliaStringDelim start=+^"""+ skip=+\%(\\\\\)*\\"+ end=+"""+ contains=@juliaStringVars,@juliaSpecialChars,@juliaSpellcheckDocStrings
 
 exec 'syntax region  juliaPrintfMacro		contained transparent start="@s\?printf(" end=")\@'.s:d(1).'<=" contains=juliaMacro,juliaPrintfParBlock'
 syntax region  juliaPrintfMacro		contained transparent start="@s\?printf\s\+" end="\ze\%([])};#]\|$\)" contains=@juliaExprsPrintf,juliaMacro,juliaSymbolS,juliaQuotedParBlockS,juliaQuotedQMarkParS
@@ -346,8 +366,8 @@ syntax match   juliaQuotedQMark         contained "?"
 " force precedence over Symbols
 syntax match   juliaOperator		display "::"
 
-syntax region  juliaCommentL		matchgroup=juliaCommentDelim start="#\ze\%([^=]\|$\)" end="$" keepend contains=juliaTodo,@spell
-syntax region  juliaCommentM		matchgroup=juliaCommentDelim start="#=\ze\%([^#]\|$\)" end="=#" contains=juliaTodo,juliaCommentM,@spell
+syntax region  juliaCommentL		matchgroup=juliaCommentDelim start="#\ze\%([^=]\|$\)" end="$" keepend contains=juliaTodo,@juliaSpellcheckComments
+syntax region  juliaCommentM		matchgroup=juliaCommentDelim start="#=\ze\%([^#]\|$\)" end="=#" contains=juliaTodo,juliaCommentM,@juliaSpellcheckComments
 syntax keyword juliaTodo		contained TODO FIXME XXX
 
 
@@ -456,7 +476,7 @@ hi def link juliaUniCharLarge		SpecialChar
 
 hi def link juliaPrintfFmt		SpecialChar
 
-if exists("g:julia_highlight_operators")
+if s:julia_highlight_operators
   hi! def link juliaOperatorHL		Operator
 else
   hi! def link juliaOperatorHL		juliaNone
