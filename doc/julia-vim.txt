@@ -346,8 +346,8 @@ g:julia_spellcheck_docstings
                 i.e. tri-strings that start at the first column. See |spell|.
                 By default, it is on (set to `1`).
 
-                                                *g:julia_spellcheck_stings*
-g:julia_spellcheck_stings
+                                               *g:julia_spellcheck_strings*
+g:julia_spellcheck_strings
 
                 Determines whether to enable spell-checking within strings.
                 See |spell|. By default, it is off (set to `0`).
