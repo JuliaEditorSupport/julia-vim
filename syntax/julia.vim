@@ -188,8 +188,8 @@ syntax region  juliaCatchBlock		matchgroup=juliaException transparent contained 
 syntax region  juliaFinallyBlock	matchgroup=juliaException transparent contained start="\<finally\>" end="\<end\>"me=s-1 contains=@juliaExpressions
 syntax match   juliaTypedef		"\<\%(abstract\|typealias\|bitstype\)\>"
 " AbstractBlock needs to come after to take precedence
-syntax region  juliaAbstractBlock	matchgroup=juliaBlKeyword start="\<abstract type\>" end="\<end\>" fold
-syntax region  juliaPrimitiveBlock	matchgroup=juliaBlKeyword start="\<primitive type\>" end="\<end\>" fold
+syntax region  juliaAbstractBlock	matchgroup=juliaBlKeyword start="\<abstract type\>" end="\<end\>" fold contains=@juliaExpressions
+syntax region  juliaPrimitiveBlock	matchgroup=juliaBlKeyword start="\<primitive type\>" end="\<end\>" fold contains=@juliaExpressions
 
 if b:julia_syntax_version >= 5
   exec 'syntax region  juliaComprehensionFor	matchgroup=juliaComprehensionFor transparent contained start="\%([^[:space:],;:({[]\_s*\)\@'.s:d(80).'<=\<for\>" end="\ze[]);]" contains=@juliaExpressions,juliaComprehensionIf,juliaComprehensionFor'
