@@ -62,9 +62,11 @@ function! s:L2U_SetupGlobal()
       let g:latex_to_unicode_auto = 0
   endif
 
-  " YouCompleteMe and neocomplcache plug-ins do not work well with LaTeX symbols
-  " suggestions
-  if exists("g:loaded_youcompleteme") || exists("g:loaded_neocomplcache")
+  " YouCompleteMe and neocomplcache/neocomplete plug-ins do not work well
+  " with LaTeX symbols suggestions
+  if exists("g:loaded_youcompleteme") ||
+        \ exists("g:loaded_neocomplcache") ||
+        \ exists("g:loaded_neocomplete")
     let g:latex_to_unicode_suggestions = 0
   endif
 
@@ -110,7 +112,7 @@ endfunction
 function! LaTeXtoUnicode#Enable()
 
   if b:l2u_enabled
-    return ""
+    return
   end
 
   call s:L2U_ResetLastCompletionInfo()
@@ -124,17 +126,17 @@ function! LaTeXtoUnicode#Enable()
   " will actually initialize all the LaTeX-to-Unicode substitutions.
   call LaTeXtoUnicode#Init()
 
-  return ""
+  return
 
 endfunction
 
 function! LaTeXtoUnicode#Disable()
   if !b:l2u_enabled
-    return ""
+    return
   endif
   let b:l2u_enabled = 0
   call LaTeXtoUnicode#Init()
-  return ""
+  return
 endfunction
 
 " Translate old options to their new equivalents
@@ -601,6 +603,5 @@ function! LaTeXtoUnicode#Toggle()
     call LaTeXtoUnicode#Enable()
     echo "LaTeX-to-Unicode enabled"
   endif
-  return ""
+  return
 endfunction
-
