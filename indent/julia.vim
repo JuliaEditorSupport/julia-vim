@@ -21,10 +21,14 @@ endif
 
 let s:skipPatterns = '\<julia\%(Comprehension\%(For\|If\)\|RangeEnd\|CommentL\|\%([bsv]\|ip\|big\|MIME\|Shell\|Printf\|Doc\)\=String\|RegEx\|SymbolS\?\)\>'
 
-function JuliaMatch(lnum, str, regex, st)
+function JuliaMatch(lnum, str, regex, st, ...)
   let s = a:st
+  let e = a:0 > 0 ? a:1 : -1
   while 1
     let f = match(a:str, a:regex, s)
+    if e > 0 && f >= e
+      return -1
+    endif
     if f >= 0
       let attr = synIDattr(synID(a:lnum,f+1,1),"name")
       if attr =~ s:skipPatterns
@@ -37,15 +41,16 @@ function JuliaMatch(lnum, str, regex, st)
   return f
 endfunction
 
-function GetJuliaNestingStruct(lnum)
+function GetJuliaNestingStruct(lnum, ...)
   " Auxiliary function to inspect the block structure of a line
   let line = getline(a:lnum)
   let s = 0
+  let e = a:0 > 0 ? a:1 : -1
   let blocks_stack = []
   let num_closed_blocks = 0
   while 1
-    let fb = JuliaMatch(a:lnum, line, '@\@<!\<\%(if\|else\%(if\)\=\|while\|for\|try\|catch\|finally\|\%(staged\)\?function\|macro\|begin\|mutable\s\+struct\|\%(mutable\s\+\)\@<!struct\|\%(abstract\|primitive\)\s\+type\|\%(\%(abstract\|primitive\)\s\+\)\@<!type\|immutable\|let\|\%(bare\)\?module\|quote\|do\)\>', s)
-    let fe = JuliaMatch(a:lnum, line, '@\@<!\<end\>', s)
+    let fb = JuliaMatch(a:lnum, line, '@\@<!\<\%(if\|else\%(if\)\=\|while\|for\|try\|catch\|finally\|\%(staged\)\?function\|macro\|begin\|mutable\s\+struct\|\%(mutable\s\+\)\@<!struct\|\%(abstract\|primitive\)\s\+type\|\%(\%(abstract\|primitive\)\s\+\)\@<!type\|immutable\|let\|\%(bare\)\?module\|quote\|do\)\>', s, e)
+    let fe = JuliaMatch(a:lnum, line, '@\@<!\<end\>', s, e)
 
     if fb < 0 && fe < 0
       " No blocks found
@@ -246,11 +251,13 @@ function GetJuliaNestingBrackets(lnum, c)
     " Note: it should be impossible to get here
     break
   endwhile
+  let first_open_bracket = -1
   let last_open_bracket = -1
   if len(brackets_stack) > 0
+    let first_open_bracket = brackets_stack[0][1]
     let last_open_bracket = brackets_stack[-1][1]
   endif
-  return [last_open_bracket, last_closed_bracket]
+  return [first_open_bracket, last_open_bracket, last_closed_bracket]
 endfunction
 
 let s:bracketBlocks = '\<julia\%(\%(\%(Printf\)\?Par\|SqBra\|CurBra\)Block\|ParBlockInRange\|StringVars\%(Par\|SqBra\|CurBra\)\|Dollar\%(Par\|SqBra\)\|QuotedParBlockS\?\)\>'
@@ -294,10 +301,13 @@ function GetJuliaIndent()
     return 0
   endif
 
+  let ind = -1
+  let lim = -1
+
   " Multiline bracketed expressions take precedence
   let c = len(getline(lnum)) + 1
   while IsInBrackets(lnum, c)
-    let [last_open_bracket, last_closed_bracket] = GetJuliaNestingBrackets(lnum, c)
+    let [first_open_bracket, last_open_bracket, last_closed_bracket] = GetJuliaNestingBrackets(lnum, c)
 
     " First scenario: the previous line has a hanging open bracket:
     " set the indentation to match the opening bracket (plus an extra space)
@@ -323,6 +333,7 @@ function GetJuliaIndent()
           let ind = 0
         else
           " we skipped a bracket set, keep searching for an opening bracket
+          let lim = c
           continue
         endif
       endif
@@ -338,17 +349,22 @@ function GetJuliaIndent()
       let ind -= 1
     endif
 
-    let &ignorecase = s:save_ignorecase
-    unlet s:save_ignorecase
-    return ind
+    break
   endwhile
 
-  " We are not in a multiline bracketed expression. Thus we look for a
-  " previous line to use as a reference
-  let [lnum,ind] = LastBlockIndent(lnum)
+  if ind == -1
+    " We are not in a multiline bracketed expression. Thus we look for a
+    " previous line to use as a reference
+    let [lnum,ind] = LastBlockIndent(lnum)
+    let c = len(getline(lnum)) + 1
+    if IsInBrackets(lnum, c)
+      let [first_open_bracket, last_open_bracket, last_closed_bracket] = GetJuliaNestingBrackets(lnum, c)
+      let lim = first_open_bracket
+    endif
+  end
 
   " Analyse the reference line
-  let [num_open_blocks, num_closed_blocks] = GetJuliaNestingStruct(lnum)
+  let [num_open_blocks, num_closed_blocks] = GetJuliaNestingStruct(lnum, lim)
 
   " Increase indentation for each newly opened block
   " in the reference line
