@@ -161,18 +161,17 @@ function GetJuliaNestingStruct(lnum)
 endfunction
 
 function GetJuliaNestingBrackets(lnum, c)
-  " Auxiliary function to inspect the block structure of a line
+  " Auxiliary function to inspect the brackets structure of a line
   let line = getline(a:lnum)[0 : (a:c - 1)]
   let s = 0
   let brackets_stack = []
-  let num_closed_brackets = 0
   let last_closed_bracket = -1
   while 1
     let fb = JuliaMatch(a:lnum, line, '[([{]', s)
     let fe = JuliaMatch(a:lnum, line, '[])}]', s)
 
     if fb < 0 && fe < 0
-      " No blocks found
+      " No brackets found
       break
     end
 
@@ -212,7 +211,6 @@ function GetJuliaNestingBrackets(lnum, c)
         if len(brackets_stack) > 0 && brackets_stack[-1][0] == 'par'
           call remove(brackets_stack, -1)
         else
-          let num_closed_brackets += 1
           let last_closed_bracket = i + 1
         endif
         continue
@@ -224,7 +222,6 @@ function GetJuliaNestingBrackets(lnum, c)
         if len(brackets_stack) > 0 && brackets_stack[-1][0] == 'sqbra'
           call remove(brackets_stack, -1)
         else
-          let num_closed_brackets += 1
           let last_closed_bracket = i + 1
         endif
         continue
@@ -236,7 +233,6 @@ function GetJuliaNestingBrackets(lnum, c)
         if len(brackets_stack) > 0 && brackets_stack[-1][0] == 'curbra'
           call remove(brackets_stack, -1)
         else
-          let num_closed_brackets += 1
           let last_closed_bracket = i + 1
         endif
         continue
@@ -257,7 +253,7 @@ function GetJuliaNestingBrackets(lnum, c)
   return [last_open_bracket, last_closed_bracket]
 endfunction
 
-let s:bracketBlocks = '\<julia\%(\%(\%(Printf\)\?Par\|SqBra\|CurBra\)Block\|ParBlockInRange\|StringVars\%(Par\|SqBra\|CurBra\)\|Dollar\%(Par\|SqBra\)\)\>'
+let s:bracketBlocks = '\<julia\%(\%(\%(Printf\)\?Par\|SqBra\|CurBra\)Block\|ParBlockInRange\|StringVars\%(Par\|SqBra\|CurBra\)\|Dollar\%(Par\|SqBra\)\|QuotedParBlockS\?\)\>'
 
 function IsInBrackets(lnum, c)
   let stack = map(synstack(a:lnum, a:c), 'synIDattr(v:val, "name")')
@@ -274,7 +270,7 @@ function LastBlockIndent(lnum)
   while lnum > 0
     let ind = indent(lnum)
     if ind == 0
-      return [max([lnum,1]), 0]
+      return [lnum, 0]
     endif
     if !IsInBrackets(lnum, 1)
       break
