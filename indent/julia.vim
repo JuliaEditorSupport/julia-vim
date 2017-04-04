@@ -300,11 +300,19 @@ function GetJuliaIndent()
 
   " Multiline bracketed expressions take precedence
   let c = len(getline(lnum)) + 1
+
+  " Is set to 1 in case code block was in brackets.
+  " This is used to prevent choosing another reference line when inside a
+  " multiline bracketed expression.
+  let in_brackets = 0
+
   while IsInBrackets(lnum, c)
+    let in_brackets = 1
     let [last_open_bracket, last_closed_bracket] = GetJuliaNestingBrackets(lnum, c)
 
     " First scenario: the previous line has a hanging open bracket:
     " set the indentation to match the opening bracket (plus an extra space)
+
     if last_open_bracket != -1
       let ind = last_open_bracket + 1
 
@@ -335,21 +343,25 @@ function GetJuliaIndent()
     else
       let ind = indent(lnum)
     endif
-
-    " In case the current line starts with a closing bracket, we align it with
+    " In case the current line contains a closing bracket only, we align it with
     " the opening one.
-    if JuliaMatch(v:lnum, getline(v:lnum), '[])}]', indent(v:lnum)) == indent(v:lnum) && ind > 0
+    " This fixes the case where the line contains end)
+    if JuliaMatch(v:lnum, getline(v:lnum), '[])}]', 0) > 0 && ind > 0 && JuliaMatch(v:lnum, getline(v:lnum), '[({[]', 0) == -1
       let ind -= 1
     endif
 
     let &ignorecase = s:save_ignorecase
     unlet s:save_ignorecase
-    return ind
+    " Do not return here it's possible that there is a nested block inside
+    break
   endwhile
 
-  " We are not in a multiline bracketed expression. Thus we look for a
-  " previous line to use as a reference
-  let [lnum,ind] = LastBlockIndent(lnum)
+  " If we are not in a multiline bracketed expression. We look for a
+  " previous line to use as a reference. Otherwise use lnum and ind from
+  " multiline.
+  if !in_brackets
+      let [lnum,ind] = LastBlockIndent(lnum)
+  end
 
   " Analyse the reference line
   let [num_open_blocks, num_closed_blocks] = GetJuliaNestingStruct(lnum)
