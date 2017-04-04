@@ -312,7 +312,7 @@ function GetJuliaIndent()
     " First scenario: the previous line has a hanging open bracket:
     " set the indentation to match the opening bracket (plus an extra space)
     if last_open_bracket != -1
-      let ind = last_open_bracket + 1
+      let ind = virtcol([lnum, last_open_bracket + 1])
 
     " Second scenario: some multiline bracketed expression was closed in the
     " previous line. But since we know we are still in a bracketed expression,
