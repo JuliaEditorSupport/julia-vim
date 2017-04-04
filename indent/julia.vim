@@ -44,8 +44,8 @@ endfunction
 function GetJuliaNestingStruct(lnum, ...)
   " Auxiliary function to inspect the block structure of a line
   let line = getline(a:lnum)
-  let s = 0
-  let e = a:0 > 0 ? a:1 : -1
+  let s = a:0 > 0 ? a:1 : 0
+  let e = a:0 > 1 ? a:2 : -1
   let blocks_stack = []
   let num_closed_blocks = 0
   while 1
@@ -302,6 +302,7 @@ function GetJuliaIndent()
   endif
 
   let ind = -1
+  let st = -1
   let lim = -1
 
   " Multiline bracketed expressions take precedence
@@ -312,7 +313,8 @@ function GetJuliaIndent()
     " First scenario: the previous line has a hanging open bracket:
     " set the indentation to match the opening bracket (plus an extra space)
     if last_open_bracket != -1
-      let ind = virtcol([lnum, last_open_bracket + 1])
+      let st = last_open_bracket
+      let ind = virtcol([lnum, st + 1])
 
     " Second scenario: some multiline bracketed expression was closed in the
     " previous line. But since we know we are still in a bracketed expression,
@@ -346,7 +348,7 @@ function GetJuliaIndent()
     " In case the current line starts with a closing bracket, we align it with
     " the opening one.
     if JuliaMatch(v:lnum, getline(v:lnum), '[])}]', indent(v:lnum)) == indent(v:lnum) && ind > 0
-      let ind -= 1
+      return ind - 1
     endif
 
     break
@@ -364,7 +366,7 @@ function GetJuliaIndent()
   end
 
   " Analyse the reference line
-  let [num_open_blocks, num_closed_blocks] = GetJuliaNestingStruct(lnum, lim)
+  let [num_open_blocks, num_closed_blocks] = GetJuliaNestingStruct(lnum, st, lim)
 
   " Increase indentation for each newly opened block
   " in the reference line
