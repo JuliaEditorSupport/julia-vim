@@ -26,7 +26,7 @@ function JuliaMatch(lnum, str, regex, st, ...)
   let e = a:0 > 0 ? a:1 : -1
   while 1
     let f = match(a:str, a:regex, s)
-    if e > 0 && f >= e
+    if e >= 0 && f >= e
       return -1
     endif
     if f >= 0
