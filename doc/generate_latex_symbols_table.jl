@@ -1,22 +1,66 @@
 #!/bin/env julia
 
 const filename = "julia-vim-L2U-table"
-const sourcefile = joinpath(JULIA_HOME, "..", "..", "doc", "manual", "unicode-input-table.rst")
 
-isfile(sourcefile) || error("unable to find source file $sourcefile")
+# Keeping this from an old revision, just in case:
+# Combining chars ranges, as obtained from https://en.wikipedia.org/wiki/Combining_character:
+# ('\u0300' ≤ u ≤ '\u036F') ||
+# ('\u1AB0' ≤ u ≤ '\u1AFF') ||
+# ('\u1DC0' ≤ u ≤ '\u1DFF') ||
+# ('\u20D0' ≤ u ≤ '\u20FF') ||
+# ('\uFE20' ≤ u ≤ '\uFE2F')
 
-# Prepend a dotted circle to combining characters
-# (removes the non-breakable space from the Julia manual table)
-# (ranges obtained from https://en.wikipedia.org/wiki/Combining_character)
-function fix_combining_chars(uni)
-    length(uni) > 1 && uni[1] == '\u00A0' && (uni = uni[nextind(uni,1):end])
-    u = uni[1]
-    isc = ('\u0300' ≤ u ≤ '\u036F') ||
-          ('\u1AB0' ≤ u ≤ '\u1AFF') ||
-          ('\u1DC0' ≤ u ≤ '\u1DFF') ||
-          ('\u20D0' ≤ u ≤ '\u20FF') ||
-          ('\uFE20' ≤ u ≤ '\uFE2F')
-    return isc ? string('\u25CC', uni) : uni
+# Most of this code is copy-pasted and slightly adapted from here:
+# JULIA_HOME/doc/src/manual/unicode-input.md b/doc/src/manual/unicode-input.md
+# except that instead of producing Markdown we want to generate a vim
+# documentation file.
+
+function tab_completions(symbols...)
+    completions = Dict{String, Vector{String}}()
+    for each in symbols, (k, v) in each
+        completions[v] = push!(get!(completions, v, String[]), k)
+    end
+    return completions
+end
+
+function unicode_data()
+    file = normpath(JULIA_HOME, "..", "..", "doc", "UnicodeData.txt")
+    names = Dict{UInt32, String}()
+    open(file) do unidata
+        for line in readlines(unidata)
+            id, name, desc = split(line, ";")[[1, 2, 11]]
+            codepoint = parse(UInt32, "0x$id")
+            names[codepoint] = (name == "" ? desc : desc == "" ? name : "$name / $desc")
+        end
+    end
+    return names
+end
+
+# Prepend a dotted circle ('◌' i.e. '\u25CC') to combining characters
+function fix_combining_chars(char)
+    cat = Base.UTF8proc.category_code(char)
+    return string(cat == 6 || cat == 8 ? "◌" : "", char)
+end
+
+function table_entries(completions, unicode_dict)
+    code = String[]
+    unicode = String[]
+    latex = String[]
+    desc = String[]
+
+    for (chars, inputs) in sort!(collect(completions), by = first)
+        code_points, unicode_names, characters = String[], String[], String[]
+        for char in chars
+            push!(code_points, "U+$(uppercase(hex(char, 5)))")
+            push!(unicode_names, get(unicode_dict, UInt32(char), "(No Unicode name)"))
+            push!(characters, isempty(characters) ? fix_combining_chars(char) : "$char")
+        end
+        push!(code, join(code_points, " + "))
+        push!(unicode, join(characters))
+        push!(latex, replace(join(inputs, ", "), "\\\\", "\\"))
+        push!(desc, join(unicode_names, " + "))
+    end
+    return code, unicode, latex, desc
 end
 
 open("$filename.txt","w") do f
@@ -34,30 +78,14 @@ open("$filename.txt","w") do f
 
     col_headers = ["Code point(s)", "Character(s)", "Tab completion sequence(s)", "Unicode name(s)"]
 
-    code = String[]
-    unicode = String[]
-    latex = String[]
-    desc = String[]
-
-    open(sourcefile) do sf
-        for l in eachline(sf)
-            m = match(r"
-                ^(U\+[0-9A-F]{5}(\ \+\ U\+[0-9A-F]{5})*)
-                \s+
-                (\X)
-                \s+
-                (\\\\[^[:space:],]+(,\ \\\\[^[:space:],]+)*)
-                \s+
-                (.*)$
-                "x, l)
-            m == nothing && continue
-            c, _, u, l, _, d = m.captures
-            push!(code, c)
-            push!(unicode, fix_combining_chars(u))
-            push!(latex, replace(l, "\\\\", "\\"))
-            push!(desc, d)
-        end
-    end
+    code, unicode, latex, desc =
+        table_entries(
+            tab_completions(
+                Base.REPLCompletions.latex_symbols,
+                Base.REPLCompletions.emoji_symbols
+                ),
+            unicode_data()
+            )
 
     cw = max(length(col_headers[1]), maximum(map(length, code)))
     uw = max(length(col_headers[2]), maximum(map(length, unicode)))
