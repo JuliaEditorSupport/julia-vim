@@ -109,7 +109,7 @@ else
   syntax cluster juliaTypesItems	contains=@juliaTypesItemsAll,@juliaTypesItems0405,@juliaTypesItems0506,@juliaTypesItems06
 endif
 syntax cluster juliaTypesItemsAll	contains=juliaBaseTypeBasic,juliaBaseTypeNum,juliaBaseTypeC,juliaBaseTypeError,juliaBaseTypeIter,juliaBaseTypeString,juliaBaseTypeArray,juliaBaseTypeDict,juliaBaseTypeSet,juliaBaseTypeIO,juliaBaseTypeProcess,juliaBaseTypeRange,juliaBaseTypeRegex,juliaBaseTypeFact,juliaBaseTypeFact,juliaBaseTypeSort,juliaBaseTypeRound,juliaBaseTypeSpecial,juliaBaseTypeRandom,juliaBaseTypeDisplay,juliaBaseTypeTime,juliaBaseTypeOther
-syntax cluster juliaTypesItems04	contains=juliaBaseTypeString04
+syntax cluster juliaTypesItems04	contains=juliaBaseTypeString0304,juliaBaseTypeString04
 syntax cluster juliaTypesItems0405	contains=juliaBaseTypeIter0405,juliaBaseTypeRange0405
 syntax cluster juliaTypesItems0506	contains=juliaBaseTypeBasic0506,juliaBaseTypeString0506,juliaBaseTypeArray0506,juliaBaseTypeRange0506,juliaBaseTypeOther0506,juliaBaseTypeIO0506
 syntax cluster juliaTypesItems06	contains=juliaBaseTypeBasic06,juliaBaseTypeArray06,juliaBaseTypeSet06,juliaBaseTypeProcess06,juliaBaseTypeRange06,juliaBaseTypeTime06
@@ -211,6 +211,7 @@ syntax match   juliaBaseTypeError	display "\<\%(\%(Bounds\|Divide\|Domain\|\%(St
 syntax match   juliaBaseTypeIter	display "\<\%(EachLine\|Enumerate\|Cartesian\%(Index\|Range\)\|LinSpace\)\>"
 syntax match   juliaBaseTypeIter0405	display "\<\%(Zip\|Filter\)\>"
 syntax match   juliaBaseTypeString	display "\<\%(DirectIndex\|Sub\|Rep\|Rev\|Abstract\)String\>"
+syntax match   juliaBaseTypeString0304	display "\<String\>"
 syntax match   juliaBaseTypeString04	display "\<\(ASCII\|UTF\%(8\|16\|32\)\|W\|Byte\|Rope\)String\>"
 syntax match   juliaBaseTypeString0506	display "\<String\>"
 syntax match   juliaBaseTypeArray	display "\<\%(\%(Sub\)\?Array\|\%(Abstract\|Dense\|Strided\)\?\%(Array\|Matrix\|Vec\%(tor\|OrMat\)\)\|SparseMatrixCSC\|\%(AbstractSparse\|Bit\|Shared\)\%(Array\|Vector\|Matrix\)\|\%\(D\|Bid\|\%(Sym\)\?Trid\)iagonal\|Hermitian\|Symmetric\|UniformScaling\|\%(Lower\|Upper\)Triangular\)\>"
@@ -434,9 +435,11 @@ for t in ["Iter", "Range"]
   exec "hi! def link juliaBaseType" . t . "0405 " . h
 endfor
 for t in ["String"]
+  let h = b:julia_syntax_version == 4 ? "juliaDeprecated" : "NONE"
+  exec "hi! def link juliaBaseType" . t . "0304 " . h
   let h = b:julia_syntax_version == 4 ? "Type" : b:julia_syntax_version == 5 ? "juliaDeprecated" : "NONE"
   exec "hi! def link juliaBaseType" . t . "04 " . h
-  let h = b:julia_syntax_version > 4 ? "Type" : "juliaDeprecated"
+  let h = b:julia_syntax_version > 4 ? "Type" : "NONE"
   exec "hi! def link juliaBaseType" . t . "0506 " . h
 endfor
 
