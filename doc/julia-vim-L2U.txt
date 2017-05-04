@@ -235,8 +235,10 @@ g:latex_to_unicode_suggestions
                 for partial matches. By default, this is set to 1 (active),
                 unless a plug-in which is known to be incompatible with it is
                 detected. Currently, known incompatible plug-ins are
-                YouCompleteMe (https://github.com/Valloric/YouCompleteMe) and
-                neocomplcache (https://github.com/Shougo/neocomplcache.vim).
+                YouCompleteMe (https://github.com/Valloric/YouCompleteMe),
+                neocomplcache (https://github.com/Shougo/neocomplcache.vim),
+                neocomplete (https://github.com/Shougo/neocomplete.vim) and
+                deoplete (https://github.com/Shougo/deoplete.nvim),
 
                 This variable can be set at any time, changes will immediately
                 take effect.

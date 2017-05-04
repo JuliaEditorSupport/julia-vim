@@ -62,11 +62,12 @@ function! s:L2U_SetupGlobal()
       let g:latex_to_unicode_auto = 0
   endif
 
-  " YouCompleteMe and neocomplcache/neocomplete plug-ins do not work well
+  " YouCompleteMe and neocomplcache/neocomplete/deoplete plug-ins do not work well
   " with LaTeX symbols suggestions
   if exists("g:loaded_youcompleteme") ||
         \ exists("g:loaded_neocomplcache") ||
-        \ exists("g:loaded_neocomplete")
+        \ exists("g:loaded_neocomplete") ||
+        \ exists("g:loaded_deoplete")
     let g:latex_to_unicode_suggestions = 0
   endif
 

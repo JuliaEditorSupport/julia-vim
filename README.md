@@ -97,8 +97,9 @@ If no suitable substitution is found, the action will fall back to whatever mapp
 defined: by default, inserting a literal `<Tab>` character, or invoking some other action if another
 plug-in is installed, e.g. [supertab] or [YouCompleteMe].
 
-Note that the [YouCompleteMe] and [neocomplcache] plug-ins do not work well with the suggestion of possible
-completions for partial matches, and therefore this feature is disabled if those plug-ins are detected.
+Note that the [YouCompleteMe], [neocomplcache], [neocomplete] and [deoplete] plug-ins do not work well
+with the suggestion of possible completions for partial matches, and therefore this feature is disabled
+if those plug-ins are detected.
 
 A literal tab can always be forced by using `CTRL-V` and then `Tab`.
 
@@ -124,6 +125,8 @@ substitution to Unicode.
 [supertab]: https://github.com/ervandew/supertab
 [YouCompleteMe]: https://github.com/Valloric/YouCompleteMe
 [neocomplcache]: https://github.com/Shougo/neocomplcache.vim
+[neocomplete]: https://github.com/Shougo/neocomplete.vim
+[deoplete]: https://github.com/Shougo/deoplete.nvim
 
 #### Using this feature on Vim versions lower than 7.4
 
