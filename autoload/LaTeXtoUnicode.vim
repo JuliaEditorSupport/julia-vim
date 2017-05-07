@@ -308,12 +308,14 @@ function! LaTeXtoUnicode#omnifunc(findstart, base)
       " ...return the Unicode symbol
       return [g:l2u_symbols_dict[a:base]]
     endif
-    " here, only partial matches were found; either keep just the longest
-    " common prefix, or pass them on
-    if !suggestions
-      let partmatches = [s:L2U_longest_common_prefix(partmatches)]
-    else
-      call sort(partmatches, "s:L2U_partmatches_sort")
+    if !empty(partmatches)
+      " here, only partial matches were found; either keep just the longest
+      " common prefix, or pass them on
+      if !suggestions
+        let partmatches = [s:L2U_longest_common_prefix(partmatches)]
+      else
+        call sort(partmatches, "s:L2U_partmatches_sort")
+      endif
     endif
     if empty(partmatches)
       call feedkeys(s:l2u_esc_sequence, 'n')
