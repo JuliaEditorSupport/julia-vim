@@ -325,6 +325,11 @@ function! LaTeXtoUnicode#omnifunc(findstart, base)
   endif
 endfunction
 
+function! LaTeXtoUnicode#PutLiteral(k)
+  call feedkeys(a:k, 'ni')
+  return ''
+endfunction
+
 " Function which saves the current insert-mode mapping of a key sequence `s`
 " and associates it with another key sequence `k` (e.g. stores the current
 " <Tab> mapping into the Fallback trigger)
@@ -349,6 +354,11 @@ function! s:L2U_SetFallbackMapping(s, k)
     let cmd = 'inoremap '
   else
     let cmd = 'imap '
+    " This is a nasty hack used to prevent infinite recursion. It's not a
+    " general solution.
+    if mmdict["expr"]
+      let rhs = substitute(rhs, '\c' . a:s, "\<C-R>=LaTeXtoUnicode#PutLiteral('" . a:s . "')\<CR>", 'g')
+    endif
   endif
   exe cmd . pre . ' ' . a:k . ' ' . rhs
 endfunction
