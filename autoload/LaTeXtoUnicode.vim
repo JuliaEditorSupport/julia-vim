@@ -379,6 +379,7 @@ function! LaTeXtoUnicode#Tab()
   " completion is to substitute the final string
   let b:l2u_backup_commpleteopt = &completeopt
   set completeopt+=longest
+  set completeopt-=noinsert
   " invoke omnicompletion; failure to perform LaTeX-to-Unicode completion is
   " handled by the CompleteDone autocommand.
   return "\<C-X>\<C-O>"
