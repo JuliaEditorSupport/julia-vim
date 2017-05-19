@@ -286,7 +286,7 @@ g:julia_blocks
                     let g:julia_blocks = 0
 <
                 in your |.vimrc| file.
-                
+
                                                   *g:julia_blocks_mappings*
 g:julia_blocks_mappings
 
