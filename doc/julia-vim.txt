@@ -30,6 +30,7 @@ Block-wise movements/objects        |julia-vim-blocks|
   Block-oriented movements          |julia-vim-blocks-moveblock|
   Block text objects                |julia-vim-blocks-objects|
   Variables                         |julia-vim-blocks-variables|
+Extras                              |julia-vim-extras|
 Customizations                      |julia-vim-options|
 About                               |julia-vim-about|
 
@@ -39,8 +40,7 @@ INTRODUCTION                                       *julia-vim-introduction*
 The julia-vim plug-in provides:
   - basic support for editing Julia files (automatic filetype detection,
     indentation, syntax highlighting)
-  - support for the matchit plugin
-    (http://www.vim.org/scripts/script.php?script_id=39)
+  - support for the |matchit| plugin
   - support for Julia block-wise movements (i.e. jumping around between
     Julia blocks like if/end, function/end etc.) and block text-objects
   - facilities for conversion of LaTeX entries to Unicode symbols which mimic
@@ -108,7 +108,7 @@ BLOCK-WISE MOVEMENTS AND BLOCK TEXT OBJECTS              *julia-vim-blocks*
 In Julia, all blocks start with a keyword (`module`, `function`, `if`, `for`,
 `while`, `type`, etc.) and end with the `end` keyword.
 
-This plug-in adds support for the "matchit" plugin, such that pressing |%| while
+This plug-in adds support for the |matchit| plugin, such that pressing |%| while
 on a block keyword will jump to the other keywords pertaining to the same
 block. For example, if the cursor is at the beginning of the following code:
 >
@@ -332,6 +332,43 @@ g:julia_blocks_mappings
 <
                 All unspecified entries keep their default value.
 
+
+==============================================================================
+EXTRAS                                                   *julia-vim-extras*
+
+
+                                        *julia#toggle_function_blockassign*
+                                        *julia#function_block2assign*
+                                        *julia#function_assign2block*
+julia#toggle_function_blockassign()
+julia#function_block2assign()
+julia#function_assign2block()
+
+                These functions allow to transform function definitions
+                between block format and assignment format. For example,
+                these two definitions are equivalent:
+>
+                function test(x, y)
+                    x + 2y
+                end
+
+                test(x, y) = x + 2y
+<
+                You can use the function `julia#toggle_function_blockassign()`
+                to switch between the two forms (the cursor needs to be on the
+                first line of the block form). This functionality requires
+                that the |matchit| plugin is loaded. Only three-line function
+                blocks like the one in the example are recognized. When
+                changing the block form into the assignment form, `return`
+                statements are removed; if the result is empty, `nothing` is
+                substituted. Leading macros (e.g. `@inline` or `@compat`) are
+                recognized and preserved by the transformation.
+                
+                In order to make this functionality practical, it is advisable
+                to map it to some key combination, e.g.:
+>
+                noremap <Leader>fb :call julia#toggle_function_blockassign()<CR>
+<
 
 ==============================================================================
 CUSTOMIZATIONS                                          *julia-vim-options*
