@@ -34,9 +34,9 @@ function! julia#toggle_function_blockassign()
     if c != -1
         return julia#function_block2assign()
     endif
-    let c = match(l, '\C\m)\s*=\s*')
+    let c = match(l, '\C\m)\%(::\S\+\)\?\%(\s\+where\s\+.*\)\?\s*=\s*')
     if c == -1
-        :echohl WarningMsg | echo "Not on a function definition or assignment line" | echohl None
+        echohl WarningMsg | echo "Not on a function definition or assignment line" | echohl None
         return
     endif
     return julia#function_assign2block()
@@ -47,7 +47,7 @@ function! julia#function_block2assign()
     let l = getline('.')
     let c = match(l, '\C\m\<function\s\+.\+(')
     if c == -1
-        :echohl WarningMsg | echo "Not on a function definition line" | echohl None
+        echohl WarningMsg | echo "Not on a function definition line" | echohl None
         return
     endif
     let fpos = copy(sav_pos)
@@ -55,7 +55,7 @@ function! julia#function_block2assign()
     call setpos('.', fpos)
     normal %
     if line('.') != fpos[1]+2 || match(getline('.'), '\C\m^\s*end\s*$') == -1
-        :echohl WarningMsg | echo "Only works with 3-lines functions" | echohl None
+        echohl WarningMsg | echo "Only works with 3-lines functions" | echohl None
         call setpos('.', sav_pos)
         return
     endif
@@ -66,20 +66,14 @@ function! julia#function_block2assign()
         normal! l
         normal %
     endwhile
-    if line('.') != fpos[1] || match(l[(col('.')-1):], '\C\m)\s*$') != 0
-        :echohl WarningMsg | echo "Unrecognized function definition format" | echohl None
+    if line('.') != fpos[1] || match(l[(col('.')-1):], '\C\m)\%(::\S\+\)\?\%(\s\+where\s\+.*\)\?\s*$') != 0
+        echohl WarningMsg | echo "Unrecognized function definition format" | echohl None
         call setpos('.', sav_pos)
         return
     endif
 
     call setpos('.', fpos)
-    normal! dwf(
-    normal %
-    while match(l[col('.')-1:], '\C\m)(') == 0
-        normal! l
-        normal %
-    endwhile
-    normal! C) = J
+    normal! dwA = J
     if match(getline('.')[(col('.')-1):], '\C\mreturn\>') == 0
         normal! dw
     endif
@@ -93,9 +87,9 @@ endfunction
 function! julia#function_assign2block()
     let sav_pos = getcurpos()
     let l = getline('.')
-    let c = match(l, '\C\m)\s*=\s*')
+    let c = match(l, '\C\m)\%(::\S\+\)\?\%(\s\+where\s\+.*\)\?\s*=\s*')
     if c == -1
-        :echohl WarningMsg | echo "Not on a function assignment-definition line" | echohl None
+        echohl WarningMsg | echo "Not on a function assignment-definition line" | echohl None
         return
     endif
     normal ^
@@ -104,12 +98,13 @@ function! julia#function_assign2block()
     endwhile
     normal! ifunction 
     let l = getline('.')
-    let c = match(l, '\C\m)\s*=\s*')
+    let c = match(l, '\C\m)\%(::\S\+\)\?\%(\s\+where\s\+.*\)\?\s*\zs=\s*')
     let eqpos = copy(sav_pos)
     let eqpos[2] = c+1
     call setpos('.', eqpos)
-    normal! f=wcT)oend
+    normal! cwoend
     normal %
+    s/\s*$// | noh
     return
 endfunction
 
