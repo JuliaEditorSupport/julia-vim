@@ -11,12 +11,12 @@ let b:did_ftplugin = 1
 let s:save_cpo = &cpo
 set cpo-=C
 
-setlocal include="^\s*\%(reload\|include\)\>"
+setlocal include=^\\s*\\%(reload\\|include\\)\\>
 setlocal suffixesadd=.jl
 setlocal comments=:#
 setlocal commentstring=#=%s=#
 setlocal cinoptions+=#1
-setlocal define="^\s*macro\>"
+setlocal define=^\\s*macro\\>
 
 let b:julia_vim_loaded = 1
 
