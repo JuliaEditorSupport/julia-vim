@@ -57,7 +57,7 @@ The LaTeX-to-Unicode facilities are documented in |julia-vim-L2U|.
 CHOOSING JULIA VERSION                                   *julia-vim-version*
 
 By default, the syntax highlighting is based on the current Julia release
-(version 0.5 at the time of writing). The plugin supports the previous stable
+(version 0.6 at the time of writing). The plugin supports the previous stable
 version and the development version as well, and allows to switch beteween
 them.
 
@@ -68,7 +68,7 @@ g:default_julia_version
                 Julia file. The default is `"current"`, meaning the latest
                 stable release. Allowed values are: `"current"` (or
                 `"release"`), `"previous"` (or `"legacy"`), `"next"` (or
-                `"devel"`), or numeric values (`"0.4"`, `"0.5"`, `"0.6"`). You
+                `"devel"`), or numeric values (`"0.5"`, `"0.6"`, `"0.7"`). You
                 would normally set this variable in your |.vimrc| file, e.g.:
 >
                     let g:default_julia_version = "devel"
@@ -84,7 +84,7 @@ julia#set_syntax_version(`julia_version`)
                 create a mapping to switch rapidly between them (you can read
                 out the currently used version from the variable
                 `b:julia_syntax_version`, which uses a numeric scheme, i.e.
-                `4` for version `0.4` etc).
+                `5` for version `0.5` etc).
 
                                        *g:julia_syntax_highlight_deprecated*
 g:julia_syntax_highlight_deprecated
