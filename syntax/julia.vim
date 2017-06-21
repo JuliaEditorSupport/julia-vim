@@ -356,7 +356,7 @@ syntax match   juliaPrintfFmt		display contained "\\%%"hs=s+1
 syntax match   juliaPossibleSymbol      transparent ":\ze[^:]" contains=juliaSymbol,juliaQuotedParBlock,juliaQuotedQMarkPar,juliaColon
 
 let s:quotable = '\%(' . s:idregex . '\|?\|' . s:operators . '\|' . s:float_regex . '\|' . s:int_regex . '\)'
-let s:quoting_colon = '\%(\%(^\s*\|\s\{6,\}\|[' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\s*\)\@'.s:d(6).'<=\|\%(\<return\s\*\)\@'.s:d(9).'<=\)\zs:'
+let s:quoting_colon = '\%(\%(^\s*\|\s\{6,\}\|[' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\s*\)\@'.s:d(6).'<=\|\%(\<\%(return\|if\|else\%(if\)\?\|while\|try\|begin\)\s*\)\@'.s:d(9).'<=\)\zs:'
 let s:quoting_colonS = '\s\@'.s:d(1).'<=:'
 
 " note: juliaSymbolS only works within whitespace-sensitive contexts,
