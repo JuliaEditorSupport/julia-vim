@@ -117,7 +117,7 @@ syntax cluster juliaSymbolItems		contains=juliaPossibleSymbol
 syntax cluster juliaNumberItems		contains=juliaNumbers
 syntax cluster juliaStringItems		contains=juliaChar,juliaString,juliabString,juliasString,juliavString,juliaipString,juliabigString,juliaMIMEString,juliaShellString,juliaDocString,juliaRegEx
 syntax cluster juliaPrintfItems		contains=juliaPrintfParBlock,juliaPrintfString
-syntax cluster juliaOperatorItems	contains=juliaOperator,juliaRangeOperator,juliaCTransOperator,juliaTernaryRegion,juliaColon,juliaSemicolon
+syntax cluster juliaOperatorItems	contains=juliaOperator,juliaRangeOperator,juliaCTransOperator,juliaTernaryRegion,juliaColon,juliaSemicolon,juliaComma
 syntax cluster juliaCommentItems	contains=juliaCommentL,juliaCommentM
 syntax cluster juliaErrorItems		contains=juliaErrorPar,juliaErrorEnd,juliaErrorElse,juliaErrorCatch,juliaErrorFinally
 
@@ -136,6 +136,7 @@ if !s:julia_spellcheck_comments
 endif
 
 syntax match   juliaSemicolon		display ";"
+syntax match   juliaComma		display ","
 syntax match   juliaColon		display ":"
 
 syntax match   juliaErrorPar		display "[])}]"
@@ -367,6 +368,7 @@ syntax keyword juliaTodo		contained TODO FIXME XXX
 "   :hi link juliaParDelim Delimiter
 hi def link juliaParDelim		juliaNone
 hi def link juliaSemicolon		juliaNone
+hi def link juliaComma  		juliaNone
 
 hi def link juliaColon			juliaOperator
 
