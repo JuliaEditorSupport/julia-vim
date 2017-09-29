@@ -209,6 +209,7 @@ syntax match   juliaBaseTypeProcess0607	display "\<PipeBuffer\>"
 syntax match   juliaBaseTypeRange	display "\<\%(Dims\|Range\%(Index\)\?\|\%(Ordinal\|Step\|\%(Abstract\)\?Unit\)Range\|Colon\)\>"
 syntax match   juliaBaseTypeRange05	display "\<FloatRange\>"
 syntax match   juliaBaseTypeRange0607	display "\<\%(ExponentialBackOff\|StepRangeLen\)\>"
+syntax match   juliaBaseTypeRange07	display "\<\%(AbstractRange\)\>"
 syntax match   juliaBaseTypeRegex	display "\<Regex\%(Match\)\?\>"
 syntax match   juliaBaseTypeFact	display "\<Factorization\>"
 syntax match   juliaBaseTypeSort	display "\<\%(Insertion\|\(Partial\)\?Quick\|Merge\)Sort\>"
@@ -410,6 +411,9 @@ for t in ["Iter", "Range"]
   let h = b:julia_syntax_version == 5 ? "Type" : b:julia_syntax_version == 6 ? "juliaDeprecated" : "NONE"
   exec "hi! def link juliaBaseType" . t . "05 " . h
 endfor
+if b:julia_syntax_version >= 7
+  hi! def link juliaBaseTypeRange07	Type
+endif
 
 hi def link juliaConstNum		Constant
 hi def link juliaConstEnv		Constant
