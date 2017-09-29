@@ -93,7 +93,7 @@ syntax cluster juliaExpressions		contains=@juliaParItems,@juliaStringItems,@juli
 syntax cluster juliaExprsPrintf		contains=@juliaExpressions,@juliaPrintfItems
 
 syntax cluster juliaParItems		contains=juliaParBlock,juliaSqBraBlock,juliaCurBraBlock,juliaQuotedParBlock,juliaQuotedQMarkPar
-syntax cluster juliaKeywordItems	contains=juliaKeyword,juliaRepKeyword,juliaTypedef
+syntax cluster juliaKeywordItems	contains=juliaKeyword,juliaInfixKeyword,juliaRepKeyword,juliaTypedef
 if b:julia_syntax_version == 5
   syntax cluster juliaBlocksItems	contains=@juliaBlocksItemsAll
 else
@@ -154,12 +154,15 @@ syntax region  juliaSqBraBlock		matchgroup=juliaParDelim start="\[" end="\]" con
 syntax region  juliaCurBraBlock		matchgroup=juliaParDelim start="{" end="}" contains=@juliaExpressions
 
 if b:julia_syntax_version >= 6
-  let s:keywords = '\<\%(return\|local\|global\|import\%(all\)\?\|export\|using\|const\|in\|where\|isa\)\>'
+  let s:keywords = '\<\%(return\|local\|global\|import\%(all\)\?\|export\|using\|const\|where\)\>'
+  let s:infixkeywords = '\<\%(in\|isa\)\>'
 else
-  let s:keywords = '\<\%(return\|local\|global\|import\%(all\)\?\|export\|using\|const\|in\)\>'
+  let s:keywords = '\<\%(return\|local\|global\|import\%(all\)\?\|export\|using\|const\)\>'
+  let s:infixkeywords = '\<\%(in\)\>'
 endif
 
 exec 'syntax match   juliaKeyword		display "' . s:keywords . '"'
+exec 'syntax match   juliaInfixKeyword		display "\%(=\s*\)\@<!' . s:infixkeywords . '\S\@!\%(\s*=\)\@!"'
 syntax match   juliaRepKeyword		display "\<\%(break\|continue\)\>"
 syntax region  juliaConditionalBlock	matchgroup=juliaConditional start="\<if\>" end="\<end\>" contains=@juliaExpressions,juliaConditionalEIBlock,juliaConditionalEBlock fold
 syntax region  juliaConditionalEIBlock	matchgroup=juliaConditional transparent contained start="\<elseif\>" end="\<\%(end\|else\|elseif\)\>"me=s-1 contains=@juliaExpressions,juliaConditionalEIBlock,juliaConditionalEBlock
@@ -375,6 +378,7 @@ hi def link juliaColon			juliaOperator
 
 
 hi def link juliaKeyword		Keyword
+hi def link juliaInfixKeyword		Keyword
 hi def link juliaRepKeyword		Keyword
 hi def link juliaBlKeyword		Keyword
 hi def link juliaConditional		Conditional
