@@ -102,15 +102,17 @@ endif
 syntax cluster juliaBlocksItemsAll	contains=juliaConditionalBlock,juliaWhileBlock,juliaForBlock,juliaBeginBlock,juliaFunctionBlock,juliaMacroBlock,juliaQuoteBlock,juliaTypeBlock,juliaImmutableBlock,juliaExceptionBlock,juliaLetBlock,juliaDoBlock,juliaModuleBlock
 syntax cluster juliaBlocksItems0607	contains=juliaStructBlock,juliaMutableStructBlock,juliaAbstractBlock,juliaPrimitiveBlock
 if b:julia_syntax_version == 5
-  syntax cluster juliaTypesItems	contains=@juliaTypesItemsAll,@juliaTypesItems05
+  syntax cluster juliaTypesItems	contains=@juliaTypesItemsAll,@juliaTypesItems05,@juliaTypesItems0506
 elseif b:julia_syntax_version == 6
-  syntax cluster juliaTypesItems	contains=@juliaTypesItemsAll,@juliaTypesItems05,@juliaTypesItems0607
+  syntax cluster juliaTypesItems	contains=@juliaTypesItemsAll,@juliaTypesItems05,@juliaTypesItems0506,@juliaTypesItems0607
 else
-  syntax cluster juliaTypesItems	contains=@juliaTypesItemsAll,@juliaTypesItems0607
+  syntax cluster juliaTypesItems	contains=@juliaTypesItemsAll,@juliaTypesItems05,@juliaTypesItems0506,@juliaTypesItems0607,@juliaTypesItems07
 endif
 syntax cluster juliaTypesItemsAll	contains=juliaBaseTypeBasic,juliaBaseTypeNum,juliaBaseTypeC,juliaBaseTypeError,juliaBaseTypeIter,juliaBaseTypeString,juliaBaseTypeArray,juliaBaseTypeDict,juliaBaseTypeSet,juliaBaseTypeIO,juliaBaseTypeProcess,juliaBaseTypeRange,juliaBaseTypeRegex,juliaBaseTypeFact,juliaBaseTypeFact,juliaBaseTypeSort,juliaBaseTypeRound,juliaBaseTypeSpecial,juliaBaseTypeRandom,juliaBaseTypeDisplay,juliaBaseTypeTime,juliaBaseTypeOther
 syntax cluster juliaTypesItems05	contains=juliaBaseTypeIter05,juliaBaseTypeRange05
+syntax cluster juliaTypesItems0506	contains=juliaBaseTypeRange0506
 syntax cluster juliaTypesItems0607	contains=juliaBaseTypeBasic0607,juliaBaseTypeArray0607,juliaBaseTypeSet0607,juliaBaseTypeProcess0607,juliaBaseTypeRange0607,juliaBaseTypeTime0607
+syntax cluster juliaTypesItems07	contains=juliaBaseTypeRange07
 syntax cluster juliaConstItems		contains=juliaConstNum,juliaConstBool,juliaConstEnv,juliaConstIO,juliaConstMMap,juliaConstC,juliaConstGeneric
 syntax cluster juliaMacroItems		contains=juliaPossibleMacro,juliaDollarVar,juliaDollarPar,juliaDollarSqBra
 syntax cluster juliaSymbolItems		contains=juliaPossibleSymbol
@@ -209,10 +211,11 @@ syntax match   juliaBaseTypeSet0607	display "\<AbstractSet\>"
 syntax match   juliaBaseTypeIO		display "\<\%(IO\%(Stream\|Buffer\|Context\)\?\|RawFD\|StatStruct\|DevNull\|FileMonitor\|PollingFileWatcher\|Timer\|Base64\%(Decode\|Encode\)Pipe\|\%(UDP\|TCP\)Socket\|\%(Abstract\)\?Channel\|BufferStream\|ReentrantLock\)\>"
 syntax match   juliaBaseTypeProcess	display "\<\%(ProcessGroup\|Pipe\|Cmd\)\>"
 syntax match   juliaBaseTypeProcess0607	display "\<PipeBuffer\>"
-syntax match   juliaBaseTypeRange	display "\<\%(Dims\|Range\%(Index\)\?\|\%(Ordinal\|Step\|\%(Abstract\)\?Unit\)Range\|Colon\)\>"
+syntax match   juliaBaseTypeRange	display "\<\%(Dims\|RangeIndex\|\%(Ordinal\|Step\|\%(Abstract\)\?Unit\)Range\|Colon\)\>"
 syntax match   juliaBaseTypeRange05	display "\<FloatRange\>"
+syntax match   juliaBaseTypeRange0506	display "\<Range\>"
 syntax match   juliaBaseTypeRange0607	display "\<\%(ExponentialBackOff\|StepRangeLen\)\>"
-syntax match   juliaBaseTypeRange07	display "\<\%(AbstractRange\)\>"
+syntax match   juliaBaseTypeRange07	display "\<AbstractRange\>"
 syntax match   juliaBaseTypeRegex	display "\<Regex\%(Match\)\?\>"
 syntax match   juliaBaseTypeFact	display "\<Factorization\>"
 syntax match   juliaBaseTypeSort	display "\<\%(Insertion\|\(Partial\)\?Quick\|Merge\)Sort\>"
@@ -425,9 +428,14 @@ for t in ["Iter", "Range"]
   let h = b:julia_syntax_version == 5 ? "Type" : b:julia_syntax_version == 6 ? "juliaDeprecated" : "NONE"
   exec "hi! def link juliaBaseType" . t . "05 " . h
 endfor
-if b:julia_syntax_version >= 7
-  hi! def link juliaBaseTypeRange07	Type
-endif
+for t in ["Range"]
+  let h = b:julia_syntax_version <= 6 ? "Type" : "juliaDeprecated"
+  exec "hi! def link juliaBaseType" . t . "0506 " . h
+endfor
+for t in ["Range"]
+  let h = b:julia_syntax_version >= 7 ? "Type" : "NONE"
+  exec "hi! def link juliaBaseType" . t . "07 " . h
+endfor
 
 hi def link juliaConstNum		Constant
 hi def link juliaConstEnv		Constant
