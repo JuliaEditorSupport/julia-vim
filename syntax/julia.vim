@@ -224,7 +224,14 @@ syntax match   juliaBaseTypeTime	display "\<\%(Date\%(Time\)\?\)\>"
 syntax match   juliaBaseTypeTime0607	display "\<DateFormat\>"
 syntax match   juliaBaseTypeOther	display "\<\%(RemoteRef\|Task\|Condition\|VersionNumber\|IPv[46]\|SerializationState\|WorkerConfig\|Future\|RemoteChannel\|IPAddr\|Stack\%(Trace\|Frame\)\|\(Caching\|Worker\)Pool\|AbstractSerializer\)\>"
 
-syntax match   juliaConstNum		display "\<\%(NaN\%(16\|32\|64\)\?\|Inf\%(16\|32\|64\)\?\|eu\?\|pi\|π\|eulergamma\|γ\|catalan\|φ\|golden\)\>"
+if b:julia_syntax_version >= 7
+  " TODO: Better recognition for ℯ, which Vim does not consider a valid identifier
+  let s:mathconsts = '\%(\<\%(NaN\%(16\|32\|64\)\?\|Inf\%(16\|32\|64\)\?\|pi\|π\)\>\)\|ℯ'
+else
+  let s:mathconsts = '\<\%(NaN\%(16\|32\|64\)\?\|Inf\%(16\|32\|64\)\?\|eu\?\|pi\|π\|eulergamma\|γ\|catalan\|φ\|golden\)\>'
+endif
+
+exec 'syntax match   juliaConstNum		display "' . s:mathconsts . '"'
 syntax match   juliaConstBool		display "\<\%(true\|false\)\>"
 syntax match   juliaConstEnv		display "\<\%(ARGS\|ENV\|CPU_CORES\|OS_NAME\|ENDIAN_BOM\|LOAD_PATH\|VERSION\|JULIA_HOME\|PROGRAM_FILE\)\>"
 syntax match   juliaConstIO		display "\<\%(STD\%(OUT\|IN\|ERR\)\)\>"
