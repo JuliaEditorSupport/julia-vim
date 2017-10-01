@@ -93,7 +93,7 @@ syntax cluster juliaExpressions		contains=@juliaParItems,@juliaStringItems,@juli
 syntax cluster juliaExprsPrintf		contains=@juliaExpressions,@juliaPrintfItems
 
 syntax cluster juliaParItems		contains=juliaParBlock,juliaSqBraBlock,juliaCurBraBlock,juliaQuotedParBlock,juliaQuotedQMarkPar
-syntax cluster juliaKeywordItems	contains=juliaKeyword,juliaRepKeyword,juliaTypedef
+syntax cluster juliaKeywordItems	contains=juliaKeyword,juliaInfixKeyword,juliaRepKeyword,juliaTypedef
 if b:julia_syntax_version == 5
   syntax cluster juliaBlocksItems	contains=@juliaBlocksItemsAll
 else
@@ -154,12 +154,15 @@ syntax region  juliaSqBraBlock		matchgroup=juliaParDelim start="\[" end="\]" con
 syntax region  juliaCurBraBlock		matchgroup=juliaParDelim start="{" end="}" contains=@juliaExpressions
 
 if b:julia_syntax_version >= 6
-  let s:keywords = '\<\%(return\|local\|global\|import\%(all\)\?\|export\|using\|const\|in\|where\|isa\)\>'
+  let s:keywords = '\<\%(return\|local\|global\|import\%(all\)\?\|export\|using\|const\|where\)\>'
+  let s:infixkeywords = '\<\%(in\|isa\)\>'
 else
-  let s:keywords = '\<\%(return\|local\|global\|import\%(all\)\?\|export\|using\|const\|in\)\>'
+  let s:keywords = '\<\%(return\|local\|global\|import\%(all\)\?\|export\|using\|const\)\>'
+  let s:infixkeywords = '\<\%(in\)\>'
 endif
 
 exec 'syntax match   juliaKeyword		display "' . s:keywords . '"'
+exec 'syntax match   juliaInfixKeyword		display "\%(=\s*\)\@<!' . s:infixkeywords . '\S\@!\%(\s*=\)\@!"'
 syntax match   juliaRepKeyword		display "\<\%(break\|continue\)\>"
 syntax region  juliaConditionalBlock	matchgroup=juliaConditional start="\<if\>" end="\<end\>" contains=@juliaExpressions,juliaConditionalEIBlock,juliaConditionalEBlock fold
 syntax region  juliaConditionalEIBlock	matchgroup=juliaConditional transparent contained start="\<elseif\>" end="\<\%(end\|else\|elseif\)\>"me=s-1 contains=@juliaExpressions,juliaConditionalEIBlock,juliaConditionalEBlock
@@ -209,6 +212,7 @@ syntax match   juliaBaseTypeProcess0607	display "\<PipeBuffer\>"
 syntax match   juliaBaseTypeRange	display "\<\%(Dims\|Range\%(Index\)\?\|\%(Ordinal\|Step\|\%(Abstract\)\?Unit\)Range\|Colon\)\>"
 syntax match   juliaBaseTypeRange05	display "\<FloatRange\>"
 syntax match   juliaBaseTypeRange0607	display "\<\%(ExponentialBackOff\|StepRangeLen\)\>"
+syntax match   juliaBaseTypeRange07	display "\<\%(AbstractRange\)\>"
 syntax match   juliaBaseTypeRegex	display "\<Regex\%(Match\)\?\>"
 syntax match   juliaBaseTypeFact	display "\<Factorization\>"
 syntax match   juliaBaseTypeSort	display "\<\%(Insertion\|\(Partial\)\?Quick\|Merge\)Sort\>"
@@ -220,7 +224,14 @@ syntax match   juliaBaseTypeTime	display "\<\%(Date\%(Time\)\?\)\>"
 syntax match   juliaBaseTypeTime0607	display "\<DateFormat\>"
 syntax match   juliaBaseTypeOther	display "\<\%(RemoteRef\|Task\|Condition\|VersionNumber\|IPv[46]\|SerializationState\|WorkerConfig\|Future\|RemoteChannel\|IPAddr\|Stack\%(Trace\|Frame\)\|\(Caching\|Worker\)Pool\|AbstractSerializer\)\>"
 
-syntax match   juliaConstNum		display "\<\%(NaN\%(16\|32\|64\)\?\|Inf\%(16\|32\|64\)\?\|eu\?\|pi\|π\|eulergamma\|γ\|catalan\|φ\|golden\)\>"
+if b:julia_syntax_version >= 7
+  " TODO: Better recognition for ℯ, which Vim does not consider a valid identifier
+  let s:mathconsts = '\%(\<\%(NaN\%(16\|32\|64\)\?\|Inf\%(16\|32\|64\)\?\|pi\|π\)\>\)\|ℯ'
+else
+  let s:mathconsts = '\<\%(NaN\%(16\|32\|64\)\?\|Inf\%(16\|32\|64\)\?\|eu\?\|pi\|π\|eulergamma\|γ\|catalan\|φ\|golden\)\>'
+endif
+
+exec 'syntax match   juliaConstNum		display "' . s:mathconsts . '"'
 syntax match   juliaConstBool		display "\<\%(true\|false\)\>"
 syntax match   juliaConstEnv		display "\<\%(ARGS\|ENV\|CPU_CORES\|OS_NAME\|ENDIAN_BOM\|LOAD_PATH\|VERSION\|JULIA_HOME\|PROGRAM_FILE\)\>"
 syntax match   juliaConstIO		display "\<\%(STD\%(OUT\|IN\|ERR\)\)\>"
@@ -374,6 +385,7 @@ hi def link juliaColon			juliaOperator
 
 
 hi def link juliaKeyword		Keyword
+hi def link juliaInfixKeyword		Keyword
 hi def link juliaRepKeyword		Keyword
 hi def link juliaBlKeyword		Keyword
 hi def link juliaConditional		Conditional
@@ -410,6 +422,9 @@ for t in ["Iter", "Range"]
   let h = b:julia_syntax_version == 5 ? "Type" : b:julia_syntax_version == 6 ? "juliaDeprecated" : "NONE"
   exec "hi! def link juliaBaseType" . t . "05 " . h
 endfor
+if b:julia_syntax_version >= 7
+  hi! def link juliaBaseTypeRange07	Type
+endif
 
 hi def link juliaConstNum		Constant
 hi def link juliaConstEnv		Constant
