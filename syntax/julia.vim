@@ -113,7 +113,16 @@ syntax cluster juliaTypesItems05	contains=juliaBaseTypeIter05,juliaBaseTypeRange
 syntax cluster juliaTypesItems0506	contains=juliaBaseTypeRange0506
 syntax cluster juliaTypesItems0607	contains=juliaBaseTypeBasic0607,juliaBaseTypeArray0607,juliaBaseTypeSet0607,juliaBaseTypeProcess0607,juliaBaseTypeRange0607,juliaBaseTypeTime0607
 syntax cluster juliaTypesItems07	contains=juliaBaseTypeRange07
-syntax cluster juliaConstItems		contains=juliaConstNum,juliaConstBool,juliaConstEnv,juliaConstIO,juliaConstMMap,juliaConstC,juliaConstGeneric
+
+syntax cluster juliaConstItemsAll	contains=juliaConstNum,juliaConstBool,juliaConstEnv,juliaConstIO,juliaConstMMap,juliaConstC,juliaConstGeneric
+syntax cluster juliaConstItems0506	contains=juliaConstNum0506
+syntax cluster juliaConstItems07	contains=juliaPossibleEuler
+if b:julia_syntax_version <= 6
+  syntax cluster juliaConstItems	contains=@juliaConstItemsAll,@juliaConstItems0506
+else
+  syntax cluster juliaConstItems	contains=@juliaConstItemsAll,@juliaConstItems0506,@juliaConstItems07
+endif
+
 syntax cluster juliaMacroItems		contains=juliaPossibleMacro,juliaDollarVar,juliaDollarPar,juliaDollarSqBra
 syntax cluster juliaSymbolItems		contains=juliaPossibleSymbol
 syntax cluster juliaNumberItems		contains=juliaNumbers
@@ -227,14 +236,15 @@ syntax match   juliaBaseTypeTime	display "\<\%(Date\%(Time\)\?\)\>"
 syntax match   juliaBaseTypeTime0607	display "\<DateFormat\>"
 syntax match   juliaBaseTypeOther	display "\<\%(RemoteRef\|Task\|Condition\|VersionNumber\|IPv[46]\|SerializationState\|WorkerConfig\|Future\|RemoteChannel\|IPAddr\|Stack\%(Trace\|Frame\)\|\(Caching\|Worker\)Pool\|AbstractSerializer\)\>"
 
-if b:julia_syntax_version >= 7
-  " TODO: Better recognition for ℯ, which Vim does not consider a valid identifier
-  let s:mathconsts = '\%(\<\%(NaN\%(16\|32\|64\)\?\|Inf\%(16\|32\|64\)\?\|pi\|π\)\>\)\|ℯ'
-else
-  let s:mathconsts = '\<\%(NaN\%(16\|32\|64\)\?\|Inf\%(16\|32\|64\)\?\|eu\?\|pi\|π\|eulergamma\|γ\|catalan\|φ\|golden\)\>'
-endif
-
-exec 'syntax match   juliaConstNum		display "' . s:mathconsts . '"'
+syntax match   juliaConstNum		display "\%(\<\%(\%(NaN\|Inf\)\%(16\|32\|64\)\?\|pi\|π\)\>\)"
+syntax match   juliaConstNum0506	display "\%(\<\%(eu\?\|eulergamma\|γ\|catalan\|φ\|golden\)\>\)"
+" Note: recognition of ℯ, which Vim does not consider a valid identifier, is
+" complicated. We detect possible uses by just looking for the character (for
+" performance) and then check that it's actually used by its own.
+" (This also tries to detect preceding number constants; it does so in a crude
+" way.)
+syntax match   juliaPossibleEuler	"ℯ" contains=juliaEuler
+exec 'syntax match   juliaEuler	        contained "\%(\%(^\|[' . s:nonidS_chars . ']\|' . s:operators . '\)\%([.0-9eEf_]*\d\)\?\)\@'.s:d(80).'<=ℯ\ze\%($\|[' . s:nonidS_chars . ']\|' . s:operators . '\)"'
 syntax match   juliaConstBool		display "\<\%(true\|false\)\>"
 syntax match   juliaConstEnv		display "\<\%(ARGS\|ENV\|CPU_CORES\|OS_NAME\|ENDIAN_BOM\|LOAD_PATH\|VERSION\|JULIA_HOME\|PROGRAM_FILE\)\>"
 syntax match   juliaConstIO		display "\<\%(STD\%(OUT\|IN\|ERR\)\)\>"
@@ -437,7 +447,16 @@ for t in ["Range"]
   exec "hi! def link juliaBaseType" . t . "07 " . h
 endfor
 
+" NOTE: deprecated constants are not highlighted as such. For once,
+" one can still legitimately use them by importing Base.MathConstants.
+" Plus, one-letter variables like `e` and `γ` can be used with other
+" meanings.
 hi def link juliaConstNum		Constant
+let h = b:julia_syntax_version <= 6 ? "Constant" : "NONE"
+exec "hi! def link juliaConstNum0506 " . h
+let h = b:julia_syntax_version >= 7 ? "Constant" : "NONE"
+exec "hi! def link juliaEuler " . h
+
 hi def link juliaConstEnv		Constant
 hi def link juliaConstIO		Constant
 hi def link juliaConstC			Constant
