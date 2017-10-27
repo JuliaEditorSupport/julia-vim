@@ -14,7 +14,7 @@ set cpo-=C
 setlocal include=^\\s*\\%(reload\\\|include\\)\\>
 setlocal suffixesadd=.jl
 setlocal comments=:#
-setlocal commentstring=#=%s=#
+setlocal commentstring=#%s
 setlocal cinoptions+=#1
 setlocal define=^\\s*macro\\>
 
