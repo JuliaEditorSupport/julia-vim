@@ -112,7 +112,7 @@ syntax cluster juliaTypesItemsAll	contains=juliaBaseTypeBasic,juliaBaseTypeNum,j
 syntax cluster juliaTypesItems05	contains=juliaBaseTypeIter05,juliaBaseTypeRange05
 syntax cluster juliaTypesItems0506	contains=juliaBaseTypeRange0506
 syntax cluster juliaTypesItems0607	contains=juliaBaseTypeBasic0607,juliaBaseTypeArray0607,juliaBaseTypeSet0607,juliaBaseTypeProcess0607,juliaBaseTypeRange0607,juliaBaseTypeTime0607
-syntax cluster juliaTypesItems07	contains=juliaBaseTypeRange07
+syntax cluster juliaTypesItems07	contains=juliaBaseTypeRange07,juliaBaseTypeSet07
 
 syntax cluster juliaConstItemsAll	contains=juliaConstNum,juliaConstBool,juliaConstEnv,juliaConstIO,juliaConstMMap,juliaConstC,juliaConstGeneric
 syntax cluster juliaConstItems0506	contains=juliaConstNum0506
@@ -217,6 +217,7 @@ syntax match   juliaBaseTypeArray0607	display "\<\%(Conj\%(Array\|Matrix\|Vector
 syntax match   juliaBaseTypeDict	display "\<\%(WeakKey\|ObjectId\)\?Dict\>"
 syntax match   juliaBaseTypeSet		display "\<\%(Int\)\?Set\>"
 syntax match   juliaBaseTypeSet0607	display "\<AbstractSet\>"
+syntax match   juliaBaseTypeSet07	display "\<BitSet\>"
 syntax match   juliaBaseTypeIO		display "\<\%(IO\%(Stream\|Buffer\|Context\)\?\|RawFD\|StatStruct\|DevNull\|FileMonitor\|PollingFileWatcher\|Timer\|Base64\%(Decode\|Encode\)Pipe\|\%(UDP\|TCP\)Socket\|\%(Abstract\)\?Channel\|BufferStream\|ReentrantLock\)\>"
 syntax match   juliaBaseTypeProcess	display "\<\%(ProcessGroup\|Pipe\|Cmd\)\>"
 syntax match   juliaBaseTypeProcess0607	display "\<PipeBuffer\>"
@@ -442,7 +443,7 @@ for t in ["Range"]
   let h = b:julia_syntax_version <= 6 ? "Type" : "juliaDeprecated"
   exec "hi! def link juliaBaseType" . t . "0506 " . h
 endfor
-for t in ["Range"]
+for t in ["Range", "Set"]
   let h = b:julia_syntax_version >= 7 ? "Type" : "NONE"
   exec "hi! def link juliaBaseType" . t . "07 " . h
 endfor
