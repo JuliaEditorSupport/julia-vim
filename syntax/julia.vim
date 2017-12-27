@@ -112,11 +112,11 @@ syntax cluster juliaTypesItemsAll	contains=juliaBaseTypeBasic,juliaBaseTypeNum,j
 syntax cluster juliaTypesItems05	contains=juliaBaseTypeIter05,juliaBaseTypeRange05
 syntax cluster juliaTypesItems0506	contains=juliaBaseTypeRange0506,juliaBaseTypeSet0506
 syntax cluster juliaTypesItems0607	contains=juliaBaseTypeBasic0607,juliaBaseTypeArray0607,juliaBaseTypeSet0607,juliaBaseTypeProcess0607,juliaBaseTypeRange0607,juliaBaseTypeTime0607
-syntax cluster juliaTypesItems07	contains=juliaBaseTypeRange07,juliaBaseTypeSet07
+syntax cluster juliaTypesItems07	contains=juliaBaseTypeBasic07,juliaBaseTypeIter07,juliaBaseTypeRange07,juliaBaseTypeArray07,juliaBaseTypeSet07,juliaBaseTypeC07
 
 syntax cluster juliaConstItemsAll	contains=juliaConstNum,juliaConstBool,juliaConstEnv,juliaConstIO,juliaConstMMap,juliaConstC,juliaConstGeneric
 syntax cluster juliaConstItems0506	contains=juliaConstNum0506
-syntax cluster juliaConstItems07	contains=juliaPossibleEuler
+syntax cluster juliaConstItems07	contains=juliaConstGeneric07,juliaPossibleEuler
 if b:julia_syntax_version <= 6
   syntax cluster juliaConstItems	contains=@juliaConstItemsAll,@juliaConstItems0506
 else
@@ -206,14 +206,18 @@ exec 'syntax match   juliaOuter    contained "\<outer\ze\s\+' . s:idregex . '\>"
 
 syntax match   juliaBaseTypeBasic	display "\<\%(Tuple\|NTuple\|Symbol\|\%(Intrinsic\)\?Function\|Union\|Type\%(Name\|Constructor\|Var\)\?\|Any\|ANY\|Vararg\|Top\|None\|Nothing\|Ptr\|Void\|Exception\|Module\|Box\|Expr\|LambdaStaticData\|\%(Data\|Union\)Type\|\%(LineNumber\|Label\|Goto\|Quote\|Top\|Symbol\|Getfield\)Node\|\%(Weak\|Global\)\?Ref\|Associative\|Method\(Table\)\?\|GetfieldNode\|Nullable\|Pair\|Val\|TypeMap\%(Level\|Entry\)\)\>"
 syntax match   juliaBaseTypeBasic0607	display "\<\%(UnionAll\|CodeInfo\)\>"
+syntax match   juliaBaseTypeBasic07	display "\<\%(Some\|Missing\)\>"
 syntax match   juliaBaseTypeNum		display "\<\%(U\?Int\%(8\|16\|32\|64\|128\)\?\|Float\%(16\|32\|64\)\|Complex\%(32\|64\|128\)\?\|Bool\|Char\|Number\|Signed\|Unsigned\|Integer\|AbstractFloat\|Real\|Rational\|Irrational\|Enum\|BigInt\|BigFloat\|MathConst\)\>"
 syntax match   juliaBaseTypeC		display "\<\%(FileOffset\|C\%(u\?\%(char\|short\|int\|long\(long\)\?\|w\?string\)\|float\|double\|\%(ptrdiff\|s\?size\|wchar\|off\|u\?intmax\)_t\)\)\>"
+syntax match   juliaBaseTypeC07		display "\<Cvoid\>"
 syntax match   juliaBaseTypeError	display "\<\%(\%(Bounds\|Divide\|Domain\|\%(Stack\)\?Overflow\|EOF\|Undef\%(Ref\|Var\)\|System\|Type\|Parse\|Argument\|Key\|Load\|Method\|Inexact\|OutOfMemory\|Init\|Assertion\|Unicode\|ReadOnlyMemory\)Error\|\%(Interrupt\|Error\|ProcessExited\|Captured\|Composite\|InvalidState\|Null\|Remote\)Exception\|DimensionMismatch\|SegmentationFault\)\>"
 syntax match   juliaBaseTypeIter	display "\<\%(EachLine\|Enumerate\|Cartesian\%(Index\|Range\)\|LinSpace\)\>"
 syntax match   juliaBaseTypeIter05	display "\<\%(Zip\|Filter\)\>"
+syntax match   juliaBaseTypeIter07	display "\<CartesianIndices\>"
 syntax match   juliaBaseTypeString	display "\<\%(DirectIndex\|Sub\|Rep\|Rev\|Abstract\)\?String\>"
 syntax match   juliaBaseTypeArray	display "\<\%(\%(Sub\)\?Array\|\%(Abstract\|Dense\|Strided\)\?\%(Array\|Matrix\|Vec\%(tor\|OrMat\)\)\|SparseMatrixCSC\|\%(AbstractSparse\|Bit\|Shared\)\%(Array\|Vector\|Matrix\)\|\%\(D\|Bid\|\%(Sym\)\?Trid\)iagonal\|Hermitian\|Symmetric\|UniformScaling\|\%(Lower\|Upper\)Triangular\|SparseVector\|VecElement\)\>"
 syntax match   juliaBaseTypeArray0607	display "\<\%(Conj\%(Array\|Matrix\|Vector\)\|Index\%(Cartesian\|Linear\|Style\)\|PermutedDimsArray\|RowVector\)\>"
+syntax match   juliaBaseTypeArray07	display "\<\%(BroadcastStyle\|Adjoint\)\>"
 syntax match   juliaBaseTypeDict	display "\<\%(WeakKey\|ObjectId\)\?Dict\>"
 syntax match   juliaBaseTypeSet		display "\<Set\>"
 syntax match   juliaBaseTypeSet0506	display "\<IntSet\>"
@@ -252,6 +256,7 @@ syntax match   juliaConstEnv		display "\<\%(ARGS\|ENV\|CPU_CORES\|OS_NAME\|ENDIA
 syntax match   juliaConstIO		display "\<\%(STD\%(OUT\|IN\|ERR\)\)\>"
 syntax match   juliaConstC		display "\<\%(WORD_SIZE\|C_NULL\)\>"
 syntax match   juliaConstGeneric	display "\<\%(nothing\|Main\)\>"
+syntax match   juliaConstGeneric07	display "\<missing\>"
 
 syntax match   juliaPossibleMacro	transparent "@" contains=juliaMacroCall,juliaMacroCallP,juliaPrintfMacro
 
@@ -444,7 +449,7 @@ for t in ["Range", "Set"]
   let h = b:julia_syntax_version <= 6 ? "Type" : "juliaDeprecated"
   exec "hi! def link juliaBaseType" . t . "0506 " . h
 endfor
-for t in ["Range", "Set"]
+for t in ["Range", "Set", "Basic", "C", "Array", "Iter"]
   let h = b:julia_syntax_version >= 7 ? "Type" : "NONE"
   exec "hi! def link juliaBaseType" . t . "07 " . h
 endfor
@@ -466,6 +471,9 @@ hi def link juliaConstLimits		Constant
 hi def link juliaConstGeneric		Constant
 hi def link juliaRangeEnd		Constant
 hi def link juliaConstBool		Boolean
+
+let h = b:julia_syntax_version >= 7 ? "Constant" : "NONE"
+exec "hi! def link juliaConstGeneric07 " . h
 
 hi def link juliaComprehensionFor	Keyword
 hi def link juliaComprehensionIf	Keyword
