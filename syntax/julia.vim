@@ -208,6 +208,7 @@ syntax match   juliaBaseTypeBasic	display "\<\%(Tuple\|NTuple\|Symbol\|\%(Intrin
 syntax match   juliaBaseTypeBasic0607	display "\<\%(UnionAll\|CodeInfo\)\>"
 syntax match   juliaBaseTypeBasic07	display "\<\%(Some\|Missing\)\>"
 syntax match   juliaBaseTypeNum		display "\<\%(U\?Int\%(8\|16\|32\|64\|128\)\?\|Float\%(16\|32\|64\)\|Complex\%(32\|64\|128\)\?\|Bool\|Char\|Number\|Signed\|Unsigned\|Integer\|AbstractFloat\|Real\|Rational\|Irrational\|Enum\|BigInt\|BigFloat\|MathConst\)\>"
+syntax match   juliaBaseTypeNum07	display "\<AbstractIrrational\>"
 syntax match   juliaBaseTypeC		display "\<\%(FileOffset\|C\%(u\?\%(char\|short\|int\|long\(long\)\?\|w\?string\)\|float\|double\|\%(ptrdiff\|s\?size\|wchar\|off\|u\?intmax\)_t\)\)\>"
 syntax match   juliaBaseTypeC07		display "\<Cvoid\>"
 syntax match   juliaBaseTypeError	display "\<\%(\%(Bounds\|Divide\|Domain\|\%(Stack\)\?Overflow\|EOF\|Undef\%(Ref\|Var\)\|System\|Type\|Parse\|Argument\|Key\|Load\|Method\|Inexact\|OutOfMemory\|Init\|Assertion\|Unicode\|ReadOnlyMemory\)Error\|\%(Interrupt\|Error\|ProcessExited\|Captured\|Composite\|InvalidState\|Null\|Remote\)Exception\|DimensionMismatch\|SegmentationFault\)\>"
@@ -451,7 +452,7 @@ for t in ["Range", "Set"]
   let h = b:julia_syntax_version <= 6 ? "Type" : "juliaDeprecated"
   exec "hi! def link juliaBaseType" . t . "0506 " . h
 endfor
-for t in ["Range", "Set", "Basic", "C", "Array", "Iter", "Display", "IO"]
+for t in ["Range", "Set", "Basic", "C", "Array", "Iter", "Display", "IO", "Num"]
   let h = b:julia_syntax_version >= 7 ? "Type" : "NONE"
   exec "hi! def link juliaBaseType" . t . "07 " . h
 endfor
