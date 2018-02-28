@@ -348,6 +348,8 @@ function GetJuliaIndent()
     " In case the current line starts with a closing bracket, we align it with
     " the opening one.
     if JuliaMatch(v:lnum, getline(v:lnum), '[])}]', indent(v:lnum)) == indent(v:lnum) && ind > 0
+      let &ignorecase = s:save_ignorecase
+      unlet s:save_ignorecase
       return ind - 1
     endif
 
