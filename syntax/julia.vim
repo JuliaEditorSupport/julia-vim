@@ -114,9 +114,9 @@ syntax cluster juliaTypesItems0506	contains=juliaBaseTypeNum0506,juliaBaseTypeRa
 syntax cluster juliaTypesItems0607	contains=juliaBaseTypeBasic0607,juliaBaseTypeArray0607,juliaBaseTypeSet0607,juliaBaseTypeProcess0607,juliaBaseTypeRange0607,juliaBaseTypeTime0607
 syntax cluster juliaTypesItems07	contains=juliaBaseTypeBasic07,juliaBaseTypeNum07,juliaBaseTypeError07,juliaBaseTypeIter07,juliaBaseTypeRange07,juliaBaseTypeArray07,juliaBaseTypeSet07,juliaBaseTypeC07,juliaBaseTypeDisplay07,juliaBaseTypeIO07
 
-syntax cluster juliaConstItemsAll	contains=juliaConstNum,juliaConstBool,juliaConstEnv,juliaConstIO,juliaConstMMap,juliaConstC,juliaConstGeneric
-syntax cluster juliaConstItems0506	contains=juliaConstNum0506
-syntax cluster juliaConstItems07	contains=juliaConstGeneric07,juliaPossibleEuler
+syntax cluster juliaConstItemsAll	contains=juliaConstNum,juliaConstBool,juliaConstEnv,juliaConstMMap,juliaConstC,juliaConstGeneric
+syntax cluster juliaConstItems0506	contains=juliaConstNum0506,juliaConstIO0506
+syntax cluster juliaConstItems07	contains=juliaConstGeneric07,juliaPossibleEuler,juliaConstIO07
 if b:julia_syntax_version <= 6
   syntax cluster juliaConstItems	contains=@juliaConstItemsAll,@juliaConstItems0506
 else
@@ -258,7 +258,8 @@ syntax match   juliaPossibleEuler	"ℯ" contains=juliaEuler
 exec 'syntax match   juliaEuler	        contained "\%(\%(^\|[' . s:nonidS_chars . ']\|' . s:operators . '\)\%([.0-9eEf_]*\d\)\?\)\@'.s:d(80).'<=ℯ\ze\%($\|[' . s:nonidS_chars . ']\|' . s:operators . '\)"'
 syntax match   juliaConstBool		display "\<\%(true\|false\)\>"
 syntax match   juliaConstEnv		display "\<\%(ARGS\|ENV\|CPU_CORES\|OS_NAME\|ENDIAN_BOM\|LOAD_PATH\|VERSION\|JULIA_HOME\|PROGRAM_FILE\)\>"
-syntax match   juliaConstIO		display "\<\%(STD\%(OUT\|IN\|ERR\)\|DevNull\)\>"
+syntax match   juliaConstIO0506		display "\<\%(STD\%(OUT\|IN\|ERR\)\|DevNull\)\>"
+syntax match   juliaConstIO07		display "\<\%(std\%(out\|in\|err\)\|devnull\)\>"
 syntax match   juliaConstC		display "\<\%(WORD_SIZE\|C_NULL\)\>"
 syntax match   juliaConstGeneric	display "\<\%(nothing\|Main\)\>"
 syntax match   juliaConstGeneric07	display "\<missing\>"
@@ -470,15 +471,21 @@ let h = b:julia_syntax_version >= 7 ? "Constant" : "NONE"
 exec "hi! def link juliaEuler " . h
 
 hi def link juliaConstEnv		Constant
-hi def link juliaConstIO		Constant
 hi def link juliaConstC			Constant
 hi def link juliaConstLimits		Constant
 hi def link juliaConstGeneric		Constant
 hi def link juliaRangeEnd		Constant
 hi def link juliaConstBool		Boolean
 
-let h = b:julia_syntax_version >= 7 ? "Constant" : "NONE"
-exec "hi! def link juliaConstGeneric07 " . h
+if b:julia_syntax_version >= 7
+  for t in ["Generic", "IO"]
+    exec "hi! def link juliaConst" . t . "07 Constant"
+  endfor
+  exec "hi! def link juliaConstIO0506 juliaDeprecated"
+else
+  exec "hi! def link juliaConstIO0506 Constant"
+  exec "hi! def link juliaConstIO07   NONE"
+endif
 
 hi def link juliaComprehensionFor	Keyword
 hi def link juliaComprehensionIf	Keyword
