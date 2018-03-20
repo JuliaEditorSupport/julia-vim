@@ -481,10 +481,10 @@ if b:julia_syntax_version >= 7
   for t in ["Generic", "IO"]
     exec "hi! def link juliaConst" . t . "07 Constant"
   endfor
-  exec "hi! def link juliaConstIO0506 juliaDeprecated"
+  hi! def link juliaConstIO0506 juliaDeprecated
 else
-  exec "hi! def link juliaConstIO0506 Constant"
-  exec "hi! def link juliaConstIO07   NONE"
+  hi! def link juliaConstIO0506 Constant
+  hi! def link juliaConstIO07   NONE
 endif
 
 hi def link juliaComprehensionFor	Keyword
