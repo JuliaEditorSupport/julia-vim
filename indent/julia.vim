@@ -25,13 +25,13 @@ function JuliaMatch(lnum, str, regex, st, ...)
   let s = a:st
   let e = a:0 > 0 ? a:1 : -1
   while 1
-    let f = match(a:str, a:regex, s)
+    let f = match(a:str, '\C' . a:regex, s)
     if e >= 0 && f >= e
       return -1
     endif
     if f >= 0
       let attr = synIDattr(synID(a:lnum,f+1,1),"name")
-      if attr =~ s:skipPatterns
+      if attr =~# s:skipPatterns
         let s = f+1
         continue
       endif
@@ -82,7 +82,7 @@ function GetJuliaNestingStruct(lnum, ...)
       let i = JuliaMatch(a:lnum, line, '@\@<!\<else\>', s)
       if i >= 0 && i == fb
         let s = i+1
-        if len(blocks_stack) > 0 && blocks_stack[-1] =~ '\<\%(else\)\=if\>'
+        if len(blocks_stack) > 0 && blocks_stack[-1] =~# '\<\%(else\)\=if\>'
           let blocks_stack[-1] = 'else'
         else
           call add(blocks_stack, 'else')
@@ -133,7 +133,7 @@ function GetJuliaNestingStruct(lnum, ...)
 
       let i = JuliaMatch(a:lnum, line, '@\@<!\<\%(while\|for\|\%(staged\)\?function\|macro\|begin\|\%(mutable\s\+\)\?struct\|\%(\%(abstract\|primitive\)\s\+\)\?type\|immutable\|let\|quote\|do\)\>', s)
       if i >= 0 && i == fb
-        if match(line, '\<\%(mutable\|abstract\|primitive\)', i) != -1
+        if match(line, '\C\<\%(mutable\|abstract\|primitive\)', i) != -1
           let s = i+11
         else
           let s = i+1
@@ -288,16 +288,11 @@ function LastBlockIndent(lnum)
 endfunction
 
 function GetJuliaIndent()
-  let s:save_ignorecase = &ignorecase
-  set noignorecase
-
   " Find a non-blank line above the current line.
   let lnum = prevnonblank(v:lnum - 1)
 
   " At the start of the file use zero indent.
   if lnum == 0
-    let &ignorecase = s:save_ignorecase
-    unlet s:save_ignorecase
     return 0
   endif
 
@@ -348,8 +343,6 @@ function GetJuliaIndent()
     " In case the current line starts with a closing bracket, we align it with
     " the opening one.
     if JuliaMatch(v:lnum, getline(v:lnum), '[])}]', indent(v:lnum)) == indent(v:lnum) && ind > 0
-      let &ignorecase = s:save_ignorecase
-      unlet s:save_ignorecase
       return ind - 1
     endif
 
@@ -387,7 +380,5 @@ function GetJuliaIndent()
     let num_closed_blocks -= 1
   endwhile
 
-  let &ignorecase = s:save_ignorecase
-  unlet s:save_ignorecase
   return ind
 endfunction
