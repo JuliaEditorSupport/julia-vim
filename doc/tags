@@ -1,3 +1,6 @@
+:JuliaDoc	julia-vim.txt	/*:JuliaDoc*
+<Plug>(JuliaDocPrompt)	julia-vim.txt	/*<Plug>(JuliaDocPrompt)*
+<Plug>(JuliaDocThis)	julia-vim.txt	/*<Plug>(JuliaDocThis)*
 L2U-ref	julia-vim-L2U-table.txt	/*L2U-ref*
 LaTeXtoUnicode#Disable()	julia-vim-L2U.txt	/*LaTeXtoUnicode#Disable()*
 LaTeXtoUnicode#Enable()	julia-vim-L2U.txt	/*LaTeXtoUnicode#Enable()*
@@ -40,6 +43,7 @@ julia-vim-blocks-move	julia-vim.txt	/*julia-vim-blocks-move*
 julia-vim-blocks-moveblock	julia-vim.txt	/*julia-vim-blocks-moveblock*
 julia-vim-blocks-objects	julia-vim.txt	/*julia-vim-blocks-objects*
 julia-vim-blocks-variables	julia-vim.txt	/*julia-vim-blocks-variables*
+julia-vim-doc	julia-vim.txt	/*julia-vim-doc*
 julia-vim-extras	julia-vim.txt	/*julia-vim-extras*
 julia-vim-introduction	julia-vim.txt	/*julia-vim-introduction*
 julia-vim-options	julia-vim.txt	/*julia-vim-options*

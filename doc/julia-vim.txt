@@ -30,6 +30,7 @@ Block-wise movements/objects        |julia-vim-blocks|
   Block-oriented movements          |julia-vim-blocks-moveblock|
   Block text objects                |julia-vim-blocks-objects|
   Variables                         |julia-vim-blocks-variables|
+Referring to documents              |julia-vim-doc|
 Extras                              |julia-vim-extras|
 Customizations                      |julia-vim-options|
 About                               |julia-vim-about|
@@ -47,6 +48,7 @@ The julia-vim plug-in provides:
     and extend what the Julia REPL and the IJulia notebook interface do.
     Optionally, this functionality can be used with all file types, not
     just Julia files. See |julia-vim-L2U|.
+  - a keymapping |K| to refer julia documents.
 
 This help file documents: 1) how to choose the Julia version for syntax
 highlighting, and 2) the block-wise movements and objects, how they work and
@@ -331,6 +333,34 @@ g:julia_blocks_mappings
                     \  }
 <
                 All unspecified entries keep their default value.
+
+
+==============================================================================
+REFERRING TO DOCUMENTS                                      *julia-vim-doc*
+
+                                                              *julia-vim-K*
+K
+        This keymapping looks up the keyword under the cursor in the julia
+        documents.
+
+        `K` can be used on an underlined keyword in the document buffer to
+        look around julia documents.
+
+
+                                                   *<Plug>(JuliaDocPrompt)*
+<Plug>(JuliaDocPrompt)
+        This keymapping prompts to input a keyword to lookup. If you don't use
+        backward search |?|, the following setting makes `?` working like it
+        in Julia REPL.
+>
+        autocmd FileType julia nmap <buffer> ? <Plug>(JuliaDocPrompt)
+<
+        Use |:augroup| as you need.
+
+
+                                                                *:JuliaDoc*
+:JuliaDoc {keyword}
+        This command looks up the {keyword} in the julia documents.
 
 
 ==============================================================================
