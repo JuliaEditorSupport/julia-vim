@@ -2,7 +2,20 @@ let s:FALSE = 0
 let s:TRUE = 1
 
 " path to the julia binary to communicate with
-let g:julia#doc#juliapath = get(g:, 'julia#doc#juliapath', 'julia')
+if has('win32') || has('win64')
+  if exists('g:julia#doc#juliapath')
+    " use assigned g:julia#doc#juliapath
+  elseif executable('julia')
+    " use julia command in PATH
+    let g:julia#doc#juliapath = 'julia'
+  else
+    " search julia binary in the default installation paths
+    let pathlist = sort(glob($LOCALAPPDATA . '\Julia-*\bin\julia.exe', 1, 1))
+    let g:julia#doc#juliapath = get(pathlist, -1, 'julia')
+  endif
+else
+  let g:julia#doc#juliapath = get(g:, 'julia#doc#juliapath', 'julia')
+endif
 
 " command to open a new juliadoc buffer
 " for example, :split, :vert split, :edit, :tabedit etc.
@@ -29,22 +42,27 @@ let g:julia#doc#cursorback = get(g:, 'julia#doc#cursorback', s:TRUE)
 
 
 function! s:version() abort
+  let VERSION = {'major': 0, 'minor': 0}
   if !executable(g:julia#doc#juliapath)
-    return 0.0
+    return VERSION
   endif
 
   let cmd = printf('%s -v', g:julia#doc#juliapath)
   let output = system(cmd)
-  let versionstr = matchstr(output, '\m\C^julia version \zs\d\+\.\d\+\ze')
-  return str2float(versionstr)
+  let versionstr = matchstr(output, '\C^julia version \zs\d\+\.\d\+\ze')
+  let [major, minor] = map(split(versionstr, '\.'), 'str2nr(v:val)')
+  let VERSION.major = major
+  let VERSION.minor = minor
+  return VERSION
 endfunction
 
 let s:VERSION = s:version()
-let s:NODOCPATTERN = '\m\C\VNo documentation found.'
+let s:NODOCPATTERN = '\C\VNo documentation found.'
 
 function! julia#doc#lookup(keyword, ...) abort
-  let juliapath = get(a:000, 0, 'julia')
-  let cmd = printf('%s -E "@doc %s"', juliapath, a:keyword)
+  let juliapath = get(a:000, 0, g:julia#doc#juliapath)
+  let keyword = escape(a:keyword, '"\')
+  let cmd = printf('%s -E "@doc %s"', juliapath, keyword)
   return systemlist(cmd)
 endfunction
 
@@ -59,11 +77,16 @@ function! julia#doc#open(keyword) abort
     return
   endif
 
-  let buffername = printf('juliadoc://%s', a:keyword)
-  let originaltabnr = tabpagenr()
-  let originalwinnr = winnr()
-  if s:isbufferexists(buffername)
-    call s:openjuliadocwin(buffername)
+  " workaround for * and ? since a buffername cannot include them
+  let keyword = a:keyword
+  let keyword = substitute(keyword, '\*', ':asterisk:', 'g')
+  let keyword = substitute(keyword, '?', ':question:', 'g')
+
+  let buffername = printf('juliadoc://%s', keyword)
+  let originaltabpagenr = tabpagenr()
+  let samewin = s:TRUE
+  if s:bufferexists(buffername)
+    let samewin = s:openjuliadocwin(buffername)
   else
     let doc = julia#doc#lookup(a:keyword, g:julia#doc#juliapath)
     if empty(doc) || match(doc[0], s:NODOCPATTERN) > -1
@@ -71,60 +94,98 @@ function! julia#doc#open(keyword) abort
       return
     endif
 
-    call s:openjuliadocwin(buffername)
-    setlocal modifiable
-    call s:writedoc(doc)
+    let samewin = s:openjuliadocwin(buffername)
+    call s:printdoc(doc)
     setlocal nobackup noswapfile nomodifiable nobuflisted buftype=nofile bufhidden=hide
     setfiletype juliadoc
   endif
 
-  if g:julia#doc#cursorback && tabpagenr() == originaltabnr && winnr() != originalwinnr
-    execute originalwinnr . 'wincmd w'
+  if tabpagenr() == originaltabpagenr && !samewin && g:julia#doc#cursorback
+    wincmd p
   endif
 
   call filter(s:HELPHISTORY, 'v:val isnot# a:keyword')
   call add(s:HELPHISTORY, a:keyword)
 endfunction
 
-function! s:isbufferexists(buffername) abort
+function! s:bufferexists(buffername) abort
   return !empty(filter(map(getbufinfo(), 'v:val.name'), 'v:val is# a:buffername'))
 endfunction
 
+" This function returns TRUE if the cursor is in the same window as before.
 function! s:openjuliadocwin(buffername) abort
+  let samewin = s:TRUE
   let existingwinnr = s:existingwindow()
   if existingwinnr != 0
     " move to the existing window
-    execute existingwinnr . 'wincmd w'
+    if existingwinnr != winnr()
+      let samewin = s:FALSE
+      execute existingwinnr . 'wincmd w'
+    endif
     if bufname('%') isnot# a:buffername
       execute printf('silent edit %s', a:buffername)
     endif
   else
     " open a new window
-    let originaltabnr = tabpagenr()
     let originalwinnr = winnr()
     let originalheight = winheight(originalwinnr)
     let originalwidth = winwidth(originalwinnr)
+    let originalwinid = s:win_getid()
     if !empty(g:julia#doc#opencmd)
       let opencmd = g:julia#doc#opencmd
     else
       let opencmd = s:opencmd(g:julia#doc#winwidth * 2)
     endif
-    execute printf('silent %s %s', opencmd, a:buffername)
 
-    call s:adjustwinsize(g:julia#doc#winheight, g:julia#doc#winwidth,
-                       \ originalheight, originalwidth, originalwinnr,
-                       \ originaltabnr)
+    execute printf('silent %s %s', opencmd, a:buffername)
+    if !s:issamewin(originalwinid)
+      let samewin = s:FALSE
+      call s:adjustwinsize(g:julia#doc#winheight, g:julia#doc#winwidth,
+                         \ originalheight, originalwidth)
+    endif
   endif
+  return samewin
 endfunction
 
 function! s:existingwindow() abort
   for winnr in range(1, winnr('$'))
-    if bufname(winbufnr(winnr)) =~# '\m\C^juliadoc://'
+    if bufname(winbufnr(winnr)) =~# '\m^juliadoc://'
       return winnr
     endif
   endfor
   return 0
 endfunction
+
+if exists('*win_getid')
+  let s:win_getid = function('win_getid')
+
+  function! s:issamewin(winid) abort
+    return a:winid == win_getid()
+  endfunction
+else
+  function! s:win_getid(...) abort
+    return [tabpagenr(), winnr('$')]
+  endfunction
+
+  function! s:issamewin(winid) abort
+    let [originaltabnr, originallastwinnr] = a:winid
+    if tabpagenr() != originaltabnr
+      return s:FALSE
+    endif
+
+    " The cursor should be in the juliadoc window after opening a new window,
+    " thus if the number of window has been changed, we could think that the
+    " cursor has been moved. If not changed, probably :edit is used.
+    if winnr('$') != originallastwinnr
+      return s:FALSE
+    endif
+
+    " This is not always true. For example after :split | :only,
+    " it doesn't change tabpage and number of windows but the cursor is not in
+    " same window. However it is too difficult to track that kind of change.
+    return s:TRUE
+  endfunction
+endif
 
 function! s:opencmd(thr_width) abort
   if a:thr_width != 0 && winwidth('%') >= a:thr_width
@@ -133,24 +194,14 @@ function! s:opencmd(thr_width) abort
   return 'split'
 endfunction
 
-function! s:adjustwinsize(height, width, originalheight, originalwidth,
-                        \ originalwinnr, originaltabnr) abort
-  if winnr() == a:originalwinnr
-    " same window
-    return
-  endif
-  if tabpagenr() != a:originaltabnr
-    " another tabpage
-    return
-  endif
-
+function! s:adjustwinsize(height, width, originalheight, originalwidth) abort
   if winwidth(winnr()) == a:originalwidth
     " horizontal split
     if a:height > 0
       execute 'resize ' . a:height
     elseif a:height < 0
       let winmaxheight = &lines
-      execute 'resize' . float2nr(round(winmaxheight * abs(a:height) / 100.0))
+      execute 'resize ' . float2nr(round(winmaxheight * abs(a:height) / 100.0))
     endif
   endif
 
@@ -165,7 +216,7 @@ function! s:adjustwinsize(height, width, originalheight, originalwidth,
   endif
 endfunction
 
-function! s:writedoc(doc) abort
+function! s:printdoc(doc) abort
   silent %delete
   call append(0, a:doc)
   silent $delete
@@ -188,7 +239,7 @@ endfunction
 
 
 
-let s:KEYWORDPATTERN = '\m\%(@\h\k*\|\h\k*!\?\)'
+let s:KEYWORDPATTERN = '\m@\?\h\k*!\?'
 
 function! julia#doc#keywordprg(...) abort
   if a:0 > 0 && a:1 isnot# expand('<cword>')
@@ -268,10 +319,10 @@ endfunction
 
 
 
-if s:VERSION > 0.6
-  let s:REPL_SEARCH = 'import REPL.repl_search; repl_search'
-else
+if s:VERSION.major == 0 && s:VERSION.minor <= 6
   let s:REPL_SEARCH = 'Base.Docs.repl_search'
+else
+  let s:REPL_SEARCH = 'import REPL.repl_search; repl_search'
 endif
 
 function! julia#doc#complete(ArgLead, CmdLine, CursorPos) abort
@@ -279,7 +330,9 @@ function! julia#doc#complete(ArgLead, CmdLine, CursorPos) abort
 endfunction
 
 function! s:likely(str) abort
-  let cmd = printf('%s -E "%s(\"%s\")"', g:julia#doc#juliapath, s:REPL_SEARCH, a:str)
+  " escape twice
+  let str = escape(escape(a:str, '"\'), '"\')
+  let cmd = printf('%s -E "%s(\"%s\")"', g:julia#doc#juliapath, s:REPL_SEARCH, str)
   let output = systemlist(cmd)
-  return split(matchstr(output[0], '\m\C^search: \zs.*'))
+  return split(matchstr(output[0], '\C^search: \zs.*'))
 endfunction
