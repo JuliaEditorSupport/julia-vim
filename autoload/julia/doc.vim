@@ -95,6 +95,7 @@ function! julia#doc#open(keyword) abort
     endif
 
     let samewin = s:openjuliadocwin(buffername)
+    setlocal modifiable
     call s:printdoc(doc)
     setlocal nobackup noswapfile nomodifiable nobuflisted buftype=nofile bufhidden=hide
     setfiletype juliadoc
