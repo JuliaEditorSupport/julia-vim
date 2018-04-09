@@ -35,9 +35,11 @@ syntax region juliadocAdmonitions matchgroup=juliadocAdmonitionsDelimiter start=
 syntax match juliadocAdmonitionsType "\c\%(danger\|warning\|info\|note\|tip\)\>" display contained
 syntax region juliadocAdmonitionsTitle matchgroup=juliadocAdmonitionsTitleDelimiter start='"' end='"' display contained oneline
 
-for [s:from, s:to] in items(julia_latex_symbols#get_dict())
-  execute printf('syntax match juliadocCodeLatex "\\%s" conceal cchar=%s display contained', escape(s:from, '~"\.^$[]*'), s:to)
-endfor
+if &encoding ==# 'utf-8'
+  for [s:from, s:to] in items(julia_latex_symbols#get_dict())
+    execute printf('syntax match juliadocCodeLatex "\\%s" conceal cchar=%s display contained', escape(s:from, '~"\.^$[]*'), s:to)
+  endfor
+endif
 
 highlight default link juliadocCode String
 highlight default link juliadocCodeLatex String
