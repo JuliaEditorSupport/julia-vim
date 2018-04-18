@@ -94,7 +94,7 @@ endif
 " Lookup documents
 nnoremap <silent><buffer> <Plug>(JuliaDocPrompt) :<C-u>call julia#doc#prompt()<CR>
 command! -nargs=1 -buffer -complete=customlist,julia#doc#complete JuliaDoc call julia#doc#open(<q-args>)
-command! -nargs=? -buffer JuliaDocKeywordprg call julia#doc#keywordprg(<q-args>)
+command! -nargs=1 -buffer JuliaDocKeywordprg call julia#doc#keywordprg(<q-args>)
 setlocal keywordprg=:JuliaDocKeywordprg
 let b:undo_ftplugin .= " | setlocal keywordprg<"
 let b:undo_ftplugin .= " | delcommand JuliaDoc | delcommand JuliaDocKeywordprg"

@@ -245,20 +245,19 @@ endfunction
 
 let s:KEYWORDPATTERN = '\m@\?\h\k*!\?'
 
-function! julia#doc#keywordprg(...) abort
-  if a:0 > 0 && a:1 isnot# expand('<cword>')
-    " 'K' in visual mode
-    if a:1 is# ''
-      return
-    endif
-    let keyword = a:1
-  else
+" This function is called in normal mode or visual mode.
+function! julia#doc#keywordprg(word) abort
+  if a:word is# ''
+    return
+  endif
+
+  let word = s:unfnameescape(a:word)
+  if word is# expand('<cword>')
     " 'K' in normal mode
     " NOTE: Because ! and @ is not in 'iskeyword' option, this func ignore
     "       the argument to recognize keywords like "@time" and "push!"
     let view = winsaveview()
-    let curpos = getpos('.')
-    let lnum = curpos[1]
+    let lnum = line('.')
     let tail = searchpos(s:KEYWORDPATTERN, 'ce', lnum)
     let head = searchpos(s:KEYWORDPATTERN, 'bc', lnum)
     call winrestview(view)
@@ -267,10 +266,38 @@ function! julia#doc#keywordprg(...) abort
     else
       let start = head[1] - 1
       let end = tail[1] - 1
-      let keyword = getline(lnum)[start : end]
+      let word = getline(lnum)[start : end]
     endif
   endif
-  call julia#doc#open(keyword)
+  call julia#doc#open(word)
+endfunction
+
+if exists('+shellslash')
+  let s:ESCAPEDCHARS = " \t\n\"#%'*<?`|"
+else
+  let s:ESCAPEDCHARS = " \t\n*?[{`$\\%#'\"|!<"
+endif
+let s:FNAMEESCAPEPATTERN = '\\\ze[' . escape(s:ESCAPEDCHARS, ']^-\') . ']'
+
+" this function reproduces an original string escaped by fnameescape()
+function! s:unfnameescape(str) abort
+  if a:str is# ''
+    return ''
+  endif
+
+  " NOTE: We cannot determine the original string if a:str starts from '\-',
+  "       '\+' or '\>' because fnameescape('-') ==# fnameescape('\-').
+  if a:str is# '\-'
+    " Remove escape anyway.
+    return '-'
+  endif
+
+  if a:str =~# '^\\[+>]'
+    let str = a:str[1:]
+  else
+    let str = a:str
+  endif
+  return substitute(str, s:FNAMEESCAPEPATTERN, '', 'g')
 endfunction
 
 
