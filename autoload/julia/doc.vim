@@ -230,12 +230,15 @@ function! s:warn(...) abort
   endif
 
   echohl WarningMsg
-  if a:0 == 1
-    echo a:1
-  else
-    echo call('printf', a:000)
-  endif
-  echohl None
+  try
+    if a:0 == 1
+      echo a:1
+    else
+      echo call('printf', a:000)
+    endif
+  finally
+    echohl None
+  endtry
 endfunction
 
 
@@ -277,15 +280,15 @@ let s:HELPHISTORY = []
 
 function! julia#doc#prompt() abort
   let inputhist = s:savehistory('input')
+  echohl MoreMsg
   try
     call s:restorehistory('input', s:HELPHISTORY)
-    echohl MoreMsg
     let keyword = input(s:HELPPROMPT, '', 'customlist,julia#doc#complete')
-    echohl NONE
 
     " Clear the last prompt
     normal! :
   finally
+    echohl None
     call s:restorehistory('input', inputhist)
   endtry
 
