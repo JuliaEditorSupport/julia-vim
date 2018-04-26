@@ -225,9 +225,9 @@ function! s:adjustwinsize(height, width, originalheight, originalwidth) abort
 endfunction
 
 function! s:printdoc(doc) abort
-  silent %delete
+  silent %delete _
   call append(0, a:doc)
-  silent $delete
+  silent $delete _
   normal! gg
 endfunction
 
