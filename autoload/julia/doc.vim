@@ -132,17 +132,18 @@ function! s:openjuliadocwin(buffername) abort
     let originalheight = winheight(originalwinnr)
     let originalwidth = winwidth(originalwinnr)
     let originalwinid = s:win_getid()
+    let height = s:getwinheight(g:julia#doc#winheight)
+    let width = s:getwinwidth(g:julia#doc#winwidth)
     if !empty(g:julia#doc#opencmd)
       let opencmd = g:julia#doc#opencmd
     else
-      let opencmd = s:opencmd(g:julia#doc#winwidth * 2)
+      let opencmd = s:opencmd(width * 2)
     endif
 
     execute printf('silent %s %s', opencmd, a:buffername)
     if !s:issamewin(originalwinid)
       let samewin = s:FALSE
-      call s:adjustwinsize(g:julia#doc#winheight, g:julia#doc#winwidth,
-                         \ originalheight, originalwidth)
+      call s:adjustwinsize(height, width, originalheight, originalwidth)
     endif
   endif
   return samewin
@@ -155,6 +156,22 @@ function! s:existingwindow() abort
     endif
   endfor
   return 0
+endfunction
+
+function! s:getwinheight(height) abort
+  if a:height < 0
+    let winmaxheight = &lines
+    return float2nr(round(winmaxheight * abs(a:height) / 100.0))
+  endif
+  return a:height
+endfunction
+
+function! s:getwinwidth(width) abort
+  if a:width < 0
+    let winmaxwidth = &columns
+    return float2nr(round(winmaxwidth * abs(a:width) / 100.0))
+  endif
+  return a:width
 endfunction
 
 if exists('*win_getid')
@@ -196,24 +213,14 @@ function! s:opencmd(thr_width) abort
 endfunction
 
 function! s:adjustwinsize(height, width, originalheight, originalwidth) abort
-  if winwidth(winnr()) == a:originalwidth
+  if winwidth(winnr()) == a:originalwidth && a:height > 0
     " horizontal split
-    if a:height > 0
-      execute 'resize ' . a:height
-    elseif a:height < 0
-      let winmaxheight = &lines
-      execute 'resize ' . float2nr(round(winmaxheight * abs(a:height) / 100.0))
-    endif
+    execute 'resize ' . a:height
   endif
 
-  if winheight(winnr()) == a:originalheight
+  if winheight(winnr()) == a:originalheight && a:width > 0
     " vertical split
-    if a:width > 0
-      execute 'vertical resize ' . a:width
-    elseif a:width < 0
-      let winmaxwidth = &columns
-      execute 'vertical resize ' . float2nr(round(winmaxwidth * abs(a:width) / 100.0))
-    endif
+    execute 'vertical resize ' . a:width
   endif
 endfunction
 
