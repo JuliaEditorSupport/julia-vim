@@ -137,6 +137,10 @@ CTRL-V <Tab> to insert a literal <Tab>.
 The settings |g:latex_to_unicode_eager| and |g:latex_to_unicode_suggestions|
 are still meaningful in this case.
 
+If you only want to use the substitution of LaTeX sequences in command mode
+(so a mapping is only defined for <S-Tab> and not for <Tab>) you can set 
+|g:latex_to_unicode_shifttab| to 1 and |g:latex_to_unicode_tab| to 0.
+
 ------------------------------------------------------------------------------
 LATEX TO UNICODE AS YOU TYPE                    *julia-vim-L2U-as-you-type*
 

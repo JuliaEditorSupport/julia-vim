@@ -460,7 +460,8 @@ endfunction
 
 " Setup the L2U tab mapping
 function! s:L2U_SetTab(wait_insert_enter)
-  if !b:l2u_cmdtab_set && get(g:, "latex_to_unicode_tab", 1) && b:l2u_enabled
+  if !b:l2u_cmdtab_set && (get(g:, "latex_to_unicode_tab", 1)
+              \ || get(g:, "latex_to_unicode_shifttab", 1)) && b:l2u_enabled
     cmap <buffer> <S-Tab> <Plug>L2UCmdTab
     cnoremap <buffer> <Plug>L2UCmdTab <C-\>eLaTeXtoUnicode#CmdTab()<CR>
     let b:l2u_cmdtab_set = 1
