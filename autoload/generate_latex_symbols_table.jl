@@ -10,7 +10,7 @@ open("$filename.vim","w") do f
     println(f, "function! $filename#$funcname()\n",
                "  return {\n",
                "    \\ ",
-               join([string("'", latex, "': '", unicode, "'") for (latex,unicode) in sort!(vcat(collect(Base.REPLCompletions.latex_symbols),collect(Base.REPLCompletions.emoji_symbols)), by=x->x[2])],
+               join([string("'", latex, "': '", unicode, "'") for (latex,unicode) in sort!(vcat(collect(REPL.REPLCompletions.latex_symbols),collect(REPL.REPLCompletions.emoji_symbols)), by=x->x[2])],
                     ",\n    \\ "),
                "}")
     println(f, "endfunction")
