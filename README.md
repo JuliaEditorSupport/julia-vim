@@ -160,23 +160,23 @@ Note that this feature requires Vim version 7.4 or higher.
 ## Changing syntax highlighting depending on the Julia version
 
 The pluign supports syntax highlighting different versions of Julia. By default, the highlighting scheme assumes
-the latest stable release of Julia (currently, version 0.6), but the previous one and the latest version under
-development are also supported. You can set a global default in your `.vimrc`, e.g. if you follow Julia's master
-you can use:
+the latest stable release of Julia (currently, version 1.0; the plugin does not differentiate between 0.7 and 1.0),
+but the previous one and the latest version under development are also supported. You can set a global default in
+your `.vimrc`, e.g. if you follow Julia's master you can use:
 
 ```
 let g:default_julia_version = "devel"
 ```
 
-or if you are still using Julia 0.5 you can use:
+or if you are still using Julia 0.6 you can use:
 
 ```
-let g:default_julia_version = "0.5"
+let g:default_julia_version = "0.6"
 ```
 
 You can also switch version for a particular buffer, by using the `julia#set_syntax_version()` function, e.g.
 by typing in Vim:
 
 ```
-:call julia#set_syntax_version("0.5")
+:call julia#set_syntax_version("0.6")
 ```
