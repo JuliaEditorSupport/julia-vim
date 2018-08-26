@@ -17,6 +17,7 @@ setlocal comments=:#
 setlocal commentstring=#=%s=#
 setlocal cinoptions+=#1
 setlocal define=^\\s*macro\\>
+setlocal fo-=t fo+=croql
 
 let b:julia_vim_loaded = 1
 
