@@ -17,11 +17,12 @@ setlocal comments=:#
 setlocal commentstring=#=%s=#
 setlocal cinoptions+=#1
 setlocal define=^\\s*macro\\>
+setlocal fo-=t fo+=croql
 
 let b:julia_vim_loaded = 1
 
 let b:undo_ftplugin = "setlocal include< suffixesadd< comments< commentstring<"
-      \ . " define< shiftwidth< expandtab< indentexpr< indentkeys< cinoptions< omnifunc<"
+      \ . " define< fo< shiftwidth< expandtab< indentexpr< indentkeys< cinoptions< omnifunc<"
       \ . " | unlet! b:julia_vim_loaded"
 
 " MatchIt plugin support
