@@ -1,6 +1,3 @@
-let s:FALSE = 0
-let s:TRUE = 1
-
 " path to the julia binary to communicate with
 if has('win32') || has('win64')
   if exists('g:julia#doc#juliapath')
@@ -16,30 +13,6 @@ if has('win32') || has('win64')
 else
   let g:julia#doc#juliapath = get(g:, 'julia#doc#juliapath', 'julia')
 endif
-
-" command to open a new juliadoc buffer
-" for example, :split, :vert split, :edit, :tabedit etc.
-" if it is empty, split the current window depending on its size -> s:opencmd()
-let g:julia#doc#opencmd = get(g:, 'julia#doc#opencmd', '')
-
-" height of a juliadoc window (in case of horizontal split window by g:julia#doc#opencmd)
-" if it is a positive number, adjust the height to the number of lines
-" if is is a negative number, adjust the height to the percentage of &lines
-" otherwise do nothing, see s:adjustwinsize()
-let g:julia#doc#winheight = get(g:, 'julia#doc#winheight', -30)
-
-" width of a juliadoc window (in case of vertical split window by g:julia#doc#opencmd)
-" if it is a positive number, adjust the width to the number of columns
-" if is is a negative number, adjust the height to the percentage of &columns
-" otherwise do nothing, see s:adjustwinsize()
-let g:julia#doc#winwidth = get(g:, 'julia#doc#winwidth', 80)
-
-" a boolean option to control the location of cursor after opening a juliadoc window
-" if it is TRUE, the cursor is moved to the original window
-" if it is FALSE, the cursor is left in the juliadoc window
-let g:julia#doc#cursorback = get(g:, 'julia#doc#cursorback', s:TRUE)
-
-
 
 function! s:version() abort
   let VERSION = {'major': 0, 'minor': 0}
@@ -77,158 +50,51 @@ function! julia#doc#open(keyword) abort
     return
   endif
 
+  let doc = julia#doc#lookup(a:keyword, g:julia#doc#juliapath)
+  if empty(doc) || match(doc[0], s:NODOCPATTERN) > -1
+    call s:warn('No documentation found for "%s".', a:keyword)
+    return
+  endif
+
   " workaround for * and ? since a buffername cannot include them
   let keyword = a:keyword
   let keyword = substitute(keyword, '\*', ':asterisk:', 'g')
   let keyword = substitute(keyword, '?', ':question:', 'g')
+  let buffername = printf('juliadoc: %s', keyword)
 
-  let buffername = printf('juliadoc://%s', keyword)
-  let originaltabpagenr = tabpagenr()
-  let samewin = s:TRUE
-  if s:bufferexists(buffername)
-    let samewin = s:openjuliadocwin(buffername)
-  else
-    let doc = julia#doc#lookup(a:keyword, g:julia#doc#juliapath)
-    if empty(doc) || match(doc[0], s:NODOCPATTERN) > -1
-      call s:warn('No documentation found for "%s".', a:keyword)
-      return
-    endif
-
-    let samewin = s:openjuliadocwin(buffername)
-    setlocal modifiable
-    call s:printdoc(doc)
-    setlocal nobackup noswapfile nomodifiable nobuflisted buftype=nofile bufhidden=hide
-    setfiletype juliadoc
-  endif
-
-  if tabpagenr() == originaltabpagenr && !samewin && g:julia#doc#cursorback
-    wincmd p
-  endif
+  call s:write_to_preview_window(doc, "juliadoc", buffername)
 
   call filter(s:HELPHISTORY, 'v:val isnot# a:keyword')
   call add(s:HELPHISTORY, a:keyword)
 endfunction
 
-function! s:bufferexists(buffername) abort
-  return !empty(filter(map(getbufinfo(), 'v:val.name'), 'v:val is# a:buffername'))
-endfunction
-
-" This function returns TRUE if the cursor is in the same window as before.
-function! s:openjuliadocwin(buffername) abort
-  let samewin = s:TRUE
-  let existingwinnr = s:existingwindow()
-  if existingwinnr != 0
-    " move to the existing window
-    if existingwinnr != winnr()
-      let samewin = s:FALSE
-      execute existingwinnr . 'wincmd w'
-    endif
-    if bufname('%') isnot# a:buffername
-      execute printf('silent edit %s', a:buffername)
+function! s:write_to_preview_window(content, ftype, buffername)
+  " Are we in the preview window from the outset? If not, best to close any
+  " preview windows that might exist.
+  let pvw = &previewwindow
+  if !pvw
+    silent! pclose!
+  endif
+  execute "silent! pedit +setlocal\\ nobuflisted\\ noswapfile\\"
+        \ "buftype=nofile\\ bufhidden=wipe" a:buffername
+  silent! wincmd P
+  if &previewwindow
+    setlocal modifiable noreadonly
+    silent! %delete _
+    call append(0, a:content)
+    silent! $delete _
+    normal! ggj
+    setlocal nomodified readonly nomodifiable
+    execute "setfiletype" a:ftype
+    " Only return to a normal window if we didn't start in a preview window.
+    if !pvw
+      silent! wincmd p
     endif
   else
-    " open a new window
-    let originalwinnr = winnr()
-    let originalheight = winheight(originalwinnr)
-    let originalwidth = winwidth(originalwinnr)
-    let originalwinid = s:win_getid()
-    let height = s:getwinheight(g:julia#doc#winheight)
-    let width = s:getwinwidth(g:julia#doc#winwidth)
-    if !empty(g:julia#doc#opencmd)
-      let opencmd = g:julia#doc#opencmd
-    else
-      let opencmd = s:opencmd(width * 2)
-    endif
-
-    execute printf('silent %s %s', opencmd, a:buffername)
-    if !s:issamewin(originalwinid)
-      let samewin = s:FALSE
-      call s:adjustwinsize(height, width, originalheight, originalwidth)
-    endif
+    " We couldn't make it to the preview window, so as a fallback we dump the
+    " contents in the status area.
+    execute printf("echo '%s'", join(a:content, "\n"))
   endif
-  return samewin
-endfunction
-
-function! s:existingwindow() abort
-  for winnr in range(1, winnr('$'))
-    if bufname(winbufnr(winnr)) =~# '\m^juliadoc://'
-      return winnr
-    endif
-  endfor
-  return 0
-endfunction
-
-function! s:getwinheight(height) abort
-  if a:height < 0
-    let winmaxheight = &lines
-    return float2nr(round(winmaxheight * abs(a:height) / 100.0))
-  endif
-  return a:height
-endfunction
-
-function! s:getwinwidth(width) abort
-  if a:width < 0
-    let winmaxwidth = &columns
-    return float2nr(round(winmaxwidth * abs(a:width) / 100.0))
-  endif
-  return a:width
-endfunction
-
-if exists('*win_getid')
-  let s:win_getid = function('win_getid')
-
-  function! s:issamewin(winid) abort
-    return a:winid == win_getid()
-  endfunction
-else
-  function! s:win_getid(...) abort
-    return [tabpagenr(), winnr('$')]
-  endfunction
-
-  function! s:issamewin(winid) abort
-    let [originaltabnr, originallastwinnr] = a:winid
-    if tabpagenr() != originaltabnr
-      return s:FALSE
-    endif
-
-    " The cursor should be in the juliadoc window after opening a new window,
-    " thus if the number of window has been changed, we could think that the
-    " cursor has been moved. If not changed, probably :edit is used.
-    if winnr('$') != originallastwinnr
-      return s:FALSE
-    endif
-
-    " This is not always true. For example after :split | :only,
-    " it doesn't change tabpage and number of windows but the cursor is not in
-    " same window. However it is too difficult to track that kind of change.
-    return s:TRUE
-  endfunction
-endif
-
-function! s:opencmd(thr_width) abort
-  if a:thr_width != 0 && winwidth('%') >= a:thr_width
-    return 'vert split'
-  endif
-  return 'split'
-endfunction
-
-function! s:adjustwinsize(height, width, originalheight, originalwidth) abort
-  if winwidth(winnr()) == a:originalwidth && a:height > 0
-    " horizontal split
-    execute 'resize ' . a:height
-  endif
-
-  if winheight(winnr()) == a:originalheight && a:width > 0
-    " vertical split
-    execute 'vertical resize ' . a:width
-  endif
-endfunction
-
-function! s:printdoc(doc) abort
-  silent %delete _
-  call append(0, a:doc)
-  silent $delete _
-  normal! gg
 endfunction
 
 function! s:warn(...) abort
