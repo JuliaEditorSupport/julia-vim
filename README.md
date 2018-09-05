@@ -159,7 +159,7 @@ Note that this feature requires Vim version 7.4 or higher.
 
 ## Changing syntax highlighting depending on the Julia version
 
-The pluign supports syntax highlighting different versions of Julia. By default, the highlighting scheme assumes
+The plugin supports syntax highlighting different versions of Julia. By default, the highlighting scheme assumes
 the latest stable release of Julia (currently, version 1.0; the plugin does not differentiate between 0.7 and 1.0),
 but the previous one and the latest version under development are also supported. You can set a global default in
 your `.vimrc`, e.g. if you follow Julia's master you can use:

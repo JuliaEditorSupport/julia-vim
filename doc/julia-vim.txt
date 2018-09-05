@@ -93,7 +93,7 @@ g:julia_syntax_highlight_deprecated
 
                 Determines whether to highlight deprecated syntax, according
                 to the Julia version in use (see |g:default_julia_verison|).
-                By default, it is off (set to `0`).
+                Default: off (set to `0`).
 
                                           *julia#toggle_deprecated_syntax()*
 julia#toggle_deprecated_syntax()
@@ -336,31 +336,34 @@ g:julia_blocks_mappings
 
 
 ==============================================================================
-REFERRING TO DOCUMENTS                                      *julia-vim-doc*
+REFERRING TO DOCUMENTATION                                  *julia-vim-doc*
 
                                                               *julia-vim-K*
 K
-        This keymapping looks up the keyword under the cursor in the julia
-        documents.
+        Look up documentation for the keyword under the cursor. If found,
+        a preview window with the documentation is opened.
 
-        `K` can be used on an underlined keyword in the document buffer to
-        look around julia documents.
+        This also works for keywords within the opened preview window,
+        allowing effortless browsing of the documentation.
+
+        (This is not really a key mapping, but uses the built-in
+        |keywordprg|-mechanism in vim; see |K| if you're curious).
 
 
                                                    *<Plug>(JuliaDocPrompt)*
 <Plug>(JuliaDocPrompt)
-        This keymapping prompts to input a keyword to lookup. If you don't use
-        backward search |?|, the following setting makes `?` working like it
-        in Julia REPL.
+        Open a prompt for keyword documentation lookup. If you don't use |?|
+        for backward search, you can use the following to make `?` work like
+        in the Julia REPL:
 >
         autocmd FileType julia nmap <buffer> ? <Plug>(JuliaDocPrompt)
 <
-        Use |:augroup| as you need.
+        Apply |:augroup| as needed.
 
 
                                                                 *:JuliaDoc*
 :JuliaDoc {keyword}
-        This command looks up the {keyword} in the julia documents.
+        Look up documentation for {keyword}.
 
 
 ==============================================================================
@@ -403,33 +406,32 @@ julia#function_assign2block()
 ==============================================================================
 CUSTOMIZATIONS                                          *julia-vim-options*
 
-Here is a list of options that can be changed to customize some aspects of the
-plugin.
+The following options allows customizing some aspects of the plugin.
 
-                                             *g:julia_spellcheck_docstings*
-g:julia_spellcheck_docstings
+                                             *g:julia_spellcheck_docstrings*
+g:julia_spellcheck_docstrings
 
-                Determines whether to enable spell-checking within docstrings,
-                i.e. tri-strings that start at the first column. See |spell|.
-                By default, it is on (set to `1`).
+                Determines whether to enable spell-checking for docstrings,
+                i.e. triple quoted strings that start in the first column. See
+                |spell|. Default: on (set to `1`).
 
                                                *g:julia_spellcheck_strings*
 g:julia_spellcheck_strings
 
-                Determines whether to enable spell-checking within strings.
-                See |spell|. By default, it is off (set to `0`).
+                Determines whether to enable spell-checking for all strings.
+                See |spell|. Default: off (set to `0`).
 
                                               *g:julia_spellcheck_comments*
 g:julia_spellcheck_comments
 
-                Determines whether to enable spell-checking within comments.
-                See |spell|. By default, it is on (set to `1`).
+                Determines whether to enable spell-checking for comments. See
+                |spell|. Default: on (set to `1`).
 
                                               *g:julia_highlight_operators*
 g:julia_highlight_operators
 
-                Determines whether to syntax-highlight operators. By default,
-                it is on (set to `1`).
+                Determines whether to apply syntax highlighting to operators.
+                Default: on (set to `1`).
 
 
 ==============================================================================
