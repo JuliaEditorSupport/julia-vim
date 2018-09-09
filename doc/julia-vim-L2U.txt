@@ -111,7 +111,8 @@ and then pressing <Tab>, results in:
 <
 
 This feature is associated with 'completefunc' completion, and therefore can
-always be accessed via CTRL-X CTRL-U, even when |g:latex_to_unicode_tab| is 0.
+always be accessed via CTRL-X CTRL-U, even when |g:latex_to_unicode_tab| is
+off.
 
 A literal <Tab> key can always be entered by using CTRL-V before <Tab> (see
 |i_CTRL-V|).
@@ -265,12 +266,18 @@ VARIABLES                                         *julia-vim-L2U-variables*
                                                    *g:latex_to_unicode_tab*
 g:latex_to_unicode_tab
 
-                Determines whether to map LaTeX-to-Unicode substitution to the
-                <Tab> key while in |Insert| and |Command-line| modes, see
-                |julia-vim-L2U-tab|. If unspecified, it is on. You can disable
-                the feature by default by inserting the line
+                A string that determines whether to map LaTeX-to-Unicode
+                substitution to the <Tab> key while in |Insert| and |Command-line|
+                modes, see |julia-vim-L2U-tab|. If unspecified, it is `"on"`,
+                meaning it is active in both insert and command-line modes.
+                You can set it to the value `"command"` or `"cmd"` to only
+                activate it in command-line mode. Or you can set it to
+                `"insert"` or `"ins"` to only have the insert mode mapping. Set it
+                to `"off"` or any other value to disable this feature entirely.
+                So for example you can disable the feature for insert mode by
+                adding the line
 >
-                    let g:latex_to_unicode_tab = 0
+                    let g:latex_to_unicode_tab = "command"
 <
                 in your |.vimrc| file. You can change this setting at any moment
                 while editing, but you need to invoke |LaTeXtoUnicode#Init()|
@@ -280,7 +287,7 @@ g:latex_to_unicode_tab
 g:latex_to_unicode_suggestions
 
                 Determines whether the <Tab> key mapping produces suggestions
-                for partial matches. By default, this is set to 1 (active),
+                for partial matches. By default, this is set to `1` (active),
                 unless a plug-in which is known to be incompatible with it is
                 detected. Currently, known incompatible plug-ins are
                 YouCompleteMe (https://github.com/Valloric/YouCompleteMe),
@@ -296,9 +303,9 @@ g:latex_to_unicode_eager
 
                 Determines whether the <Tab> key mapping performs the
                 substitution immediately upon finding an exact match. By
-                default this setting is set to 1 (active), so that e.g. typing
+                default this setting is set to `1` (active), so that e.g. typing
                 `\ne` and pressing the <Tab> key triggers the substitution. If
-                this variable is set to 0, an exact match which is also a
+                this variable is set to `0`, an exact match which is also a
                 possible partial match to some other sequence triggers the
                 suggestions menu first, but another <Tab> forces the
                 substitution, so that e.g. typing `\ne` and then <Tab>
@@ -363,7 +370,7 @@ g:latex_to_unicode_cmd_mapping
                 Specifies the mapping (or list of mappings) for the
                 substitution in |Command-line| mode. By default, it is
                 `['<Tab>', '<S-Tab>']`, but it can be changed to avoid
-                overriding other user-defined mapping, e.g. to `'<S-Tab>'`
+                overriding other user-defined mappings, e.g. to `'<S-Tab>'`
                 (if your terminal suppoorts it) or `'<C-\><Tab>'`.
                 The `'<Tab>'` (or to be more precise the |wildchar| key) and
                 `'<S-Tab>'` mappings are special in that they fall back to

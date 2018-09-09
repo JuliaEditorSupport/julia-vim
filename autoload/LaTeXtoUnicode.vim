@@ -64,7 +64,7 @@ function! s:L2U_SetupGlobal()
   call s:L2U_deprecated_options()
 
   if v:version < 704
-      let g:latex_to_unicode_tab = 0
+      let g:latex_to_unicode_tab = "off"
       let g:latex_to_unicode_auto = 0
   endif
 
@@ -157,6 +157,14 @@ function! s:L2U_deprecated_options()
       exec "let g:" . new . " = g:" . old
     endif
   endfor
+
+  if has_key(g:, "latex_to_unicode_tab")
+    if g:latex_to_unicode_tab is# 1
+      let g:latex_to_unicode_tab = "on"
+    elseif g:latex_to_unicode_tab is# 0
+      let g:latex_to_unicode_tab = "off"
+    endif
+  endif
 endfunction
 
 function! s:L2U_file_type_regex(ft)
@@ -465,7 +473,9 @@ endfunction
 
 " Setup the L2U tab mapping
 function! s:L2U_SetTab(wait_insert_enter)
-  if !b:l2u_cmdtab_set && get(g:, "latex_to_unicode_tab", 1) && b:l2u_enabled
+  let opt_do_cmdtab = index(["on", "command", "cmd"], get(g:, "latex_to_unicode_tab", "on")) != -1
+  let opt_do_instab = index(["on", "insert", "ins"], get(g:, "latex_to_unicode_tab", "on")) != -1
+  if !b:l2u_cmdtab_set && opt_do_cmdtab && b:l2u_enabled
     let b:l2u_cmdtab_keys = get(g:, "latex_to_unicode_cmd_mapping", ['<Tab>','<S-Tab>'])
     if type(b:l2u_cmdtab_keys) != type([]) " avoid using v:t_list for backward compatibility
       let b:l2u_cmdtab_keys = [b:l2u_cmdtab_keys]
@@ -483,7 +493,7 @@ function! s:L2U_SetTab(wait_insert_enter)
   if a:wait_insert_enter && !get(g:, "did_insert_enter", 0)
     return
   endif
-  if !get(g:, "latex_to_unicode_tab", 1) || !b:l2u_enabled
+  if !opt_do_instab || !b:l2u_enabled
     return
   endif
 
