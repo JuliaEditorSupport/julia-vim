@@ -166,8 +166,10 @@ syntax region  juliaBeginBlock		matchgroup=juliaBlKeyword start="\<begin\>" end=
 syntax region  juliaFunctionBlock	matchgroup=juliaBlKeyword start="\<function\>" end="\<end\>" contains=@juliaExpressions fold
 syntax region  juliaMacroBlock		matchgroup=juliaBlKeyword start="\<macro\>" end="\<end\>" contains=@juliaExpressions fold
 syntax region  juliaQuoteBlock		matchgroup=juliaBlKeyword start="\<quote\>" end="\<end\>" contains=@juliaExpressions fold
-syntax region  juliaTypeBlock		matchgroup=juliaBlKeyword06 start="\<type\>" end="\<end\>" contains=@juliaExpressions fold
-syntax region  juliaImmutableBlock	matchgroup=juliaBlKeyword06 start="\<immutable\>" end="\<end\>" contains=@juliaExpressions fold
+if b:julia_syntax_version <= 10
+  syntax region  juliaTypeBlock		matchgroup=juliaBlKeyword06 start="\<type\>" end="\<end\>" contains=@juliaExpressions fold
+  syntax region  juliaImmutableBlock	matchgroup=juliaBlKeyword06 start="\<immutable\>" end="\<end\>" contains=@juliaExpressions fold
+endif
 syntax region  juliaStructBlock		matchgroup=juliaBlKeyword start="\<struct\>" end="\<end\>" contains=@juliaExpressions fold
 syntax region  juliaMutableStructBlock	matchgroup=juliaBlKeyword start="\<mutable struct\>" end="\<end\>" contains=@juliaExpressions fold
 syntax region  juliaLetBlock		matchgroup=juliaBlKeyword start="\<let\>" end="\<end\>" contains=@juliaExpressions fold
