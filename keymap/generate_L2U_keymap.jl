@@ -2,6 +2,30 @@
 
 const filename = "latex2unicode_utf-8"
 
+# We want to avoid situations in which the user types e.g. \delt and pauses,
+# and the result is "∇t" because "\del" gets recognized and then there is some leftover "t".
+# This allows us to get completions with <Tab> for example.
+function fix_completions(completions::Dict{String,String})
+    allinputs = sort!(collect(keys(completions)))
+    new_completions = copy(completions)
+
+    for input in allinputs
+        chars = completions[input]
+        l = length(input)
+        longer = filter(x->startswith(x, input)&&length(x)>l, allinputs)
+        n = length(longer)
+        n == 0 && continue
+        new_completions[input * "<Tab>"] = chars
+        for other in longer
+            for j = (l+1):(length(other)-1)
+                haskey(new_completions, other[1:j]) && continue
+                new_completions[other[1:j]] = other[1:j]
+            end
+        end
+    end
+    return new_completions
+end
+
 function unicode_data()
     file = normpath(Sys.BINDIR, "..", "..", "doc", "UnicodeData.txt")
     names = Dict{UInt32, String}()
@@ -27,12 +51,18 @@ function table_entries(completions::Dict{String,String}, unicode_dict)
     unicode = String[]
     desc = String[]
 
-    for (input, chars) in sort!(collect(completions), by = last)
+    for (input, chars) in sort!(collect(completions))
         code_points, unicode_names, characters = String[], String[], String[]
-        for char in chars
-            push!(code_points, "<char-0x$(uppercase(string(UInt32(char), base = 16, pad = 5)))>")
-            push!(unicode_names, get(unicode_dict, UInt32(char), "(No Unicode name)"))
-            push!(characters, isempty(characters) ? fix_combining_chars(char) : "$char")
+        if startswith(chars, "\\")
+            push!(code_points, replace(chars, "\\" => "\\\\"))
+            push!(unicode_names, "(Incomplete sequence)")
+            push!(characters, "")
+        else
+            for char in chars
+                push!(code_points, "<char-0x$(uppercase(string(UInt32(char), base = 16, pad = 5)))>")
+                push!(unicode_names, get(unicode_dict, UInt32(char), "(No Unicode name)"))
+                push!(characters, isempty(characters) ? fix_combining_chars(char) : "$char")
+            end
         end
         push!(latex, replace(input, "\\"=>"\\\\"))
         push!(code, join(code_points))
@@ -56,10 +86,10 @@ open("$filename.vim","w") do f
 
     latex, code, unicode, desc =
         table_entries(
-            merge(
+            fix_completions(merge(
                 REPL.REPLCompletions.latex_symbols,
                 REPL.REPLCompletions.emoji_symbols
-                ),
+                )),
             unicode_data()
             )
 

@@ -63,9 +63,7 @@ available:
      for a character with |f| or |t|, as explained in |language-mapping|. See
      |julia-vim-L2U-keymap|.
 
-The first two methods are independent and can be used together without issues.
-The third one is best used by its own, disabling the other two, to avoid
-confusion.
+All of these methods are independent and can be used together without issues.
 
 The default configuration is to use the first method, and it's only active
 when editing Julia files. It only works in |Insert| and |Command-line| modes.
@@ -75,12 +73,13 @@ It is possible to enable it with other file types, see
 regardless of the file type, see |julia-vim-L2U-enable-disable|.
 
 In |Command-line| mode, e.g. when searching with the |/| or |?| commands, the
-default behavior is very similar, but slightly more limited, see
-|julia-vim-L2U-cmdmode|.
+default behavior is very similar to the default |Insert| mode behavior, but
+slightly more limited, see |julia-vim-L2U-cmdmode|.
 
 These features only work as described with Vim version 7.4 or higher. Tab
 completion can still be made available on lower Vim versions, see
-|julia-vim-L2U-workaround|.
+|julia-vim-L2U-workaround|. The keymap mode might work but it hasn't been
+tested.
 
 See |julia-vim| for the general reference about the other features of the
 julia-vim plug-in.
@@ -198,16 +197,17 @@ uses |keymap| to generate the mappings. This has the advantage that it works
 in more circumstances, e.g. in |Command-line| mode or when searching within a
 line with |f| or |t| (since it uses |language-mapping| underneath). It can
 also be easily turned on or off like any other keymap (see |i_CTRL-^| and
-|c_CTRL-^|).
-The disadvantages are that you don't see the whole sequence as you're typing
-it, and no suggestions or partial completions are available, thus you need to
-know the substitutions (see |julia-vim-L2U-reference|), and to type them
-correctly in full.
+|c_CTRL-^|). It also works with emojis.
+The disadvantage is that you don't see the whole sequence as you're typing
+it, and you can't fix mistakes with backspace, for example.
 Another difference is that there is a |timeout| like for any other mapping.
 
 In order to use this method, set |g:latex_to_unicode_keymap| to `1`.
-If you do so, it is advisable to disable the other two methods,
-setting both |g:latex_to_unicode_tab| and |g:latex_to_unicode_auto| to `0`.
+You can use it in parallel with the other methods, they don't interfere. For
+example, typing a partial sequence and pressing <Tab> still triggers
+completions and suggestions if |g:latex_to_unicode_tab| is active.
+
+If you use this feature, it's also useful to set |lCursor|.
 
 ------------------------------------------------------------------------------
 LATEX TO UNICODE ON DIFFERENT FILE TYPES         *julia-vim-L2U-file-types*
@@ -337,8 +337,6 @@ g:latex_to_unicode_keymap
                 in your |.vimrc| file. You can change this setting at any
                 moment while editing, but you need to invoke
                 |LaTeXtoUnicode#Init()| for the change to take effect.
-                It's advisable to disable |g:latex_to_unicode_tab| and
-                |g:latex_to_unicde_auto| if you use this.
 
                                             *g:latex_to_unicode_file_types*
 g:latex_to_unicode_file_types
