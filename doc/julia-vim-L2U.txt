@@ -20,12 +20,12 @@ License: MIT license  {{{
     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 }}}
-
 CONTENTS					*julia-vim-L2U*
 
 LaTeX-to-Unicode substitutions      |julia-vim-L2U-introdction|
   Via Tab key                       |julia-vim-L2U-tab|
   As you type                       |julia-vim-L2U-as-you-type|
+  Via Keymap                        |julia-vim-L2U-keymap|
   On different file types           |julia-vim-L2U-file-types|
   Enabling and disabling            |julia-vim-L2U-enable-disable|
 Variables                           |julia-vim-L2U-variables|
@@ -34,37 +34,53 @@ Functions                           |julia-vim-L2U-functions|
 ==============================================================================
 LATEX TO UNICODE                              *julia-vim-L2U-introduction*
 
-In the Julia REPL, entering a LaTeX sequence such as `\alpha` and pressing the
-<Tab> key substitutes it with a Unicode character such as `α`. The Julia REPL
-also provides partial completions, and suggestions for possible completions
-upon repeated pressing of the <Tab> key. Emojis are also available, with
-their names written between colons, e.g. `\:interrobang:` produces `⁉`.
+In the Julia REPL, entering a LaTeX-like sequence such as `\alpha` and pressing
+the <Tab> key substitutes it with a Unicode character such as `α`. The Julia
+REPL also provides partial completions, and suggestions for possible
+completions upon repeated pressing of the <Tab> key. Emojis are also
+available, with their names written between colons, e.g. `\:interrobang:`
+produces `⁉`.
 
-This Vim plug-in provides the same functionality, with some extensions:
-  - when a partial sequence is found, suggestions are presented in a menu
-    together with their Unicode counterpart; the exact behaviour of this
-    feature can be customized, see |julia-vim-L2U-tab|
-  - optionally, symbols are substituted on the fly as you type them, see
-    |julia-vim-L2U-as-you-type|
+See |julia-vim-L2U-reference| for the complete table of substitutions.
 
-In Vim |Command-line| mode, e.g. when searching with the |/| or |?| commands, the
-default behavior is very similar, but slightly more limited: there are no
-suggestions, and the as-you-type substitutions are not avaliable. By default
-both <Tab> and <S-Tab> are mapped in command-line mode (the latter for
-backward compatibility reasons), but this can be customized if needed, see
+This Vim plug-in also provides the functionality needed to convert LaTeX
+input sequences into Unicode characters. There are 3 different methods
+available:
+
+  1. The default one is the most similar to the Julia one: substitutions are
+     triggered by pressing the <Tab> key; if a partial match is found a list
+     of suggested completions is presented in a menu together with their
+     Unicode counterpart. The exact behaviour of this feature can be
+     customized, see |julia-vim-L2U-tab|.
+
+  2. The second one substitutes symbols on the fly as you type, but only in
+     |Insert| mode. See |julia-vim-L2U-as-you-type|.
+
+  3. The third is based on |keymap|. It also substitutes as-you-type, but it
+     doesn't show you the full LaTeX sequence as you're typing it, and there
+     is a time-out. Its main advantage over the previous one is that can be
+     used in more circumstances, e.g. in |Command-line| mode or when searching
+     for a character with |f| or |t|, as explained in |language-mapping|. See
+     |julia-vim-L2U-keymap|.
+
+The first two methods are independent and can be used together without issues.
+The third one is best used by its own, disabling the other two, to avoid
+confusion.
+
+The default configuration is to use the first method, and it's only active
+when editing Julia files. It only works in |Insert| and |Command-line| modes.
+
+It is possible to enable it with other file types, see
+|julia-vim-L2U-file-types|, and it can be even turned on/off on the fly
+regardless of the file type, see |julia-vim-L2U-enable-disable|.
+
+In |Command-line| mode, e.g. when searching with the |/| or |?| commands, the
+default behavior is very similar, but slightly more limited, see
 |julia-vim-L2U-cmdmode|.
-
-By default, this feature is only active when editing Julia files. However, it
-can be also enabled with other file types, see |julia-vim-L2U-file-types|, and
-even turned on/off on the fly regardless of the file type, see
-|julia-vim-L2U-enable-disable|.
 
 These features only work as described with Vim version 7.4 or higher. Tab
 completion can still be made available on lower Vim versions, see
 |julia-vim-L2U-workaround|.
-
-See |julia-vim-L2U-reference| for the complete table of the available
-LaTeX-to-Unicode substitutions.
 
 See |julia-vim| for the general reference about the other features of the
 julia-vim plug-in.
@@ -82,7 +98,7 @@ mapping assigned to it, such that when the <Tab> key is pressed the plug-in
 looks for potential LaTeX symbol matches before the cursor, and if it fails to
 find anything of interest it will fall-back to the previous mapping for <Tab>
 (with default Vim settings, this means it will insert a literal <Tab>; but if
-you have defined dome other behaviour for that key, e.g. by installing another
+you have defined some other behavior for that key, e.g. by installing another
 plug-in such as supertab (https://github.com/ervandew/supertab) than that will
 be used).
 
@@ -128,13 +144,13 @@ setting.
 
 Command-line mode                                      *julia-vim-L2U-cmdmode*
 
-In |Command-line| mode, the behavior is largely the same except that both <Tab> and
-<S-Tab> are mapped by default, and the functionality is slightly more limited.
-No suggestions are shown for partial completions. Pre-existsing user-defined
-mappings of <Tab> are overridden, and in case of no L2U matches the fallback
-behavior is the standard Vim one. In order to avoid that, the
+In |Command-line| mode, the behavior is largely the same except that both
+<Tab> and <S-Tab> are mapped by default, and the functionality is slightly
+more limited. No suggestions are shown for partial completions. Pre-existing
+user-defined mappings of <Tab> are overridden. In order to avoid that, the
 completion can be mapped onto a defferent key combination, see
-|g:latex_to_unicode_cmd_mapping|.
+|g:latex_to_unicode_cmd_mapping|. When using <Tab>, if no matches are found
+the behavior falls back to the standard Vim command-line completion.
 
 Vim versions lower than 7.4                     *julia-vim-L2U-workaround*
 
@@ -173,6 +189,25 @@ sign.
 This feature does not currently work with emojis.
 
 This feature does not interfere with the <Tab> based substitution.
+
+------------------------------------------------------------------------------
+LATEX TO UNICODE VIA KEYMAP                          *julia-vim-L2U-keymap*
+
+This method is somewhat similar to the as-you-type one described above, but it
+uses |keymap| to generate the mappings. This has the advantage that it works
+in more circumstances, e.g. in |Command-line| mode or when searching within a
+line with |f| or |t| (since it uses |language-mapping| underneath). It can
+also be easily turned on or off like any other keymap (see |i_CTRL-^| and
+|c_CTRL-^|).
+The disadvantages are that you don't see the whole sequence as you're typing
+it, and no suggestions or partial completions are available, thus you need to
+know the substitutions (see |julia-vim-L2U-reference|), and to type them
+correctly in full.
+Another difference is that there is a |timeout| like for any other mapping.
+
+In order to use this method, set |g:latex_to_unicode_keymap| to `1`.
+If you do so, it is advisable to disable the other two methods,
+setting both |g:latex_to_unicode_tab| and |g:latex_to_unicode_auto| to `0`.
 
 ------------------------------------------------------------------------------
 LATEX TO UNICODE ON DIFFERENT FILE TYPES         *julia-vim-L2U-file-types*
@@ -271,7 +306,7 @@ g:latex_to_unicode_eager
                 pressing <Tab> again performs the substitution.
 
                 This variable can be set at any time, changes will immediately
-                take effect. When |g:latex_to_unicode_suggestions| is 0,
+                take effect. When |g:latex_to_unicode_suggestions| is `0`,
                 this setting has no effect (it's like if it was always on).
                 
                                                   *g:latex_to_unicode_auto*
@@ -279,7 +314,7 @@ g:latex_to_unicode_auto
 
                 Determines whether to activate LaTeX-to-Unicode substitution
                 on the fly as you type (in |Insert| mode), see
-                |julia-vim-L2U-as-you-type|. If unspecified, it is 0 (off).
+                |julia-vim-L2U-as-you-type|. If unspecified, it is `0` (off).
                 You can enable the feature by default by inserting the line
 >
                     let g:latex_to_unicode_auto = 1
@@ -287,6 +322,23 @@ g:latex_to_unicode_auto
                 in your |.vimrc| file. You can change this setting at any
                 moment while editing, but you need to invoke
                 |LaTeXtoUnicode#Init()| for the change to take effect.
+
+
+                                                *g:latex_to_unicode_keymap*
+g:latex_to_unicode_keymap
+
+                Determines whether to activate the |keymap|-based
+                LaTeX-to-Unicode substitutions, see |julia-vim-L2U-keymap|.
+                If unspecified, it is `0` (off). You can enable the feature by
+                default by inserting the line
+>
+                    let g:latex_to_unicode_keymap = 1
+<
+                in your |.vimrc| file. You can change this setting at any
+                moment while editing, but you need to invoke
+                |LaTeXtoUnicode#Init()| for the change to take effect.
+                It's advisable to disable |g:latex_to_unicode_tab| and
+                |g:latex_to_unicde_auto| if you use this.
 
                                             *g:latex_to_unicode_file_types*
 g:latex_to_unicode_file_types
