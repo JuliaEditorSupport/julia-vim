@@ -27,7 +27,7 @@ Unicode symbols (e.g. `α`). By default, these substitutions must be triggered e
 be activated, and a method based on keymap is also available.
 
 This feature also works in command mode, e.g. when searching the files with the `/` or `?` commands, but the
-as-you-type mode is not available (the keymap-based version is though, and it also works with some Vim
+as-you-type mode is not available (the keymap-based version works though, and it also works with some Vim
 commands like `f` and `t`).
 
 By default, this feature is only active when editing Julia files. However, it can be also enabled with
@@ -112,10 +112,8 @@ and a LaTeX sequence can unambiguously be identified.
 For example, if you type `a \neq b` the `\neq` will be changed to `≠` right after the space, before you input
 the `b`.
 
-This does not interfere with the <kbd>Tab</kbd> mapping discussed above. It only works in insert mode.
-
-The `g:latex_to_unicode_auto` setting can also be changed from the Vim command-line, but you will
-also need to give the command `:call LaTeXtoUnicode#Init()` for the change to take effect.
+This does not interfere with the <kbd>Tab</kbd> mapping discussed above. It only works in insert mode, and it
+doesn't work with emojis.
 
 This feature is not available with Vim versions lower then 7.4.
 
@@ -124,14 +122,16 @@ This feature is not available with Vim versions lower then 7.4.
 A different susbstitution mode based on keymaps can be activated with `:let g:latex_to_unicode_keymap = 1`,
 e.g. by putting it into your `.vimrc` file. This works similarly to the as-you-type method described above,
 but it has the advantage that it works under more circumstances, e.g. in command-line mode when searching with
-`/` or `?`, and when using the `f` and `t` commands.
-The disadvantages are that you don't see the whole sequence as you're typing it, and no suggestions or partial
-completions are available, thus you need to know the substitutions (see `:help L2U`), and to type them
-correctly in full.
+`/` or `?`, and when using the `f` and `t` commands; plus it works with emojis too.
+The main disadvantage is that you don't see the whole sequence as you're typing it, and you can't fix mistakes
+with backspace, for example.
 Another difference is that there is a timeout like for any other mapping.
+In any case, it is possible to use this method in parallel with the other two methods, they don't interfere.
+So if you have the <kbd>Tab</kbd> mapping (discussed above) activated, you still get to see completions and
+suggestions. If you have the as-you-type substitution active, and you make a mistake, you can simply press
+backspace and keep going, at least in insert mode, and so on.
 
-If you use this method, it is advisable to disable the other two methods, setting both `g:latex_to_unicode_tab`
-and `g:latex_to_unicode_auto` to `0`.
+This feature might with Vim versions lower then 7.4, but it hasn't been tested.
 
 ### LaTeX-to-Unicode on other file types
 
