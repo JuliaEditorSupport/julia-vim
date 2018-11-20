@@ -403,8 +403,8 @@ function! LaTeXtoUnicode#FallbackCallback()
   return
 endfunction
 
-" This is the function which is mapped to <S-Tab> in command-line mode
-function! LaTeXtoUnicode#CmdTab()
+" This is the function that performs the substitution in command-line mode
+function! LaTeXtoUnicode#CmdTab(triggeredbytab)
   " first stage
   " analyse command line
   let col1 = getcmdpos() - 1
@@ -413,6 +413,9 @@ function! LaTeXtoUnicode#CmdTab()
   let b:l2u_singlebslash = (match(l[0:col1-1], '\\$') >= 0)
   " completion not found
   if col0 == -1
+    if a:triggeredbytab
+      call feedkeys("\<Tab>", 'nt') " fall-back to the default <Tab>
+    endif
     return l
   endif
   let base = l[col0 : col1-1]
@@ -428,6 +431,9 @@ function! LaTeXtoUnicode#CmdTab()
     endif
   endfor
   if len(partmatches) == 0
+    if a:triggeredbytab
+      call feedkeys("\<Tab>", 'nt') " fall-back to the default <Tab>
+    endif
     return l
   endif
   " exact matches are replaced with Unicode
@@ -457,8 +463,13 @@ endfunction
 " Setup the L2U tab mapping
 function! s:L2U_SetTab(wait_insert_enter)
   if !b:l2u_cmdtab_set && get(g:, "latex_to_unicode_tab", 1) && b:l2u_enabled
-    cmap <buffer> <S-Tab> <Plug>L2UCmdTab
-    cnoremap <buffer> <Plug>L2UCmdTab <C-\>eLaTeXtoUnicode#CmdTab()<CR>
+    let b:l2u_cmdtab_keys = get(g:, "latex_to_unicode_cmd_mapping", ['<Tab>','<S-Tab>'])
+    if type(b:l2u_cmdtab_keys) != v:t_list
+      let b:l2u_cmdtab_keys = [b:l2u_cmdtab_keys]
+    endif
+    for k in b:l2u_cmdtab_keys
+      exec 'cnoremap <buffer> '.k.' <C-\>eLaTeXtoUnicode#CmdTab('.(k ==? '<Tab>').')<CR>'
+    endfor
     let b:l2u_cmdtab_set = 1
   endif
   if b:l2u_tab_set
@@ -494,7 +505,9 @@ endfunction
 " Revert the LaTeX-to-Unicode tab mapping settings
 function! s:L2U_UnsetTab()
   if b:l2u_cmdtab_set
-    cunmap <buffer> <S-Tab>
+    for k in b:l2u_cmdtab_keys
+      exec 'cunmap <buffer> '.k
+    endfor
     let b:l2u_cmdtab_set = 0
   endif
   if !b:l2u_tab_set

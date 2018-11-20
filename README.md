@@ -26,8 +26,8 @@ Unicode symbols (e.g. `α`). By default, these substitutions must be triggered e
 <kbd>Tab</kbd> key, as in the Julia command line (the REPL); however, an automatic, as-you-type mode can also
 be activated.
 
-On the Vim command line, the feature is activated by pressing <kbd>Shift-Tab</kbd>. This is mostly useful
-when searching the files with the `/` or `?` commands.
+This feature also works in command mode, e.g. when searching the files with the `/` or `?` commands, but the
+as-you-type mode is not available.
 
 By default, this feature is only active when editing Julia files. However, it can be also enabled with
 other file types, and even turned on/off on the fly regardless of the file type.
@@ -59,14 +59,16 @@ if those plug-ins are detected.
 A literal tab can always be forced by using <kbd>CTRL-V</kbd> and then <kbd>Tab</kbd>.
 
 On the Vim command line, e.g. when searching the file with the `/` or `?` commands, the feature is
-activated by <kbd>Shift-Tab</kbd>.
+also activated by <kbd>Tab</kbd>, but falls-back to the Vim built-in behavior if no suitable substitution
+is found: if you had defined a mapping for <kbd>Tab</kbd> in command mode, it will be overridden. This
+can be prevented by choosing a different value for the mapping keys, see the full documentation.
 
 To disable this mapping, you can use the command `:let g:latex_to_unicode_tab = 0`, e.g. by putting
 it into your `.vimrc` file. You can also change this setting from the Vim command-line, but you will
 also need to give the command `:call LaTeXtoUnicode#Init()` for the change to take effect.
 
-Even when the mapping is disabled, the feature is still available via the omnicompletion mechanism,
-i.e. by pressing <kbd>CTRL-X</kbd> and then <kbd>CTRL-O</kbd>.
+Even when the mapping is disabled, the feature is still available (in insert mode) via the
+omnicompletion mechanism, i.e. by pressing <kbd>CTRL-X</kbd> and then <kbd>CTRL-O</kbd>.
 
 To disable the suggestions of partial matches completions, use the command
 `:let g:latex_to_unicode_suggestions = 0`.
@@ -109,7 +111,7 @@ and a LaTeX sequence can unambiguously be identified.
 For example, if you type `a \neq b` the `\neq` will be changed to `≠` right after the space, before you input
 the `b`.
 
-This does not interfere with the <kbd>Tab</kbd> mapping discussed above.
+This does not interfere with the <kbd>Tab</kbd> mapping discussed above. It only works in insert mode.
 
 The `g:latex_to_unicode_auto` setting can also be changed from the Vim command-line, but you will
 also need to give the command `:call LaTeXtoUnicode#Init()` for the change to take effect.

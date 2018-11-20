@@ -47,8 +47,12 @@ This Vim plug-in provides the same functionality, with some extensions:
   - optionally, symbols are substituted on the fly as you type them, see
     |julia-vim-L2U-as-you-type|
 
-The substitution is triggered by the <S-Tab> combination while in command line
-mode, e.g. when searching in a file with the |/| or |?| commands.
+In Vim |Command-line| mode, e.g. when searching with the |/| or |?| commands, the
+default behavior is very similar, but slightly more limited: there are no
+suggestions, and the as-you-type substitutions are not avaliable. By default
+both <Tab> and <S-Tab> are mapped in command-line mode (the latter for
+backward compatibility reasons), but this can be customized if needed, see
+|julia-vim-L2U-cmdmode|.
 
 By default, this feature is only active when editing Julia files. However, it
 can be also enabled with other file types, see |julia-vim-L2U-file-types|, and
@@ -68,9 +72,9 @@ julia-vim plug-in.
 ------------------------------------------------------------------------------
 LATEX TO UNICODE VIA TAB KEY                            *julia-vim-L2U-tab*
 
-Substitution of LaTeX sequences when pressing the <Tab> key in insert mode, or
-the <S-Tab> combination while on the command line, is active by default. Use
-|g:latex_to_unicode_tab| to control it.
+Substitution of LaTeX sequences when pressing the <Tab> key (in |Insert| mode or
+in |Command-line| modes) is active by default. Use |g:latex_to_unicode_tab| to
+control it.
 
 When this feature is active, the julia-vim plug-in creates a mapping for the
 <Tab> key (in |Insert| mode) which takes precedence on any previously defined
@@ -121,6 +125,16 @@ other sequences, e.g. `\ne` is associated with `≠`, but it is also a partial
 match for `\nequiv` (`≢`). By default, if <Tab> finds an exact match performs
 the substitution, but this can be controlled by the |g:latex_to_unicode_eager|
 setting.
+
+Command-line mode                                      *julia-vim-L2U-cmdmode*
+
+In |Command-line| mode, the behavior is largely the same except that both <Tab> and
+<S-Tab> are mapped by default, and the functionality is slightly more limited.
+No suggestions are shown for partial completions. Pre-existsing user-defined
+mappings of <Tab> are overridden, and in case of no L2U matches the fallback
+behavior is the standard Vim one. In order to avoid that, the
+completion can be mapped onto a defferent key combination, see
+|g:latex_to_unicode_cmd_mapping|.
 
 Vim versions lower than 7.4                     *julia-vim-L2U-workaround*
 
@@ -217,10 +231,9 @@ VARIABLES                                         *julia-vim-L2U-variables*
 g:latex_to_unicode_tab
 
                 Determines whether to map LaTeX-to-Unicode substitution to the
-                <Tab> key while in insert mode (and to the <S-Tab> combination
-                for command line mode), see |julia-vim-L2U-tab|. If unspecified,
-                it is on.  You can disable the feature by default by inserting
-                the line
+                <Tab> key while in |Insert| and |Command-line| modes, see
+                |julia-vim-L2U-tab|. If unspecified, it is on. You can disable
+                the feature by default by inserting the line
 >
                     let g:latex_to_unicode_tab = 0
 <
@@ -293,6 +306,18 @@ g:latex_to_unicode_file_types_blacklist
                 |'filetype'| matches the provided pattern (or any of the
                 patterns if a list is provided). By default, it contains an
                 unmatchable pattern, i.e. it is effectively disabled.
+
+                                           *g:latex_to_unicode_cmd_mapping*
+g:latex_to_unicode_cmd_mapping
+
+                Specifies the mapping (or list of mappings) for the
+                substitution in |Command-line| mode. By default, it is
+                `['<Tab>', '<S-Tab>']`, but it can be changed to avoid
+                overriding other user-defined mapping, e.g. to `'<S-Tab>'`
+                (if your terminal suppoorts it) or `'<C-\><Tab>'`.
+                The `'<Tab>'` mapping is special in that it falls back to
+                performing default Vim completions in case no suitable
+                substitutions are found.
 
 ==============================================================================
 FUNCTIONS                                         *julia-vim-L2U-functions*
