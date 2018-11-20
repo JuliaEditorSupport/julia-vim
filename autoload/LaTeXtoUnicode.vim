@@ -19,6 +19,9 @@ function! s:L2U_Setup()
   if !has_key(b:, "l2u_cmdtab_set")
     let b:l2u_cmdtab_set = 0
   endif
+  if !has_key(b:, "l2u_keymap_set")
+    let b:l2u_keymap_set = 0
+  endif
 
   " Did we activate the L2U as-you-type substitutions?
   if !has_key(b:, "l2u_autosub_set")
@@ -600,6 +603,21 @@ function! s:L2U_UnsetAutoSub()
   let b:l2u_autosub_set = 0
 endfunction
 
+function! s:L2U_SetKeymap()
+  if !b:l2u_keymap_set && get(g:, "latex_to_unicode_keymap", 0) && b:l2u_enabled
+    setlocal keymap=latex2unicode
+    let b:l2u_keymap_set = 1
+  endif
+endfunction
+
+function! s:L2U_UnsetKeymap()
+  if !b:l2u_keymap_set
+    return
+  endif
+  setlocal keymap=
+  let b:l2u_keymap_set = 0
+endfunction
+
 " Initialization. Can be used to re-init when global settings have changed.
 function! LaTeXtoUnicode#Init(...)
   let wait_insert_enter = a:0 > 0 ? a:1 : 1
@@ -612,9 +630,11 @@ function! LaTeXtoUnicode#Init(...)
 
   call s:L2U_UnsetTab()
   call s:L2U_UnsetAutoSub()
+  call s:L2U_UnsetKeymap()
 
   call s:L2U_SetTab(wait_insert_enter)
   call s:L2U_SetAutoSub(wait_insert_enter)
+  call s:L2U_SetKeymap()
 endfunction
 
 function! LaTeXtoUnicode#Toggle()

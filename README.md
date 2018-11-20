@@ -24,10 +24,11 @@ The remainder of this README will only give an overview of some of the features:
 This plug-in adds some functionality to substitute LaTeX code sequences (e.g. `\alpha`) with corresponding
 Unicode symbols (e.g. `α`). By default, these substitutions must be triggered explicitly by pressing the
 <kbd>Tab</kbd> key, as in the Julia command line (the REPL); however, an automatic, as-you-type mode can also
-be activated.
+be activated, and a method based on keymap is also available.
 
 This feature also works in command mode, e.g. when searching the files with the `/` or `?` commands, but the
-as-you-type mode is not available.
+as-you-type mode is not available (the keymap-based version is though, and it also works with some Vim
+commands like `f` and `t`).
 
 By default, this feature is only active when editing Julia files. However, it can be also enabled with
 other file types, and even turned on/off on the fly regardless of the file type.
@@ -117,6 +118,20 @@ The `g:latex_to_unicode_auto` setting can also be changed from the Vim command-l
 also need to give the command `:call LaTeXtoUnicode#Init()` for the change to take effect.
 
 This feature is not available with Vim versions lower then 7.4.
+
+### LaTeX-to-Unicode via keymap
+
+A different susbstitution mode based on keymaps can be activated with `:let g:latex_to_unicode_keymap = 1`,
+e.g. by putting it into your `.vimrc` file. This works similarly to the as-you-type method described above,
+but it has the advantage that it works under more circumstances, e.g. in command-line mode when searching with
+`/` or `?`, and when using the `f` and `t` commands.
+The disadvantages are that you don't see the whole sequence as you're typing it, and no suggestions or partial
+completions are available, thus you need to know the substitutions (see `:help L2U`), and to type them
+correctly in full.
+Another difference is that there is a timeout like for any other mapping.
+
+If you use this method, it is advisable to disable the other two methods, setting both `g:latex_to_unicode_tab`
+and `g:latex_to_unicode_auto` to `0`.
 
 ### LaTeX-to-Unicode on other file types
 
