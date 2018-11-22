@@ -464,7 +464,7 @@ endfunction
 function! s:L2U_SetTab(wait_insert_enter)
   if !b:l2u_cmdtab_set && get(g:, "latex_to_unicode_tab", 1) && b:l2u_enabled
     let b:l2u_cmdtab_keys = get(g:, "latex_to_unicode_cmd_mapping", ['<Tab>','<S-Tab>'])
-    if type(b:l2u_cmdtab_keys) != v:t_list
+    if type(b:l2u_cmdtab_keys) != type([]) " avoid using v:t_list for backward compatibility
       let b:l2u_cmdtab_keys = [b:l2u_cmdtab_keys]
     endif
     for k in b:l2u_cmdtab_keys
