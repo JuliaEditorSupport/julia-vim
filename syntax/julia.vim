@@ -221,7 +221,7 @@ syntax match   juliaBaseTypeRange	display "\<\%(Dims\|RangeIndex\|\%(Ordinal\|St
 syntax match   juliaBaseTypeRange06	display "\<Range\>"
 syntax match   juliaBaseTypeRange1011	display "\<\(Abstract\|Lin\)Range\>"
 syntax match   juliaBaseTypeRegex	display "\<Regex\%(Match\)\?\>"
-syntax match   juliaBaseTypeFact	display "\<Factorization\>"
+syntax match   juliaBaseTypeFact	display "\<\%(Factorization\|BunchKaufman\|\%(Cholesky\|QR\)\%(Pivoted\)\?\|\%(Generalized\)\?\%(Eigen\|SVD\|Schur\)\|Hessenberg\|LDLt\|LQ\|LU\)\>"
 syntax match   juliaBaseTypeSort	display "\<\%(Insertion\|\(Partial\)\?Quick\|Merge\)Sort\>"
 syntax match   juliaBaseTypeRound	display "\<Round\%(ingMode\|FromZero\|Down\|Nearest\%(Ties\%(Away\|Up\)\)\?\|ToZero\|Up\)\>"
 syntax match   juliaBaseTypeSpecial	display "\<\%(LocalProcess\|ClusterManager\)\>"
