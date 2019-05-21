@@ -1,6 +1,7 @@
 #!/bin/env julia
 
 const filename = "latex2unicode_utf-8"
+const include_emoji = false # set this to true if you want to keymap empjis as well
 
 # We want to avoid situations in which the user types e.g. \delt and pauses,
 # and the result is "∇t" because "\del" gets recognized and then there is some leftover "t".
@@ -17,10 +18,8 @@ function fix_completions(completions::Dict{String,String})
         n == 0 && continue
         new_completions[input * "<Tab>"] = chars
         for other in longer
-            for j = (l+1):(length(other)-1)
-                haskey(new_completions, other[1:j]) && continue
-                new_completions[other[1:j]] = other[1:j]
-            end
+            add = other[1:(l+1)]
+            get!(new_completions, add, add)
         end
     end
     return new_completions
@@ -97,12 +96,15 @@ open("$filename.vim","w") do f
 
     col_headers = ["\" Tab completion sequence", "Code point", "Character", "Unicode name"]
 
-    latex, code, unicode, desc =
-        table_entries(
-            fix_completions(merge(
+    orig_completions = include_emoji ? merge(
                 REPL.REPLCompletions.latex_symbols,
                 REPL.REPLCompletions.emoji_symbols
-                )),
+                ) :
+                REPL.REPLCompletions.latex_symbols
+
+    latex, code, unicode, desc =
+        table_entries(
+            fix_completions(orig_completions),
             unicode_data()
             )
 
