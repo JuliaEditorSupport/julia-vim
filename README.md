@@ -109,7 +109,7 @@ you will also need to give the command `:call LaTeXtoUnicode#Init()` for the cha
 In this mode, symbols will be substituted as you type, as soon as some extra character appears after the symbol
 and a LaTeX sequence can unambiguously be identified.
 
-For example, if you type `a \neq b` the `\neq` will be changed to `≠` right after the space, before you input
+For example, if you type `a \ne b` the `\ne` will be changed to `≠` right after the space, before you input
 the `b`.
 
 This does not interfere with the <kbd>Tab</kbd> mapping discussed above. It only works in insert mode, and it
