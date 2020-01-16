@@ -24,7 +24,6 @@ License: MIT license  {{{
 CONTENTS					*julia-vim*
 
 Introduction	                    |julia-vim-introduction|
-Chosing Julia version               |julia-vim-version|
 Block-wise movements/objects        |julia-vim-blocks|
   Keyword-oriented movements        |julia-vim-blocks-move|
   Block-oriented movements          |julia-vim-blocks-moveblock|
@@ -50,59 +49,11 @@ The julia-vim plug-in provides:
     just Julia files. See |julia-vim-L2U|.
   - a keymapping |K| to refer julia documents.
 
-This help file documents: 1) how to choose the Julia version for syntax
-highlighting, and 2) the block-wise movements and objects, how they work and
-what variables can be used to enable/disable/tweak them.
+This help file documents: 1) the block-wise movements and objects, how they
+work and what variables can be used to enable/disable/tweak them; 2) The
+documentation lookup facility; 3) Some extra functions and customization
+options.
 The LaTeX-to-Unicode facilities are documented in |julia-vim-L2U|.
-
-==============================================================================
-CHOOSING JULIA VERSION                                   *julia-vim-version*
-
-By default, the syntax highlighting is based on the current Julia release
-(version 1.0 at the time of writing). The plugin supports the previous stable
-version and the development version as well, and allows to switch between
-them. (Note that the plugin does not differentiate between 0.7 and 1.0.)
-
-                                                   *g:default_julia_version*
-g:default_julia_version
-
-                Determines the default Julia version to use when opening a
-                Julia file. The default is `"current"`, meaning the latest
-                stable release. Allowed values are: `"current"` (or
-                `"release"`), `"previous"` (or `"legacy"`), `"next"` (or
-                `"devel"`), or numeric values (`"0.6"`, `"1.0"`, `"1.1"`). You
-                would normally set this variable in your |.vimrc| file, e.g.:
->
-                    let g:default_julia_version = "devel"
-<
-
-                                                *julia#set_syntax_version()*
-julia#set_syntax_version(`julia_version`)
-
-                This function allows to change the syntax highlighting for the
-                current buffer. The argument is the same as for
-                |g:default_julia_version|. If you switch often between projects
-                developed using different versions of Julia, you may want to
-                create a mapping to switch rapidly between them (you can read
-                out the currently used version from the variable
-                `b:julia_syntax_version`, which uses a numeric scheme, i.e.
-                `6` for version `0.6`, `10` for `1.0` etc).
-
-                                       *g:julia_syntax_highlight_deprecated*
-g:julia_syntax_highlight_deprecated
-
-                Determines whether to highlight deprecated syntax, according
-                to the Julia version in use (see |g:default_julia_verison|).
-                Default: off (set to `0`).
-
-                                          *julia#toggle_deprecated_syntax()*
-julia#toggle_deprecated_syntax()
-
-                This function allows to switch on or off the highlighting of
-                deprecaed syntax (see |g:julia_syntax_highlight_deprecated|).
-                The current status is stored in the variable
-                `b:julia_syntax_highlight_deprecated`.
-
 
 ==============================================================================
 BLOCK-WISE MOVEMENTS AND BLOCK TEXT OBJECTS              *julia-vim-blocks*
