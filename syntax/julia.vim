@@ -242,7 +242,7 @@ syntax match   juliaComplexUnit		display	contained "\<im\>"
 
 exec 'syntax match   juliaOperator	"' . s:operators . '"'
 syntax match   juliaRangeOperator	display ":"
-exec 'syntax region  juliaTernaryRegion	matchgroup=juliaTernaryOperator start="\s\zs?\ze\s" skip="\%(:\(:\|[^:[:space:]'."'".'"({[]\+\s*\ze:\)\|^\s*:\|\%(?\s*\)\@'.s:d(6).'<=:(\)" end=":" contains=@juliaExpressions,juliaErrorSemicol'
+exec 'syntax region  juliaTernaryRegion	matchgroup=juliaTernaryOperator start="\s\zs?\ze\s" skip="\%(:\(:\|[^:[:space:]'."'".'"({[]\+\s*\ze:\)\|\%(?\s*\)\@'.s:d(6).'<=:(\)" end=":" contains=@juliaExpressions,juliaErrorSemicol'
 
 let s:interp_dollar = '\([' . s:nonidS_chars . s:uniop_chars . s:binop_chars . '!?]\|^\)\@'.s:d(1).'<=\$'
 
