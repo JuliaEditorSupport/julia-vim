@@ -244,7 +244,6 @@ function! LaTeXtoUnicode#omnifunc(findstart, base)
     endif
     let b:l2u_in_fallback = 0
     " set info for the callback
-    let b:l2u_tab_completing = 1
     let b:l2u_found_completion = 1
     " analyse current line
     let col1 = col('.')
@@ -373,6 +372,7 @@ function! LaTeXtoUnicode#Tab()
   endif
   " reset the in_fallback info
   let b:l2u_in_fallback = 0
+  let b:l2u_tab_completing = 1
   " temporary change to completeopt to use the `longest` setting, which is
   " probably the only one which makes sense given that the goal of the
   " completion is to substitute the final string
@@ -381,7 +381,8 @@ function! LaTeXtoUnicode#Tab()
   set completeopt-=noinsert
   " invoke omnicompletion; failure to perform LaTeX-to-Unicode completion is
   " handled by the CompleteDone autocommand.
-  return "\<C-X>\<C-O>"
+  call feedkeys("\<C-X>\<C-O>", 'n')
+  return ""
 endfunction
 
 " This function is called at every CompleteDone event, and is meant to handle
