@@ -248,8 +248,8 @@ regardless of the |'filetype'| of the file you're editing, using the functions
 |LaTeXtoUnicode#Enable()|, |LaTeXtoUnicode#Disable()|, |LaTeXtoUnicode#Toggle()|.
 For example, you could use a mapping like:
 >
-    noremap <expr> <F7> LaTeXtoUnicode#Toggle()
-    inoremap <expr> <F7> LaTeXtoUnicode#Toggle()
+    noremap <F7> <Cmd>call LaTeXtoUnicode#Toggle()<CR>
+    inoremap <F7> <Cmd>call LaTeXtoUnicode#Toggle()<CR>
 <
 and then use the <F7> key to quickly switch the functionality on and off as
 needed (the first mapping is for |Normal| mode, the second for |Insert| mode).
