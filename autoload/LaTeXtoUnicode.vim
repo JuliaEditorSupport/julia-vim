@@ -420,7 +420,7 @@ function! LaTeXtoUnicode#FallbackCallback()
 endfunction
 
 " This is the function that performs the substitution in command-line mode
-function! LaTeXtoUnicode#CmdTab(triggeredbytab)
+function! LaTeXtoUnicode#CmdTab(trigger)
   " first stage
   " analyse command line
   let col1 = getcmdpos() - 1
@@ -429,10 +429,12 @@ function! LaTeXtoUnicode#CmdTab(triggeredbytab)
   let b:l2u_singlebslash = (match(l[0:col1-1], '\\$') >= 0)
   " completion not found
   if col0 == -1
-    if a:triggeredbytab
-      call feedkeys("\<Tab>", 'nt') " fall-back to the default <Tab>
+    if a:trigger == &wildchar
+      call feedkeys(nr2char(a:trigger), 'nt') " fall-back to the default wildchar
+    elseif a:trigger == char2nr("\<S-Tab>")
+      call feedkeys("\<S-Tab>", 'nt') " fall-back to the default <S-Tab>
     endif
-    return l
+    return ''
   endif
   let base = l[col0 : col1-1]
   " search for matches
@@ -441,39 +443,28 @@ function! LaTeXtoUnicode#CmdTab(triggeredbytab)
   for k in keys(g:l2u_symbols_dict)
     if k ==# base
       let exact_match = 1
-    endif
-    if len(k) >= len(base) && k[0 : len(base)-1] ==# base
+      break
+    elseif len(k) >= len(base) && k[0 : len(base)-1] ==# base
       call add(partmatches, k)
     endif
   endfor
-  if len(partmatches) == 0
-    if a:triggeredbytab
-      call feedkeys("\<Tab>", 'nt') " fall-back to the default <Tab>
+  if !exact_match && len(partmatches) == 0
+    " no matches, call fallbacks
+    if a:trigger == &wildchar
+      call feedkeys(nr2char(a:trigger), 'nt') " fall-back to the default wildchar
+    elseif a:trigger == char2nr("\<S-Tab>")
+      call feedkeys("\<S-Tab>", 'nt') " fall-back to the default <S-Tab>
     endif
-    return l
-  endif
-  " exact matches are replaced with Unicode
-  if exact_match
+  elseif exact_match
+    " exact matches are replaced with Unicode
     let unicode = g:l2u_symbols_dict[base]
-    if col0 > 0
-      let pre = l[0 : col0 - 1]
-    else
-      let pre = ''
-    endif
-    let posdiff = col1-col0 - len(unicode)
-    call setcmdpos(col1 - posdiff + 1)
-    return pre . unicode . l[col1 : -1]
-  endif
-  " no exact match: complete with the longest common prefix
-  let common = s:L2U_longest_common_prefix(partmatches)
-  if col0 > 0
-    let pre = l[0 : col0 - 1]
+    call feedkeys(repeat("\b", len(base)) . unicode, 'nt')
   else
-    let pre = ''
+    " no exact match: complete with the longest common prefix
+    let common = s:L2U_longest_common_prefix(partmatches)
+    call feedkeys(common[len(base):], 'nt')
   endif
-  let posdiff = col1-col0 - len(common)
-  call setcmdpos(col1 - posdiff + 1)
-  return pre . common . l[col1 : -1]
+  return ''
 endfunction
 
 " Setup the L2U tab mapping
@@ -484,7 +475,8 @@ function! s:L2U_SetTab(wait_insert_enter)
       let b:l2u_cmdtab_keys = [b:l2u_cmdtab_keys]
     endif
     for k in b:l2u_cmdtab_keys
-      exec 'cnoremap <buffer> '.k.' <C-\>eLaTeXtoUnicode#CmdTab('.(k ==? '<Tab>').')<CR>'
+      exec 'let trigger = char2nr("'.(k[0] == '<' ? '\' : '').k.'")'
+      exec 'cnoremap <buffer><expr> '.k.' LaTeXtoUnicode#CmdTab('.trigger.')'
     endfor
     let b:l2u_cmdtab_set = 1
   endif
