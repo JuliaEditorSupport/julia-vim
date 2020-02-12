@@ -11,6 +11,9 @@ function! s:L2U_Setup()
   if !has_key(b:, "l2u_enabled")
     let b:l2u_enabled = 0
   endif
+  if !has_key(b:, "l2u_autodetect_enable")
+    let b:l2u_autodetect_enable = 1
+  endif
 
   " Did we install the L2U tab mappings?
   if !has_key(b:, "l2u_tab_set")
@@ -93,23 +96,29 @@ function! LaTeXtoUnicode#Refresh()
 
   call s:L2U_Setup()
 
+  " skip if manually overridden
+  if !b:l2u_autodetect_enable
+    return
+  endif
+
   " by default, LaTeX-to-Unicode is only active on julia files
   let file_types = s:L2U_file_type_regex(get(g:, "latex_to_unicode_file_types", "julia"))
   let file_types_blacklist = s:L2U_file_type_regex(get(g:, "latex_to_unicode_file_types_blacklist", "$^"))
 
   if match(&filetype, file_types) < 0 || match(&filetype, file_types_blacklist) >= 0
     if b:l2u_enabled
-      call LaTeXtoUnicode#Disable()
+      call LaTeXtoUnicode#Disable(1)
     else
       return
     endif
   elseif !b:l2u_enabled
-    call LaTeXtoUnicode#Enable()
+    call LaTeXtoUnicode#Enable(1)
   endif
 
 endfunction
 
-function! LaTeXtoUnicode#Enable()
+function! LaTeXtoUnicode#Enable(...)
+  let auto_set = a:0 > 0 ? a:1 : 0
 
   if b:l2u_enabled
     return
@@ -118,6 +127,7 @@ function! LaTeXtoUnicode#Enable()
   call s:L2U_ResetLastCompletionInfo()
 
   let b:l2u_enabled = 1
+  let b:l2u_autodetect_enable = auto_set
 
   " If we're editing the first file upon opening vim, this will only init the
   " command line mode mapping, and the full initialization will be performed by
@@ -130,11 +140,13 @@ function! LaTeXtoUnicode#Enable()
 
 endfunction
 
-function! LaTeXtoUnicode#Disable()
+function! LaTeXtoUnicode#Disable(...)
+  let auto_set = a:0 > 0 ? a:1 : 0
   if !b:l2u_enabled
     return
   endif
   let b:l2u_enabled = 0
+  let b:l2u_autodetect_enable = auto_set
   call LaTeXtoUnicode#Init()
   return
 endfunction
