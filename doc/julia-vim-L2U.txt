@@ -248,16 +248,16 @@ regardless of the |'filetype'| of the file you're editing, using the functions
 |LaTeXtoUnicode#Enable()|, |LaTeXtoUnicode#Disable()|, |LaTeXtoUnicode#Toggle()|.
 For example, you could use a mapping like:
 >
-    noremap <F7> <Cmd>call LaTeXtoUnicode#Toggle()<CR>
-    inoremap <F7> <Cmd>call LaTeXtoUnicode#Toggle()<CR>
+    noremap <expr> <F7> LaTeXtoUnicode#Toggle()
+    noremap! <expr> <F7> LaTeXtoUnicode#Toggle()
 <
 and then use the <F7> key to quickly switch the functionality on and off as
-needed (the first mapping is for |Normal| mode, the second for |Insert| mode).
+needed (see |noremap| and |noremap!|).
 
-NOTE: these functions are different from the variables |g:latex_to_unicode_tab|
-and |g:latex_to_unicode_auto|: the functions enable/disable the functionality
-as a whole, while the variables control individual features (tab substitution
-and auto substitution).
+NOTE: these functions are different from the variables |g:latex_to_unicode_tab|,
+|g:latex_to_unicode_auto| and |g:latex_to_unicode_keymap|: the functions
+enable/disable the functionality as a whole, while the variables control
+individual features (tab, auto and keymap substitution).
 
 ==============================================================================
 VARIABLES                                         *julia-vim-L2U-variables*

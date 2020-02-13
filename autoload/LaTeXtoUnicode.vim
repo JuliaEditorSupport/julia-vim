@@ -93,12 +93,11 @@ endfunction
 " Each time the filetype changes, we may need to enable or
 " disable the LaTeX-to-Unicode functionality
 function! LaTeXtoUnicode#Refresh()
-
   call s:L2U_Setup()
 
   " skip if manually overridden
   if !b:l2u_autodetect_enable
-    return
+    return ''
   endif
 
   " by default, LaTeX-to-Unicode is only active on julia files
@@ -109,19 +108,18 @@ function! LaTeXtoUnicode#Refresh()
     if b:l2u_enabled
       call LaTeXtoUnicode#Disable(1)
     else
-      return
+      return ''
     endif
   elseif !b:l2u_enabled
     call LaTeXtoUnicode#Enable(1)
   endif
-
 endfunction
 
 function! LaTeXtoUnicode#Enable(...)
   let auto_set = a:0 > 0 ? a:1 : 0
 
   if b:l2u_enabled
-    return
+    return ''
   end
 
   call s:L2U_ResetLastCompletionInfo()
@@ -135,20 +133,18 @@ function! LaTeXtoUnicode#Enable(...)
   " Otherwise, if we're opening a file from within a running vim session, this
   " will actually initialize all the LaTeX-to-Unicode substitutions.
   call LaTeXtoUnicode#Init()
-
-  return
-
+  return ''
 endfunction
 
 function! LaTeXtoUnicode#Disable(...)
   let auto_set = a:0 > 0 ? a:1 : 0
   if !b:l2u_enabled
-    return
+    return ''
   endif
   let b:l2u_enabled = 0
   let b:l2u_autodetect_enable = auto_set
   call LaTeXtoUnicode#Init()
-  return
+  return ''
 endfunction
 
 " Translate old options to their new equivalents
@@ -640,6 +636,7 @@ function! LaTeXtoUnicode#Init(...)
   call s:L2U_SetTab(wait_insert_enter)
   call s:L2U_SetAutoSub(wait_insert_enter)
   call s:L2U_SetKeymap()
+  return ''
 endfunction
 
 function! LaTeXtoUnicode#Toggle()
@@ -651,5 +648,5 @@ function! LaTeXtoUnicode#Toggle()
     call LaTeXtoUnicode#Enable()
     echo "LaTeX-to-Unicode enabled"
   endif
-  return
+  return ''
 endfunction
