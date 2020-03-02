@@ -197,7 +197,7 @@ uses |keymap| to generate the mappings. This has the advantage that it works
 in more circumstances, e.g. in |Command-line| mode or when searching within a
 line with |f| or |t| (since it uses |language-mapping| underneath). It can
 also be easily turned on or off like any other keymap (see |i_CTRL-^| and
-|c_CTRL-^|). It also works with emojis.
+|c_CTRL-^|). Like the as-you-type fature, it doesn't work with emojis.
 The disadvantage is that you don't see the whole sequence as you're typing
 it, and you can't fix mistakes with backspace, for example.
 Another difference is that there is a |timeout| like for any other mapping.
@@ -365,7 +365,8 @@ g:latex_to_unicode_cmd_mapping
                 `['<Tab>', '<S-Tab>']`, but it can be changed to avoid
                 overriding other user-defined mapping, e.g. to `'<S-Tab>'`
                 (if your terminal suppoorts it) or `'<C-\><Tab>'`.
-                The `'<Tab>'` mapping is special in that it falls back to
+                The `'<Tab>'` (or to be more precise the |wildchar| key) and
+                `'<S-Tab>'` mappings are special in that they fall back to
                 performing default Vim completions in case no suitable
                 substitutions are found.
 

@@ -17,7 +17,6 @@ The remainder of this README will only give an overview of some of the features:
 
 * [Latex-to-Unicode substitutions](#latex-to-unicode-substitutions)
 * [Block-wise movements and block text-objects](#block-wise-movements-and-block-text-objects)
-* [Changing syntax highlighting depending on the Julia version](#changing-syntax-highlighting-depending-on-the-julia-version)
 
 ## LaTeX-to-Unicode substitutions
 
@@ -122,7 +121,7 @@ This feature is not available with Vim versions lower then 7.4.
 A different susbstitution mode based on keymaps can be activated with `:let g:latex_to_unicode_keymap = 1`,
 e.g. by putting it into your `.vimrc` file. This works similarly to the as-you-type method described above,
 but it has the advantage that it works under more circumstances, e.g. in command-line mode when searching with
-`/` or `?`, and when using the `f` and `t` commands; plus it works with emojis too.
+`/` or `?`, and when using the `f` and `t` commands.
 The main disadvantage is that you don't see the whole sequence as you're typing it, and you can't fix mistakes
 with backspace, for example.
 Another difference is that there is a timeout like for any other mapping.
@@ -151,7 +150,7 @@ the mappings:
 
 ```
 noremap <expr> <F7> LaTeXtoUnicode#Toggle()
-inoremap <expr> <F7> LaTeXtoUnicode#Toggle()
+noremap! <expr> <F7> LaTeXtoUnicode#Toggle()
 ```
 
 and then use the <kbd>F7</kbd> key to quickly turn the feature on and off.
