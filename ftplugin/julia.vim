@@ -37,7 +37,7 @@ if exists("loaded_matchit")
   " note: the following regex not only recognizes macros, but also local/global keywords.
   " the purpose is recognizing things like `@inline myfunction()`
   " or `global myfunction(...)` etc, for matchit and block movement functionality
-  let s:macro_regex = '\%(@\%(#\@!\S\)\+\|\<\%(local\|global\)\)\s\+'
+  let s:macro_regex = '\%(@\%([#(]\@!\S\)\+\|\<\%(local\|global\)\)\s\+'
   let s:nomacro = '\%(' . s:macro_regex . '\)\@<!'
   let s:yesmacro = s:nomacro . '\%('. s:macro_regex . '\)\+'
   let b:julia_begin_keywordsm = '\%(' . s:yesmacro . b:julia_begin_keywords . '\)\|'
