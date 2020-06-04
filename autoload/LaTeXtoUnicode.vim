@@ -235,17 +235,17 @@ function! s:L2U_longest_common_prefix(partmatches)
   return common
 endfunction
 
-" Omnicompletion function. Besides the usual two-stage omnifunc behaviour,
+" Completion function. Besides the usual two-stage completefunc behaviour,
 " it has the following peculiar features:
 "  *) keeps track of the previous completion attempt
 "  *) sets some info to be used by the fallback function
 "  *) either returns a list of completions if a partial match is found, or a
 "     Unicode char if an exact match is found
 "  *) forces its way out of completion mode through a hack in some cases
-function! LaTeXtoUnicode#omnifunc(findstart, base)
+function! LaTeXtoUnicode#completefunc(findstart, base)
   if a:findstart
     " first stage
-    " avoid infinite loop if the fallback happens to call omnicompletion
+    " avoid infinite loop if the fallback happens to call completion
     if b:l2u_in_fallback
       let b:l2u_in_fallback = 0
       return -3
@@ -387,9 +387,9 @@ function! LaTeXtoUnicode#Tab()
   let b:l2u_backup_commpleteopt = &completeopt
   set completeopt+=longest
   set completeopt-=noinsert
-  " invoke omnicompletion; failure to perform LaTeX-to-Unicode completion is
+  " invoke completion; failure to perform LaTeX-to-Unicode completion is
   " handled by the CompleteDone autocommand.
-  call feedkeys("\<C-X>\<C-O>", 'n')
+  call feedkeys("\<C-X>\<C-U>", 'n')
   return ""
 endfunction
 
@@ -487,11 +487,11 @@ function! s:L2U_SetTab(wait_insert_enter)
     return
   endif
 
-  " Backup the previous omnifunc (the check is probably not really needed)
-  if get(b:, "prev_omnifunc", "") != "LaTeXtoUnicode#omnifunc"
-    let b:prev_omnifunc = &omnifunc
+  " Backup the previous completefunc (the check is probably not really needed)
+  if get(b:, "prev_completefunc", "") != "LaTeXtoUnicode#completefunc"
+    let b:prev_completefunc = &completefunc
   endif
-  setlocal omnifunc=LaTeXtoUnicode#omnifunc
+  setlocal completefunc=LaTeXtoUnicode#completefunc
 
   call s:L2U_SetFallbackMapping('<Tab>', s:l2u_fallback_trigger)
   imap <buffer> <Tab> <Plug>L2UTab
@@ -517,7 +517,7 @@ function! s:L2U_UnsetTab()
   if !b:l2u_tab_set
     return
   endif
-  exec "setlocal omnifunc=" . get(b:, "prev_omnifunc", "")
+  exec "setlocal completefunc=" . get(b:, "prev_completefunc", "")
   iunmap <buffer> <Tab>
   if empty(maparg("<Tab>", "i"))
     call s:L2U_SetFallbackMapping(s:l2u_fallback_trigger, '<Tab>')

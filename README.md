@@ -68,7 +68,7 @@ it into your `.vimrc` file. You can also change this setting from the Vim comman
 also need to give the command `:call LaTeXtoUnicode#Init()` for the change to take effect.
 
 Even when the mapping is disabled, the feature is still available (in insert mode) via the
-omnicompletion mechanism, i.e. by pressing <kbd>CTRL-X</kbd> and then <kbd>CTRL-O</kbd>.
+completion mechanism, i.e. by pressing <kbd>CTRL-X</kbd> and then <kbd>CTRL-U</kbd>.
 
 To disable the suggestions of partial matches completions, use the command
 `:let g:latex_to_unicode_suggestions = 0`.
@@ -88,12 +88,12 @@ substitution to Unicode.
 #### Using this feature on Vim versions lower than 7.4
 
 The automatic remapping of the <kbd>Tab</kbd> key is not performed if Vim version is lower than 7.4. However, the
-functionality can still be used via the omnicompletion mechanism, i.e. by using <kbd>CTRL-X</kbd><kbd>CTRL-O</kbd>. You can
+functionality can still be used via the completion mechanism, i.e. by using <kbd>CTRL-X</kbd><kbd>CTRL-U</kbd>. You can
 map this to some more convenient key combination, e.g. you may want to add something like this line to your
 `.vimrc` file:
 
 ```
-inoremap <C-Tab> <C-X><C-O>
+inoremap <C-Tab> <C-X><C-U>
 ```
 
 This would map the functionality to <kbd>CTRL-Tab</kbd>. However, if you try to map this to <kbd>Tab</kbd>, you'd only be
@@ -139,7 +139,7 @@ the variable `g:latex_to_unicode_file_types` to specify for which file types thi
 The variable must be set to a string containing a pattern (a regular expression) which matches the desired file
 types, or to a list of such patterns. For example, to activate the feature on all file types, you could put
 `let g:latex_to_unicode_file_types = ".*"` in your `.vimrc` file.
-Be aware, however, that enabling the functionality overrides the `omnifunc` setting for that file type.
+Be aware, however, that enabling the functionality overrides the `completefunc` setting.
 
 ### Enabling and disabling the LaTeX-to-Unicode functionality
 

@@ -110,8 +110,8 @@ and then pressing <Tab>, results in:
     1 + α
 <
 
-This feature is associated with 'omnifunc' completion, and therefore can
-always be accessed via CTRL-X CTRL-O, even when |g:latex_to_unicode_tab| is 0.
+This feature is associated with 'completefunc' completion, and therefore can
+always be accessed via CTRL-X CTRL-U, even when |g:latex_to_unicode_tab| is 0.
 
 A literal <Tab> key can always be entered by using CTRL-V before <Tab> (see
 |i_CTRL-V|).
@@ -154,11 +154,11 @@ the behavior falls back to the standard Vim command-line completion.
 Vim versions lower than 7.4                     *julia-vim-L2U-workaround*
 
 The <Tab> key remapping is not performed by default with Vim versions lower
-than 7.4. However, the functionality is still available via onmicompletion,
-which is accessible by the CTRL-X CTRL-O key combination. You can map some
-other key combination to this by adding something like
+than 7.4. However, the functionality is still available via user-defined
+completion, which is accessible by the CTRL-X CTRL-U key combination. You
+can map some other key combination to this by adding something like
 >
-  inoremap <C-Tab> <C-X><C-O>
+  inoremap <C-Tab> <C-X><C-U>
 <
 in your |.vimrc| file. If you'd map <Tab> directly, then you'd need to use
 CTRL-V <Tab> to insert a literal <Tab>.
@@ -235,10 +235,10 @@ in all cases except for Python and untyped files, you would use:
     let g:latex_to_unicode_file_types_blacklist = ["python", ""]
 <
 
-NOTE: enabling the functionality will override the |'omnifunc'| setting, which
-can be undesirable, and interfere with plug-ins for different file types. In
-any case, the previous |'omnifunc'| setting is restored when the functionality
-is disabled, see |julia-vim-L2U-enable-disable|.
+NOTE: enabling the functionality will override the |'completefunc'| setting,
+which can be undesirable, and interfere with plug-ins for different file types.
+In any case, the previous |'completefunc'| setting is restored when the
+functionality is disabled, see |julia-vim-L2U-enable-disable|.
 
 ------------------------------------------------------------------------------
 ENABLING AND DISABLING LATEX TO UNICODE      *julia-vim-L2U-enable-disable*
@@ -275,7 +275,7 @@ g:latex_to_unicode_tab
                 in your |.vimrc| file. You can change this setting at any moment
                 while editing, but you need to invoke |LaTeXtoUnicode#Init()|
                 for the change to take effect.
-                
+
                                            *g:latex_to_unicode_suggestions*
 g:latex_to_unicode_suggestions
 
@@ -290,7 +290,7 @@ g:latex_to_unicode_suggestions
 
                 This variable can be set at any time, changes will immediately
                 take effect.
-                
+
                                                  *g:latex_to_unicode_eager*
 g:latex_to_unicode_eager
 
@@ -308,7 +308,7 @@ g:latex_to_unicode_eager
                 This variable can be set at any time, changes will immediately
                 take effect. When |g:latex_to_unicode_suggestions| is `0`,
                 this setting has no effect (it's like if it was always on).
-                
+
                                                   *g:latex_to_unicode_auto*
 g:latex_to_unicode_auto
 
@@ -393,8 +393,8 @@ LaTeXtoUnicode#Toggle()
                 |g:latex_to_unicode_file_types| and
                 |g:latex_to_unicode_file_types_blacklist|. See
                 |julia-vim-L2U-enable-disable|. Note that LaTeXtoUnicode#Enable()
-                will override the |'omnifunc'| definition, if present. However,
-                LaTeXtoUnicode#Disable() will restore it.
+                will override the |'completefunc'| definition, if present.
+                However, LaTeXtoUnicode#Disable() will restore it.
                 These functions implicitly invoke |LaTeXtoUnicode#Init()|.
 
 
