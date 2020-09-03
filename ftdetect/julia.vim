@@ -8,11 +8,12 @@ endif
 autocmd BufRead,BufNewFile *.jl      set filetype=julia
 
 autocmd FileType *                   call LaTeXtoUnicode#Refresh()
+autocmd BufNew *                     call LaTeXtoUnicode#Refresh()
 autocmd BufEnter *                   call LaTeXtoUnicode#Refresh()
 autocmd CmdwinEnter *                call LaTeXtoUnicode#Refresh()
 
 " This autocommand is used to postpone the first initialization of LaTeXtoUnicode as much as possible,
-" by calling LaTeXtoUnicode#SetTab amd LaTeXtoUnicode#SetAutoSub only at InsertEnter or later
+" by calling LaTeXtoUnicode#SetTab and LaTeXtoUnicode#SetAutoSub only at InsertEnter or later
 function! s:L2UTrigger()
   augroup L2UInit
     autocmd!
