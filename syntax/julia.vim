@@ -146,8 +146,8 @@ exec 'syntax region  juliaCatchBlock		matchgroup=juliaException transparent cont
 exec 'syntax region  juliaFinallyBlock	matchgroup=juliaException transparent contained start="'.s:nodot.'\<finally\>" end="'.s:nodot.'\<end\>"me=s-1 contains=@juliaExpressions'
 exec 'syntax match   juliaTypedef		"'.s:nodot.'\<\%(abstract\|typealias\|bitstype\)\>"'
 " AbstractBlock needs to come after to take precedence
-exec 'syntax region  juliaAbstractBlock	matchgroup=juliaBlKeyword start="'.s:nodot.'\<abstract type\>" end="'.s:nodot.'\<end\>" fold contains=@juliaExpressions'
-exec 'syntax region  juliaPrimitiveBlock	matchgroup=juliaBlKeyword start="'.s:nodot.'\<primitive type\>" end="'.s:nodot.'\<end\>" fold contains=@juliaExpressions'
+exec 'syntax region  juliaAbstractBlock	matchgroup=juliaBlKeyword start="'.s:nodot.'\<abstract\s\+type\>" end="'.s:nodot.'\<end\>" fold contains=@juliaExpressions'
+exec 'syntax region  juliaPrimitiveBlock	matchgroup=juliaBlKeyword start="'.s:nodot.'\<primitive\s\+type\>" end="'.s:nodot.'\<end\>" fold contains=@juliaExpressions'
 
 exec 'syntax region  juliaComprehensionFor	matchgroup=juliaComprehensionFor transparent contained start="\%([^[:space:],;:({[]\_s*\)\@'.s:d(80).'<=\<for\>" end="\ze[]);]" contains=@juliaExpressions,juliaComprehensionIf,juliaComprehensionFor'
 exec 'syntax match   juliaComprehensionIf	contained "'.s:nodot.'\<if\>"'
