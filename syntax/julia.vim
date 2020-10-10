@@ -124,7 +124,7 @@ syntax region  juliaSqBraIdxBlock	matchgroup=juliaParDelim start="\[" end="\]" c
 exec 'syntax region  juliaSqBraBlock	matchgroup=juliaParDelim start="\%(^\|\s\|' . s:operators . '\)\@'.s:d(3).'<=\[" end="\]" contains=@juliaExpressions,juliaComprehensionFor,juliaSymbolS,juliaQuotedParBlockS,juliaQuotedQMarkParS'
 syntax region  juliaCurBraBlock		matchgroup=juliaParDelim start="{" end="}" contains=@juliaExpressions
 
-exec 'syntax match   juliaKeyword		display "'.s:nodot.'\<\%(return\|local\|global\|import\%(all\)\?\|export\|using\|const\|where\)\>"'
+exec 'syntax match   juliaKeyword		display "'.s:nodot.'\<\%(return\|local\|global\|import\|export\|using\|const\|where\)\>"'
 syntax match   juliaInfixKeyword	display "\%(=\s*\)\@<!\<\%(in\|isa\)\>\S\@!\%(\s*=\)\@!"
 exec 'syntax match   juliaRepKeyword		display "'.s:nodot.'\<\%(break\|continue\)\>"'
 exec 'syntax region  juliaConditionalBlock	matchgroup=juliaConditional start="'.s:nodot.'\<if\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions,juliaConditionalEIBlock,juliaConditionalEBlock fold'
