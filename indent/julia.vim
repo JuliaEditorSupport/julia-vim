@@ -270,7 +270,7 @@ endfunction
 
 function IsInDocString(lnum)
   let stack = map(synstack(a:lnum, 1), 'synIDattr(v:val, "name")')
-  call filter(stack, 'v:val =~# "\\<juliaDocString\\>"')
+  call filter(stack, 'v:val =~# "\\<juliaDocString\\(Delim\\)\\?\\>"')
   return len(stack) > 0
 endfunction
 
