@@ -398,34 +398,36 @@ function GetJuliaIndent()
 
   " Additional special case: multiline import/using/export statements
 
+  let prevline = getline(lnum)
   " Are we in a multiline import/using/export statement, right below the
   " opening line?
   if IsInContinuationImportLine(v:lnum) && !IsInContinuationImportLine(lnum)
     if get(g:, 'julia_indent_align_import', 1)
       " if the opening line has a colon followed by non-comments, use it as
       " reference point
-      let cind = JuliaMatch(lnum, getline(lnum), ':', indent(lnum))
+      let cind = JuliaMatch(lnum, prevline, ':', indent(lnum))
       " echo "cind=".string(cind) | sleep 1
       if cind >= 0
-        let nonwhiteind = JuliaMatch(lnum, getline(lnum), '\S', cind+1)
+        let nonwhiteind = JuliaMatch(lnum, prevline, '\S', cind+1)
         if nonwhiteind >= 0
-          " return match(getline(lnum), '\S', cind+1) " a bit overkill...
+          " return match(prevline, '\S', cind+1) " a bit overkill...
           return cind + 2
         endif
       else
-        " if the opening line is not a naxed import/using/export statement, use
+        " if the opening line is not a naked import/using/export statement, use
         " it as reference
-        let iind = JuliaMatch(lnum, getline(lnum), '\<import\|using\|export\>', indent(lnum))
+        let iind = JuliaMatch(lnum, prevline, '\<import\|using\|export\>', indent(lnum))
         if iind >= 0
           " assuming whitespace after using... so no `using(XYZ)` please!
-          let nonwhiteind = JuliaMatch(lnum, getline(lnum), '\S', iind+6)
+          let nonwhiteind = JuliaMatch(lnum, prevline, '\S', iind+6)
           if nonwhiteind >= 0
-            return match(getline(lnum), '\S', iind+6)
+            return match(prevline, '\S', iind+6)
           endif
         endif
       endif
     endif
     let ind += shiftwidth()
+
   " Or did we just close a multiline import/using/export statement?
   elseif !IsInContinuationImportLine(v:lnum) && IsInContinuationImportLine(lnum)
     " find the starting line of the statement
