@@ -347,7 +347,7 @@ julia#function_assign2block()
                 statements are removed; if the result is empty, `nothing` is
                 substituted. Leading macros (e.g. `@inline` or `@compat`) are
                 recognized and preserved by the transformation.
-                
+
                 In order to make this functionality practical, it is advisable
                 to map it to some key combination, e.g.:
 >
@@ -384,6 +384,30 @@ g:julia_highlight_operators
                 Determines whether to apply syntax highlighting to operators.
                 Default: on (set to `1`).
 
+                                              *g:julia_indent_align_import*
+g:julia_indent_align_import
+
+                In a multi-line import/using/export statment, the lines after
+                the first one use some special alignment rules by default,
+                e.g.:
+>
+                import X: one,
+                          two,
+                          three
+                export four,
+                       five,
+                       six
+<
+                When `g:julia_indent_align_import` is `0` instead, the usual
+                indentation is used:
+>
+                import X: one,
+                    two,
+                    three
+                export four,
+                    five,
+                    six
+<
 
 ==============================================================================
 ABOUT                                                     *julia-vim-about*
