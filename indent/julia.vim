@@ -19,7 +19,7 @@ if exists("*GetJuliaIndent")
   finish
 endif
 
-let s:skipPatterns = '\<julia\%(Comprehension\%(For\|If\)\|RangeKeyword\|Comment[LM]\|\%([bsv]\|ip\|big\|MIME\|Shell\|Printf\|Doc\)\=String\|RegEx\|SymbolS\?\)\>'
+let s:skipPatterns = '\<julia\%(Comprehension\%(For\|If\)\|RangeKeyword\|Comment\%([LM]\|Delim\)\|\%([bsv]\|ip\|big\|MIME\|Shell\|Printf\|Doc\)\=String\|RegEx\|SymbolS\?\)\>'
 
 function JuliaMatch(lnum, str, regex, st, ...)
   let s = a:st
@@ -274,6 +274,15 @@ function IsInDocString(lnum)
   return len(stack) > 0
 endfunction
 
+function IsInContinuationImportLine(lnum)
+  let stack = map(synstack(a:lnum, 1), 'synIDattr(v:val, "name")')
+  call filter(stack, 'v:val =~# "\\<juliaImportLine\\>"')
+  if len(stack) == 0
+    return 0
+  endif
+  return JuliaMatch(a:lnum, getline(a:lnum), '\<\%(import\|using\|export\)\>', indent(a:lnum)) == -1
+endfunction
+
 " Auxiliary function to find a line which does not start in the middle of a
 " multiline bracketed expression, to be used as reference for block
 " indentation.
@@ -386,6 +395,51 @@ function GetJuliaIndent()
   let [num_open_blocks, num_closed_blocks] = GetJuliaNestingStruct(v:lnum)
   " Decrease indentation for each closed block in the current line
   let ind -= shiftwidth() * num_closed_blocks
+
+  " Additional special case: multiline import/using/export statements
+
+  " Are we in a multiline import/using/export statement, right below the
+  " opening line?
+  if IsInContinuationImportLine(v:lnum) && !IsInContinuationImportLine(lnum)
+    " if the opening line has a colon followed by non-comments, use it as
+    " reference point
+    let cind = JuliaMatch(lnum, getline(lnum), ':', indent(lnum))
+    " echo "cind=".string(cind) | sleep 1
+    if cind >= 0
+      let nonwhiteind = JuliaMatch(lnum, getline(lnum), '\S', cind+1)
+      if nonwhiteind >= 0
+        " return match(getline(lnum), '\S', cind+1)
+        return cind + 2
+      endif
+    else
+      " if the opening line is not a naxed import/using/export statement, use
+      " it as reference
+      let iind = JuliaMatch(lnum, getline(lnum), '\<import\|using\|export\>', indent(lnum))
+      if iind >= 0
+        " assuming whitespace after using... so no `using(XYZ)` please!
+        let nonwhiteind = JuliaMatch(lnum, getline(lnum), '\S', iind+6)
+        if nonwhiteind >= 0
+          return match(getline(lnum), '\S', iind+6)
+        endif
+      endif
+    endif
+    let ind += shiftwidth()
+  " Or did we just close a multiline import/using/export statement?
+  elseif !IsInContinuationImportLine(v:lnum) && IsInContinuationImportLine(lnum)
+    " find the starting line of the statement
+    let ilnum = 0
+    for iln in range(lnum-1, 1, -1)
+      if !IsInContinuationImportLine(iln)
+        let ilnum = iln
+        break
+      endif
+    endfor
+    if ilnum == 0
+      " something went horribly wrong, give up
+      let ind = indent(lnum)
+    endif
+    let ind = indent(ilnum)
+  endif
 
   return ind
 endfunction
