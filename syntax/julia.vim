@@ -340,7 +340,7 @@ exec 'syntax region   juliaQuotedParBlockS	matchgroup=juliaQParDelim contained s
 " force precedence over Symbols
 syntax match   juliaOperator		display "::"
 
-syntax region  juliaCommentL		matchgroup=juliaCommentDelim excludenl start="#\ze\%([^=]\|$\)" end="$"
+syntax region  juliaCommentL		matchgroup=juliaCommentDelim excludenl start="#\ze\%([^=]\|$\)" end="$" contains=juliaTodo,juliaCommentM,@juliaSpellcheckComments
 syntax region  juliaCommentM		matchgroup=juliaCommentDelim start="#=\ze\%([^#]\|$\)" end="=#" contains=juliaTodo,juliaCommentM,@juliaSpellcheckComments
 syntax keyword juliaTodo		contained TODO FIXME XXX
 
