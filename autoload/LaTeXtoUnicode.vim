@@ -80,7 +80,12 @@ function! s:L2U_SetupGlobal()
   " A hack to forcibly get out of completion mode: feed
   " this string with feedkeys()
   if has("win32") || has("win64")
-    let s:l2u_esc_sequence = "\u0006"
+    let file_types_backspaced = s:L2U_file_type_regex(get(g:, "latex_to_unicode_file_types_backspaced", ""))
+    if match(&filetype, file_types_backspaced) >= 0 
+      let s:l2u_esc_sequence = "\u0006\b"
+    else
+      let s:l2u_esc_sequence = "\u0006"
+    endif
   else
     let s:l2u_esc_sequence = "\u0091\b"
   end
