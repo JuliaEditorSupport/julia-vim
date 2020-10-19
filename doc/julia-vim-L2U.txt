@@ -227,6 +227,11 @@ To make it active only on, say, Julia and Lisp files, you could use:
     let g:latex_to_unicode_file_types = ["julia", "lisp"]
 <
 
+If you encounter an error (#204) where the LaTeX-to-Unicode substitutions
+add an extra control character after completion, you can use the variable
+|g:latex_to_unicode_file_types_backspaced| to specify file types for which
+you need to delete the character, similarly as above.
+
 Another option, |g:latex_to_unicode_file_types_blacklist|, can be used to
 exclude certain file types. For example, if you'd wish to enable the feature
 in all cases except for Python and untyped files, you would use:
@@ -347,6 +352,16 @@ g:latex_to_unicode_file_types
                 By default, its value is `"julia"`. The patterns provided must
                 match the whole filetype name. See also
                 |g:latex_to_unicode_file_types_blacklist|.
+
+                                            *g:latex_to_unicode_file_types_backspaced*
+g:latex_to_unicode_file_types_backspaced
+
+                Same as |g:latex_to_unicode_file_types|, but specifies certain
+                filetypes on which the escape sequence used after the LaTeX to
+                Unicode conversion has an additional backspace. This is 
+                because text-based/custom files on some systems add an extra 
+                control character after completion; this sequence deletes it.
+                By default, it contains no patterns.
 
                                   *g:latex_to_unicode_file_types_blacklist*
 g:latex_to_unicode_file_types_blacklist
