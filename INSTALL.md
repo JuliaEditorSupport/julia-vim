@@ -40,8 +40,8 @@ Run `vim` and update your bundles:
 pathogen, `:help packages`.)
 
 ```bash
-cd ~/.vim
-mkdir -p bundle && cd bundle
+mkdir -p ~/.vim/pack/julia-vim/start
+cd ~/.vim/pack/julia-vim/start
 git clone git://github.com/JuliaEditorSupport/julia-vim.git
 ```
 
