@@ -89,11 +89,11 @@ matchit plugin is enabled.
 
 There are two families of block movements, keyword-oriented (see
 |julia-vim-blocks-move|) and block-oriented (see
-|julia-vim-blocks-blockmove|).
+|julia-vim-blocks-moveblock|).
 
 Finally, this plug-in also adds block |text-objects| special mappings, so that
 whole blocks can be manipulated as a whole when in visual mode or
-operator-pending mode, see |julia-vim-block-objects|.
+operator-pending mode, see |julia-vim-blocks-objects|.
 
 The block movements and block objects mappings can be collectively disabled,
 see |g:julia_blocks|, and customized, see |g:julia_blocks_mappings|.
