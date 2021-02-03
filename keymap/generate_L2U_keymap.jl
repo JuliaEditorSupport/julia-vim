@@ -1,5 +1,7 @@
 #!/bin/env julia
 
+import REPL
+
 const filename = "latex2unicode_utf-8"
 const include_emoji = false # set this to true if you want to keymap empjis as well
 
@@ -78,13 +80,13 @@ open("$filename.vim","w") do f
         " The full generating script can be found in the comments at the bottom of this file,
         " and it can be extracted with:
         "
-        "     \$ grep '^\">' $filename.vim | cut -c4- > $(basename(Base.source_path()))'
+        "     \$ grep '^\">' $filename.vim | cut -c4- > '$(basename(Base.source_path()))'
         "
         " To produce this keymap file you need to have Julia compilied from source, and
-        " to run `make UnicodeData.txt` inside Julia's `doc` directory.
+        " to run `make deps` inside Julia's `doc` directory.
         " Then you can run:
         "
-        "     \$ julia $(basename(Base.source_path())).jl
+        "     \$ julia $(basename(Base.source_path()))
         "
 
         scriptencoding utf-8
