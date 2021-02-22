@@ -197,10 +197,9 @@ syntax match   juliaConstIO		display "\<\%(std\%(out\|in\|err\)\|devnull\)\>"
 syntax match   juliaConstC		display "\<\%(C_NULL\)\>"
 syntax match   juliaConstGeneric	display "\<\%(nothing\|Main\|undef\|missing\)\>"
 
-" exec 'syntax match   juliaFunctionName	contained "\(\<function\s\+\)\@'.s:d(15).'<=[^(;[:space:]]\+"'
-exec 'syntax match   juliaFunctionDef	contained transparent "\(\<function\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*\ze\s\+\%(end\>\|$\)" contains=juliaFunctionName'
-exec 'syntax region  juliaFunctionDefP	contained transparent start="\(\<function\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*\s*(" end=")\@'.s:d(1).'<=" contains=juliaFunctionName,juliaParBlock'
-exec 'syntax match   juliaFunctionName	contained "\(\<function\s\+\)\@'.s:d(15).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*"'
+exec 'syntax match   juliaFunctionDef	contained transparent "\%(\<function\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*\ze\s\+\%(end\>\|$\)" contains=juliaFunctionName'
+exec 'syntax region  juliaFunctionDefP	contained transparent start="\%(\<function\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*\s*(" end=")\@'.s:d(1).'<=" contains=juliaFunctionName,juliaParBlock'
+exec 'syntax match   juliaFunctionName	contained "\%(\<function\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*"'
 
 syntax match   juliaPossibleMacro	transparent "@" contains=juliaMacroCall,juliaMacroCallP,juliaPrintfMacro
 
