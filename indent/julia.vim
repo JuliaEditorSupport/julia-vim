@@ -396,7 +396,8 @@ function GetJuliaIndent()
     " argument list is special-cased)
     if JuliaMatch(v:lnum, getline(v:lnum), '[])}]', indent(v:lnum)) == indent(v:lnum) && ind > 0
       if !align_brackets && !align_funcargs
-        let ind = -1
+        call JumpToMatch(v:lnum, indent(v:lnum))
+        return indent(line("."))
       elseif (align_brackets && getline(v:lnum)[indent(v:lnum)] != ')') || align_funcargs
         return ind - 1
       else " must be a ')' and align_brackets==1 and align_funcargs==0
