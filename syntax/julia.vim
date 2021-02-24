@@ -70,11 +70,11 @@ let s:operators = '\%(' . '\.\%([-+*/^÷%|&!]\|//\|\\\|<<\|>>>\?\)\?=' .
 
 syn case match
 
-syntax cluster juliaExpressions		contains=@juliaParItems,@juliaStringItems,@juliaKeywordItems,@juliaBlocksItems,@juliaTypesItems,@juliaConstItems,@juliaMacroItems,@juliaSymbolItems,@juliaOperatorItems,@juliaNumberItems,@juliaCommentItems,@juliaErrorItems
+syntax cluster juliaExpressions		contains=@juliaParItems,@juliaStringItems,@juliaKeywordItems,@juliaBlocksItems,@juliaTypesItems,@juliaConstItems,@juliaMacroItems,@juliaSymbolItems,@juliaOperatorItems,@juliaNumberItems,@juliaCommentItems,@juliaErrorItems,@juliaSyntaxRegions
 syntax cluster juliaExprsPrintf		contains=@juliaExpressions,@juliaPrintfItems
 
 syntax cluster juliaParItems		contains=juliaParBlock,juliaSqBraIdxBlock,juliaSqBraBlock,juliaCurBraBlock,juliaQuotedParBlock,juliaQuotedQMarkPar
-syntax cluster juliaKeywordItems	contains=juliaKeyword,juliaImportLine,juliaInfixKeyword,juliaRepKeyword
+syntax cluster juliaKeywordItems	contains=juliaKeyword,juliaWhereKeyword,juliaImportLine,juliaInfixKeyword,juliaRepKeyword
 syntax cluster juliaBlocksItems		contains=juliaConditionalBlock,juliaWhileBlock,juliaForBlock,juliaBeginBlock,juliaFunctionBlock,juliaMacroBlock,juliaQuoteBlock,juliaTypeBlock,juliaImmutableBlock,juliaExceptionBlock,juliaLetBlock,juliaDoBlock,juliaModuleBlock,juliaStructBlock,juliaMutableStructBlock,juliaAbstractBlock,juliaPrimitiveBlock
 syntax cluster juliaTypesItems		contains=juliaBaseTypeBasic,juliaBaseTypeNum,juliaBaseTypeC,juliaBaseTypeError,juliaBaseTypeIter,juliaBaseTypeString,juliaBaseTypeArray,juliaBaseTypeDict,juliaBaseTypeSet,juliaBaseTypeIO,juliaBaseTypeProcess,juliaBaseTypeRange,juliaBaseTypeRegex,juliaBaseTypeFact,juliaBaseTypeFact,juliaBaseTypeSort,juliaBaseTypeRound,juliaBaseTypeSpecial,juliaBaseTypeRandom,juliaBaseTypeDisplay,juliaBaseTypeTime,juliaBaseTypeOther
 
@@ -88,6 +88,8 @@ syntax cluster juliaPrintfItems		contains=juliaPrintfParBlock,juliaPrintfString
 syntax cluster juliaOperatorItems	contains=juliaOperator,juliaRangeOperator,juliaCTransOperator,juliaTernaryRegion,juliaColon,juliaSemicolon,juliaComma
 syntax cluster juliaCommentItems	contains=juliaCommentL,juliaCommentM
 syntax cluster juliaErrorItems		contains=juliaErrorPar,juliaErrorEnd,juliaErrorElse,juliaErrorCatch,juliaErrorFinally
+
+syntax cluster juliaSyntaxRegions	contains=juliaParamTypeR,juliaFunctionCallR,juliaTypeOperatorR,juliaWhereR
 
 syntax cluster juliaSpellcheckStrings		contains=@spell
 syntax cluster juliaSpellcheckDocStrings	contains=@spell
@@ -122,9 +124,9 @@ syntax region  juliaParBlock		matchgroup=juliaParDelim start="(" end=")" contain
 syntax region  juliaParBlockInRange	matchgroup=juliaParDelim contained start="(" end=")" contains=@juliaExpressions,juliaParBlockInRange,juliaRangeKeyword,juliaComprehensionFor
 syntax region  juliaSqBraIdxBlock	matchgroup=juliaParDelim start="\[" end="\]" contains=@juliaExpressions,juliaParBlockInRange,juliaRangeKeyword,juliaComprehensionFor,juliaSymbolS,juliaQuotedParBlockS,juliaQuotedQMarkParS
 exec 'syntax region  juliaSqBraBlock	matchgroup=juliaParDelim start="\%(^\|\s\|' . s:operators . '\)\@'.s:d(3).'<=\[" end="\]" contains=@juliaExpressions,juliaComprehensionFor,juliaSymbolS,juliaQuotedParBlockS,juliaQuotedQMarkParS'
-syntax region  juliaCurBraBlock		matchgroup=juliaParDelim start="{" end="}" contains=@juliaExpressions
+syntax region  juliaCurBraBlock		matchgroup=juliaParDelim start="{" end="}" contains=juliaType,@juliaExpressions
 
-exec 'syntax match   juliaKeyword		display "'.s:nodot.'\<\%(return\|local\|global\|const\|where\)\>"'
+exec 'syntax match   juliaKeyword		display "'.s:nodot.'\<\%(return\|local\|global\|const\)\>"'
 syntax match   juliaInfixKeyword	display "\%(=\s*\)\@<!\<\%(in\|isa\)\>\S\@!\%(\s*=\)\@!"
 
 " The import/export/using keywords introduce a sort of special parsing
@@ -140,7 +142,7 @@ exec 'syntax region  juliaWhileBlock		matchgroup=juliaRepeat start="'.s:nodot.'\
 exec 'syntax region  juliaForBlock		matchgroup=juliaRepeat start="'.s:nodot.'\<for\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions,juliaOuter fold'
 exec 'syntax region  juliaBeginBlock		matchgroup=juliaBlKeyword start="'.s:nodot.'\<begin\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions fold'
 exec 'syntax region  juliaFunctionBlock		matchgroup=juliaBlKeyword start="'.s:nodot.'\<function\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions,juliaFunctionDef,juliaFunctionDefP fold'
-exec 'syntax region  juliaMacroBlock		matchgroup=juliaBlKeyword start="'.s:nodot.'\<macro\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions fold'
+exec 'syntax region  juliaMacroBlock		matchgroup=juliaBlKeyword start="'.s:nodot.'\<macro\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions,juliaFunctionDef,juliaFunctionDefP fold'
 exec 'syntax region  juliaQuoteBlock		matchgroup=juliaBlKeyword start="'.s:nodot.'\<quote\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions fold'
 exec 'syntax region  juliaStructBlock		matchgroup=juliaBlKeyword start="'.s:nodot.'\<struct\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions fold'
 exec 'syntax region  juliaMutableStructBlock	matchgroup=juliaBlKeyword start="'.s:nodot.'\<mutable\s\+struct\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions fold'
@@ -197,9 +199,15 @@ syntax match   juliaConstIO		display "\<\%(std\%(out\|in\|err\)\|devnull\)\>"
 syntax match   juliaConstC		display "\<\%(C_NULL\)\>"
 syntax match   juliaConstGeneric	display "\<\%(nothing\|Main\|undef\|missing\)\>"
 
-exec 'syntax match   juliaFunctionDef	contained transparent "\%(\<function\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*\ze\s\+\%(end\>\|$\)" contains=juliaFunctionName'
-exec 'syntax region  juliaFunctionDefP	contained transparent start="\%(\<function\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*\s*(" end=")\@'.s:d(1).'<=" contains=juliaFunctionName,juliaParBlock'
-exec 'syntax match   juliaFunctionName	contained "\%(\<function\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*"'
+exec 'syntax region  juliaParamTypeR	transparent start="' . s:idregex . '\%(\.' . s:idregex . '\)*\s*{" end="}\@'.s:d(1).'<=" contains=juliaType,@juliaExpressions'
+exec 'syntax match   juliaType		contained "' . s:idregex . '\%(\.' . s:idregex . '\)*"'
+
+exec 'syntax region  juliaFunctionCallR	transparent start="' . s:idregex . '\%(\.' . s:idregex . '\)*\s*(" end=")\@'.s:d(1).'<=" contains=juliaFunctionCall,juliaParBlock'
+exec 'syntax match   juliaFunctionCall	contained "' . s:idregex . '\%(\.' . s:idregex . '\)*"'
+
+exec 'syntax match   juliaFunctionDef	contained transparent "\%(\<\%(function\|macro\)\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*\ze\s\+\%(end\>\|$\)" contains=juliaFunctionName'
+exec 'syntax region  juliaFunctionDefP	contained transparent start="\%(\<\%(function\|macro\)\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*\s*(" end=")\@'.s:d(1).'<=" contains=juliaFunctionName,juliaParBlock'
+exec 'syntax match   juliaFunctionName	contained "\%(\<\%(function\|macro\)\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*"'
 
 syntax match   juliaPossibleMacro	transparent "@" contains=juliaMacroCall,juliaMacroCallP,juliaPrintfMacro
 
@@ -342,7 +350,14 @@ exec 'syntax region   juliaQuotedParBlockS	matchgroup=juliaQParDelim contained s
 
 
 " force precedence over Symbols
-syntax match   juliaOperator		display "::"
+exec 'syntax match   juliaTypeOperatorR	transparent "[<>:]:\s*' . s:idregex . '\%(\.' . s:idregex . '\)*" contains=juliaTypeOperator,juliaType,@juliaExpressions'
+exec 'syntax match   juliaTypeOperatorR	transparent "' . s:idregex . '\%(\.' . s:idregex . '\)*\s*[<>]:\%(\s*' . s:idregex . '\%(\.' . s:idregex . '\)*\)\?" contains=juliaTypeOperator,juliaType,@juliaExpressions'
+exec 'syntax match   juliaTypeOperatorR	transparent "\<isa\s\+' . s:idregex . '\%(\.' . s:idregex . '\)*" contains=juliaIsaKeyword,juliaType,@juliaExpressions'
+syntax match   juliaTypeOperator	contained "[:<>]:"
+syntax match   juliaIsaKeyword		contained "\<isa\>"
+
+syntax match   juliaWhereKeyword       	"\<where\>"
+exec 'syntax match   juliaWhereR	transparent "\<where\s\+' . s:idregex . '" contains=juliaWhereKeyword,juliaType,juliaTypeOperatorR'
 
 syntax region  juliaCommentL		matchgroup=juliaCommentDelim excludenl start="#\ze\%([^=]\|$\)" end="$" contains=juliaTodo,@juliaSpellcheckComments
 syntax region  juliaCommentM		matchgroup=juliaCommentDelim fold start="#=\ze\%([^#]\|$\)" end="=#" contains=juliaTodo,juliaCommentM,@juliaSpellcheckComments
@@ -366,15 +381,19 @@ exec 'syntax match   juliaMacroName		"@' . s:idregex . '\%(\.' . s:idregex . '\)
 hi def link juliaParDelim		juliaNone
 hi def link juliaSemicolon		juliaNone
 hi def link juliaComma			juliaNone
+hi def link juliaFunctionCall		juliaNone
 
 hi def link juliaColon			juliaOperator
 
 hi def link juliaFunctionName		juliaFunction
+hi def link juliaFunctionName1		juliaFunction
 hi def link juliaMacroName		juliaMacro
 
 
 hi def link juliaKeyword		Keyword
+hi def link juliaWhereKeyword		Keyword
 hi def link juliaInfixKeyword		Keyword
+hi def link juliaIsaKeyword		Keyword
 hi def link juliaAsKeyword		Keyword
 hi def link juliaRepKeyword		Keyword
 hi def link juliaBlKeyword		Keyword
@@ -403,6 +422,8 @@ hi def link juliaBaseTypeRandom		Type
 hi def link juliaBaseTypeDisplay	Type
 hi def link juliaBaseTypeTime		Type
 hi def link juliaBaseTypeOther		Type
+
+hi def link juliaType			Type
 
 " NOTE: deprecated constants are not highlighted as such. For once,
 " one can still legitimately use them by importing Base.MathConstants.
@@ -480,6 +501,7 @@ hi def link juliaOperator		juliaOperatorHL
 hi def link juliaRangeOperator		juliaOperatorHL
 hi def link juliaCTransOperator		juliaOperatorHL
 hi def link juliaTernaryOperator	juliaOperatorHL
+hi def link juliaTypeOperator		juliaOperatorHL
 
 hi def link juliaCommentL		Comment
 hi def link juliaCommentM		Comment
