@@ -201,7 +201,7 @@ syntax match    juliaMathematicalFunctions    display "\<\%(isapprox\|sin\|cos\|
 syntax match    juliaAbstractNumberTypes    display "\<\%(Number\|Real\|AbstractFloat\|Integer\|Signed\|Unsigned\|AbstractIrrational\)\>"
 syntax match    juliaConcreteNumberTypes    display "\<\%(Float16\|Float32\|Float64\|BigFloat\|Bool\|Int8\|UInt8\|Int16\|UInt16\|Int32\|UInt32\|Int64\|UInt64\|Int128\|UInt128\|BigInt\|Complex\|Rational\|Irrational\)\>"
 syntax match    juliaDataFormats    display "\<\%(digits\|digits!\|bitstring\|parse\|tryparse\|big\|signed\|unsigned\|float\|significand\|exponent\|complex\|bswap\|hex2bytes\|hex2bytes!\|bytes2hex\)\>"
-syntax match    juliaGeneralNumberFunctionsAndConstants    display "\<\%(one\|oneunit\|zero\|im\|pi\|ℯ\|catalan\|eulergamma\|golden\|Inf\|Inf32\|Inf16\|NaN\|NaN32\|NaN16\|issubnormal\|isfinite\|isinf\|isnan\|iszero\|isone\|nextfloat\|prevfloat\|isinteger\|isreal\|Float32\|Float64\|rounding\|setrounding\|get_zero_subnormals\|set_zero_subnormals\)\>"
+syntax match    juliaGeneralNumberFunctionsAndConstants    display "\<\%(one\|oneunit\|zero\|im\|pi\|ℯ\|catalan\|eulergamma\|golden\|Inf\|Inf32\|Inf16\|NaN\|NaN32\|NaN16\|issubnormal\|isfinite\|isinf\|isnan\|iszero\|isone\|nextfloat\|prevfloat\|isinteger\|isreal\|rounding\|setrounding\|get_zero_subnormals\|set_zero_subnormals\)\>"
 syntax match    juliaIntegers    display "\<\%(count_ones\|count_zeros\|leading_zeros\|leading_ones\|trailing_zeros\|trailing_ones\|isodd\|iseven\|@int128_str\|@uint128_str\)\>"
 syntax match    juliaBigFloatsAndBigInts    display "\<\%(precision\|setprecision\|@big_str\)\>"
 
