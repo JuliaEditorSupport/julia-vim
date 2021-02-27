@@ -176,6 +176,7 @@ syntax match    juliaMissingValues    display "\<\%(Missing\|missing\|coalesce\|
 syntax match    juliaSystem    display "\<\%(run\|devnull\|success\|process_running\|process_exited\|kill\|set_process_title\|get_process_title\|ignorestatus\|detach\|Cmd\|setenv\|withenv\|pipeline\|gethostname\|getpid\|time\|time_ns\|@time\|@timev\|@timed\|@elapsed\|@allocated\|EnvDict\|ENV\|isunix\|isapple\|islinux\|isbsd\|isfreebsd\|isopenbsd\|isnetbsd\|isdragonfly\|iswindows\|windows_version\|free_memory\|total_memory\|@static\)\>"
 syntax match    juliaVersioning    display "\<\%(VersionNumber\|@v_str\)\>"
 syntax match    juliaErrors    display "\<\%(error\|throw\|rethrow\|backtrace\|catch_backtrace\|catch_stack\|@assert\|register_error_hint\|show_error_hints\|ArgumentError\|AssertionError\|BoundsError\|CompositeException\|DimensionMismatch\|DivideError\|DomainError\|EOFError\|ErrorException\|InexactError\|InterruptException\|KeyError\|LoadError\|MethodError\|MissingException\|OutOfMemoryError\|ReadOnlyMemoryError\|OverflowError\|ProcessFailedException\|StackOverflowError\|SystemError\|TypeError\|UndefKeywordError\|UndefRefError\|UndefVarError\|StringIndexError\|InitError\|retry\|ExponentialBackOff\)\>"
+syntax match    juliaEvents    display "\<\%(Timer\|AsyncCondition\)\>"
 
 
 syntax match   juliaBaseTypeBasic	display "\<\%(\%(N\|Named\)\?Tuple\|Symbol\|Function\|Union\%(All\)\?\|Type\%(Name\|Var\)\?\|Any\|ANY\|Vararg\|Ptr\|Exception\|Module\|Expr\|DataType\|\%(LineNumber\|Quote\)Node\|\%(Weak\|Global\)\?Ref\|Method\|Pair\|Val\|Nothing\|Some\|Missing\)\>"
