@@ -172,6 +172,7 @@ syntax match    juliaSpecialValues    display "\<\%(typemin\|typemax\|floatmin\|
 syntax match    juliaSpecialTypes    display "\<\%(Any\|Union\|UnionAll\|Tuple\|NamedTuple\|@NamedTuple\|Val\|Vararg\|Nothing\|isnothing\|Some\|something\|Enum\|@enum\|Expr\|Symbol\|Module\)\>"
 syntax match    juliaGenericFunctions    display "\<\%(Function\|hasmethod\|applicable\|invoke\|@invoke\|invokelatest\|@invokelatest\|new\|ComposedFunction\)\>"
 syntax match    juliaSyntax    display "\<\%(eval\|@eval\|evalfile\|esc\|@inbounds\|@boundscheck\|@propagate_inbounds\|@inline\|@noinline\|@nospecialize\|@specialize\|gensym\|@gensym\|@goto\|@label\|@simd\|@polly\|@generated\|@pure\|@deprecate\)\>"
+syntax match    juliaMissingValues    display "\<\%(Missing\|missing\|coalesce\|ismissing\|skipmissing\|nonmissingtype\)\>"
 
 
 syntax match   juliaBaseTypeBasic	display "\<\%(\%(N\|Named\)\?Tuple\|Symbol\|Function\|Union\%(All\)\?\|Type\%(Name\|Var\)\?\|Any\|ANY\|Vararg\|Ptr\|Exception\|Module\|Expr\|DataType\|\%(LineNumber\|Quote\)Node\|\%(Weak\|Global\)\?Ref\|Method\|Pair\|Val\|Nothing\|Some\|Missing\)\>"
@@ -208,7 +209,7 @@ syntax match   juliaConstBool		display "\<\%(true\|false\)\>"
 syntax match   juliaConstEnv		display "\<\%(ARGS\|ENV\|ENDIAN_BOM\|LOAD_PATH\|VERSION\|PROGRAM_FILE\|DEPOT_PATH\)\>"
 syntax match   juliaConstIO		display "\<\%(std\%(out\|in\|err\)\|devnull\)\>"
 syntax match   juliaConstC		display "\<\%(C_NULL\)\>"
-syntax match   juliaConstGeneric	display "\<\%(nothing\|undef\|missing\)\>"
+syntax match   juliaConstGeneric	display "\<\%(nothing\|undef\)\>"
 
 exec 'syntax match   juliaFunctionDef	contained transparent "\%(\<function\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*\ze\s\+\%(end\>\|$\)" contains=juliaFunctionName'
 exec 'syntax region  juliaFunctionDefP	contained transparent start="\%(\<function\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*\s*(" end=")\@'.s:d(1).'<=" contains=juliaFunctionName,juliaParBlock'
