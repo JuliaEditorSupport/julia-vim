@@ -190,6 +190,7 @@ syntax match    juliaIterableCollections    display "\<\%(in\|eltype\|indexin\|u
 syntax match    juliaIndexableCollections    display "\<\%(getindex\|setindex!\|firstindex\|lastindex\)\>"
 syntax match    juliaDictionaries    display "\<\%(AbstractDict\|Dict\|IdDict\|WeakKeyDict\|ImmutableDict\|haskey\|get\|get!\|getkey\|delete!\|pop!\|keys\|values\|pairs\|merge\|mergewith\|merge!\|mergewith!\|sizehint!\|keytype\|valtype\)\>"
 syntax match    juliaSetLikeCollections    display "\<\%(AbstractSet\|Set\|BitSet\|union\|union!\|intersect\|setdiff\|setdiff!\|symdiff\|symdiff!\|intersect!\|issubset\|issetequal\|isdisjoint\)\>"
+syntax match    juliaDequeues    display "\<\%(push!\|pop!\|popat!\|pushfirst!\|popfirst!\|insert!\|deleteat!\|splice!\|resize!\|append!\|prepend!\)\>"
 
 
 syntax match   juliaBaseTypeBasic	display "\<\%(\%(N\|Named\)\?Tuple\|Symbol\|Function\|Union\%(All\)\?\|Type\%(Name\|Var\)\?\|Any\|ANY\|Vararg\|Ptr\|Exception\|Module\|Expr\|DataType\|\%(LineNumber\|Quote\)Node\|\%(Weak\|Global\)\?Ref\|Method\|Pair\|Val\|Nothing\|Some\|Missing\)\>"
