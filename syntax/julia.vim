@@ -179,6 +179,7 @@ syntax match    juliaErrors    display "\<\%(error\|throw\|rethrow\|backtrace\|c
 syntax match    juliaEvents    display "\<\%(Timer\|AsyncCondition\)\>"
 syntax match    juliaReflection    display "\<\%(nameof\|parentmodule\|pathof\|pkgdir\|moduleroot\|__module__\|__source__\|@__MODULE__\|@__FILE__\|@__DIR__\|@__LINE__\|fullname\|names\|nfields\|isconst\|nameof\|functionloc\)\>"
 syntax match    juliaInternals    display "\<\%(gc\|enable\|@preserve\|safepoint\|lower\|@lower\|parse\|ParseError\|QuoteNode\|macroexpand\|@macroexpand\|@macroexpand1\|code_lowered\|code_typed\|precompile\)\>"
+syntax match    juliaMeta    display "\<\%(quot\|isexpr\|isidentifier\|isoperator\|isunaryoperator\|isbinaryoperator\|show_sexpr\)\>"
 
 
 syntax match   juliaBaseTypeBasic	display "\<\%(\%(N\|Named\)\?Tuple\|Symbol\|Function\|Union\%(All\)\?\|Type\%(Name\|Var\)\?\|Any\|ANY\|Vararg\|Ptr\|Exception\|Module\|Expr\|DataType\|\%(LineNumber\|Quote\)Node\|\%(Weak\|Global\)\?Ref\|Method\|Pair\|Val\|Nothing\|Some\|Missing\)\>"
