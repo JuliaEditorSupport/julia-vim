@@ -163,6 +163,7 @@ syntax match   juliaRangeKeyword	display contained "\<\%(begin\|end\)\>"
 
 syntax match    juliaBaseGettingAround   display "\<\%(exit\|atexit\|isinteractive\|summarysize\|require\|compilecache\|__precompile__\|include\|include\|include_string\|include_dependency\|which\|methods\|ans\|active_project\)\>"
 syntax match    juliaStandardModules    display "\<\%(Main\|Core\|Base\)\>"
+syntax match    juliaBaseSubmodules display "\<\%(Broadcast\|Docs\|Iterators\|Libc\|Meta\|Stacktraces\|Sys\|Threads\|GC\)\>"
 
 
 syntax match   juliaBaseTypeBasic	display "\<\%(\%(N\|Named\)\?Tuple\|Symbol\|Function\|Union\%(All\)\?\|Type\%(Name\|Var\)\?\|Any\|ANY\|Vararg\|Ptr\|Exception\|Module\|Expr\|DataType\|\%(LineNumber\|Quote\)Node\|\%(Weak\|Global\)\?Ref\|Method\|Pair\|Val\|Nothing\|Some\|Missing\)\>"
