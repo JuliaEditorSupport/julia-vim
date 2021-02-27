@@ -162,6 +162,8 @@ exec 'syntax match   juliaOuter		contained "\<outer\ze\s\+' . s:idregex . '\>"'
 syntax match   juliaRangeKeyword	display contained "\<\%(begin\|end\)\>"
 
 syntax match    juliaBaseGettingAround   display "\<\%(exit\|atexit\|isinteractive\|summarysize\|require\|compilecache\|__precompile__\|include\|include\|include_string\|include_dependency\|which\|methods\|ans\|active_project\)\>"
+syntax match    juliaStandardModules    display "\<\%(Main\|Core\|Base\)\>"
+
 
 syntax match   juliaBaseTypeBasic	display "\<\%(\%(N\|Named\)\?Tuple\|Symbol\|Function\|Union\%(All\)\?\|Type\%(Name\|Var\)\?\|Any\|ANY\|Vararg\|Ptr\|Exception\|Module\|Expr\|DataType\|\%(LineNumber\|Quote\)Node\|\%(Weak\|Global\)\?Ref\|Method\|Pair\|Val\|Nothing\|Some\|Missing\)\>"
 syntax match   juliaBaseTypeNum		display "\<\%(U\?Int\%(8\|16\|32\|64\|128\)\?\|Float\%(16\|32\|64\)\|Complex\|Bool\|Char\|Number\|Signed\|Unsigned\|Integer\|AbstractFloat\|Real\|Rational\|\%(Abstract\)\?Irrational\|Enum\|BigInt\|BigFloat\|MathConst\|ComplexF\%(16\|32\|64\)\)\>"
@@ -197,7 +199,7 @@ syntax match   juliaConstBool		display "\<\%(true\|false\)\>"
 syntax match   juliaConstEnv		display "\<\%(ARGS\|ENV\|ENDIAN_BOM\|LOAD_PATH\|VERSION\|PROGRAM_FILE\|DEPOT_PATH\)\>"
 syntax match   juliaConstIO		display "\<\%(std\%(out\|in\|err\)\|devnull\)\>"
 syntax match   juliaConstC		display "\<\%(C_NULL\)\>"
-syntax match   juliaConstGeneric	display "\<\%(nothing\|Main\|undef\|missing\)\>"
+syntax match   juliaConstGeneric	display "\<\%(nothing\|undef\|missing\)\>"
 
 exec 'syntax match   juliaFunctionDef	contained transparent "\%(\<function\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*\ze\s\+\%(end\>\|$\)" contains=juliaFunctionName'
 exec 'syntax region  juliaFunctionDefP	contained transparent start="\%(\<function\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*\s*(" end=")\@'.s:d(1).'<=" contains=juliaFunctionName,juliaParBlock'
