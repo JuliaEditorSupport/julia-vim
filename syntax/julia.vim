@@ -193,6 +193,9 @@ syntax match    juliaSetLikeCollections    display "\<\%(AbstractSet\|Set\|BitSe
 syntax match    juliaDequeues    display "\<\%(push!\|pop!\|popat!\|pushfirst!\|popfirst!\|insert!\|deleteat!\|splice!\|resize!\|append!\|prepend!\)\>"
 syntax match    juliaUtilityCollections    display "\<\%(Pair\|Pairs\)\>"
 
+" Mathematics
+syntax match    juliaMathematicalOperators    display "\<\%(fma\|muladd\|inv\|div\|fld\|cld\|mod\|rem\|rem2pi\|mod2pi\|divrem\|fldmod\|fld1\|mod1\|fldmod1\|rationalize\|numerator\|denominator\|bitrotate\|range\|OneTo\|StepRangeLen\|cmp\|xor\)\>"
+
 
 syntax match   juliaBaseTypeBasic	display "\<\%(\%(N\|Named\)\?Tuple\|Symbol\|Function\|Union\%(All\)\?\|Type\%(Name\|Var\)\?\|Any\|ANY\|Vararg\|Ptr\|Exception\|Module\|Expr\|DataType\|\%(LineNumber\|Quote\)Node\|\%(Weak\|Global\)\?Ref\|Method\|Pair\|Val\|Nothing\|Some\|Missing\)\>"
 syntax match   juliaBaseTypeNum		display "\<\%(U\?Int\%(8\|16\|32\|64\|128\)\?\|Float\%(16\|32\|64\)\|Complex\|Bool\|Char\|Number\|Signed\|Unsigned\|Integer\|AbstractFloat\|Real\|Rational\|\%(Abstract\)\?Irrational\|Enum\|BigInt\|BigFloat\|MathConst\|ComplexF\%(16\|32\|64\)\)\>"
