@@ -169,6 +169,7 @@ syntax match    juliaTypeRelations  display "\<\%(supertype\|Type\|DataType\|typ
 syntax match    juliaDeclaredStructure    display "\<\%(ismutable\|isimmutable\|isabstracttype\|isprimitivetype\|issingletontype\|isstructtype\|nameof\|fieldnames\|fieldname\|hasfield\)\>"
 syntax match    juliaMemoryLayout    display "\<\%(sizeof\|isconcretetype\|isbits\|isbitstype\|fieldtype\|fieldtypes\|fieldcount\|fieldoffset\|datatype_alignment\|datatype_haspadding\|datatype_pointerfree\)\>"
 syntax match    juliaSpecialValues    display "\<\%(typemin\|typemax\|floatmin\|floatmax\|maxintfloat\|eps\|instances\)\>"
+syntax match    juliaSpecialTypes    display "\<\%(Any\|Union\|UnionAll\|Tuple\|NamedTuple\|@NamedTuple\|Val\|Vararg\|Nothing\|isnothing\|Some\|something\|Enum\|@enum\|Expr\|Symbol\|Module\)\>"
 
 
 syntax match   juliaBaseTypeBasic	display "\<\%(\%(N\|Named\)\?Tuple\|Symbol\|Function\|Union\%(All\)\?\|Type\%(Name\|Var\)\?\|Any\|ANY\|Vararg\|Ptr\|Exception\|Module\|Expr\|DataType\|\%(LineNumber\|Quote\)Node\|\%(Weak\|Global\)\?Ref\|Method\|Pair\|Val\|Nothing\|Some\|Missing\)\>"
