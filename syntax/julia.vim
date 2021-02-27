@@ -184,6 +184,7 @@ syntax match    juliaMeta    display "\<\%(quot\|isexpr\|isidentifier\|isoperato
 
 " Collections and Data Structures
 syntax match    juliaIteration    display "\<\%(iterate\|IteratorSize\|IteratorEltype\)\>"
+syntax match    juliaConstructorsAndTypes    display "\<\%(AbstractRange\|OrdinalRange\|AbstractUnitRange\|StepRange\|UnitRange\|LinRange\)\>"
 
 
 syntax match   juliaBaseTypeBasic	display "\<\%(\%(N\|Named\)\?Tuple\|Symbol\|Function\|Union\%(All\)\?\|Type\%(Name\|Var\)\?\|Any\|ANY\|Vararg\|Ptr\|Exception\|Module\|Expr\|DataType\|\%(LineNumber\|Quote\)Node\|\%(Weak\|Global\)\?Ref\|Method\|Pair\|Val\|Nothing\|Some\|Missing\)\>"
