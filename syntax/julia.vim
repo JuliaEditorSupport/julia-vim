@@ -178,6 +178,7 @@ syntax match    juliaVersioning    display "\<\%(VersionNumber\|@v_str\)\>"
 syntax match    juliaErrors    display "\<\%(error\|throw\|rethrow\|backtrace\|catch_backtrace\|catch_stack\|@assert\|register_error_hint\|show_error_hints\|ArgumentError\|AssertionError\|BoundsError\|CompositeException\|DimensionMismatch\|DivideError\|DomainError\|EOFError\|ErrorException\|InexactError\|InterruptException\|KeyError\|LoadError\|MethodError\|MissingException\|OutOfMemoryError\|ReadOnlyMemoryError\|OverflowError\|ProcessFailedException\|StackOverflowError\|SystemError\|TypeError\|UndefKeywordError\|UndefRefError\|UndefVarError\|StringIndexError\|InitError\|retry\|ExponentialBackOff\)\>"
 syntax match    juliaEvents    display "\<\%(Timer\|AsyncCondition\)\>"
 syntax match    juliaReflection    display "\<\%(nameof\|parentmodule\|pathof\|pkgdir\|moduleroot\|__module__\|__source__\|@__MODULE__\|@__FILE__\|@__DIR__\|@__LINE__\|fullname\|names\|nfields\|isconst\|nameof\|functionloc\)\>"
+syntax match    juliaInternals    display "\<\%(gc\|enable\|@preserve\|safepoint\|lower\|@lower\|parse\|ParseError\|QuoteNode\|macroexpand\|@macroexpand\|@macroexpand1\|code_lowered\|code_typed\|precompile\)\>"
 
 
 syntax match   juliaBaseTypeBasic	display "\<\%(\%(N\|Named\)\?Tuple\|Symbol\|Function\|Union\%(All\)\?\|Type\%(Name\|Var\)\?\|Any\|ANY\|Vararg\|Ptr\|Exception\|Module\|Expr\|DataType\|\%(LineNumber\|Quote\)Node\|\%(Weak\|Global\)\?Ref\|Method\|Pair\|Val\|Nothing\|Some\|Missing\)\>"
