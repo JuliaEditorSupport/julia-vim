@@ -203,6 +203,7 @@ syntax match    juliaConcreteNumberTypes    display "\<\%(Float16\|Float32\|Floa
 syntax match    juliaDataFormats    display "\<\%(digits\|digits!\|bitstring\|parse\|tryparse\|big\|signed\|unsigned\|float\|significand\|exponent\|complex\|bswap\|hex2bytes\|hex2bytes!\|bytes2hex\)\>"
 syntax match    juliaGeneralNumberFunctionsAndConstants    display "\<\%(one\|oneunit\|zero\|im\|pi\|ℯ\|catalan\|eulergamma\|golden\|Inf\|Inf32\|Inf16\|NaN\|NaN32\|NaN16\|issubnormal\|isfinite\|isinf\|isnan\|iszero\|isone\|nextfloat\|prevfloat\|isinteger\|isreal\|Float32\|Float64\|rounding\|setrounding\|get_zero_subnormals\|set_zero_subnormals\)\>"
 syntax match    juliaIntegers    display "\<\%(count_ones\|count_zeros\|leading_zeros\|leading_ones\|trailing_zeros\|trailing_ones\|isodd\|iseven\|@int128_str\|@uint128_str\)\>"
+syntax match    juliaBigFloatsAndBigInts    display "\<\%(precision\|setprecision\|@big_str\)\>"
 
 
 syntax match   juliaBaseTypeBasic	display "\<\%(\%(N\|Named\)\?Tuple\|Symbol\|Function\|Union\%(All\)\?\|Type\%(Name\|Var\)\?\|Any\|ANY\|Vararg\|Ptr\|Exception\|Module\|Expr\|DataType\|\%(LineNumber\|Quote\)Node\|\%(Weak\|Global\)\?Ref\|Method\|Pair\|Val\|Nothing\|Some\|Missing\)\>"
