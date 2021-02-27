@@ -200,6 +200,7 @@ syntax match    juliaMathematicalFunctions    display "\<\%(isapprox\|sin\|cos\|
 " Numbers
 syntax match    juliaAbstractNumberTypes    display "\<\%(Number\|Real\|AbstractFloat\|Integer\|Signed\|Unsigned\|AbstractIrrational\)\>"
 syntax match    juliaConcreteNumberTypes    display "\<\%(Float16\|Float32\|Float64\|BigFloat\|Bool\|Int8\|UInt8\|Int16\|UInt16\|Int32\|UInt32\|Int64\|UInt64\|Int128\|UInt128\|BigInt\|Complex\|Rational\|Irrational\)\>"
+syntax match    juliaDataFormats    display "\<\%(digits\|digits!\|bitstring\|parse\|tryparse\|big\|signed\|unsigned\|float\|significand\|exponent\|complex\|bswap\|hex2bytes\|hex2bytes!\|bytes2hex\)\>"
 
 
 syntax match   juliaBaseTypeBasic	display "\<\%(\%(N\|Named\)\?Tuple\|Symbol\|Function\|Union\%(All\)\?\|Type\%(Name\|Var\)\?\|Any\|ANY\|Vararg\|Ptr\|Exception\|Module\|Expr\|DataType\|\%(LineNumber\|Quote\)Node\|\%(Weak\|Global\)\?Ref\|Method\|Pair\|Val\|Nothing\|Some\|Missing\)\>"
