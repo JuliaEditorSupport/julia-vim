@@ -167,6 +167,7 @@ syntax match    juliaBaseSubmodules display "\<\%(Broadcast\|Docs\|Iterators\|Li
 syntax match    juliaObjects display "\<\%(isa\|isequal\|isless\|ifelse\|typeassert\|typeof\|tuple\|ntuple\|objectid\|hash\|finalizer\|finalize\|copy\|deepcopy\|getproperty\|setproperty!\|propertynames\|hasproperty\|getfield\|setfield!\|isdefined\|@isdefined\|convert\|promote\|oftype\|widen\|identity\)\>"
 syntax match    juliaTypeRelations  display "\<\%(supertype\|Type\|DataType\|typejoin\|typeintersect\|promote_type\|promote_rule\|isdispatchtuple\)\>"
 syntax match    juliaDeclaredStructure    display "\<\%(ismutable\|isimmutable\|isabstracttype\|isprimitivetype\|issingletontype\|isstructtype\|nameof\|fieldnames\|fieldname\|hasfield\)\>"
+syntax match    juliaMemoryLayout    display "\<\%(sizeof\|isconcretetype\|isbits\|isbitstype\|fieldtype\|fieldtypes\|fieldcount\|fieldoffset\|datatype_alignment\|datatype_haspadding\|datatype_pointerfree\)\>"
 
 
 syntax match   juliaBaseTypeBasic	display "\<\%(\%(N\|Named\)\?Tuple\|Symbol\|Function\|Union\%(All\)\?\|Type\%(Name\|Var\)\?\|Any\|ANY\|Vararg\|Ptr\|Exception\|Module\|Expr\|DataType\|\%(LineNumber\|Quote\)Node\|\%(Weak\|Global\)\?Ref\|Method\|Pair\|Val\|Nothing\|Some\|Missing\)\>"
