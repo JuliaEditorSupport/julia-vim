@@ -161,7 +161,8 @@ exec 'syntax match   juliaOuter		contained "\<outer\ze\s\+' . s:idregex . '\>"'
 
 syntax match   juliaRangeKeyword	display contained "\<\%(begin\|end\)\>"
 
-syntax match    juliaBaseGettingAround   display "\<\%(exit\|atexit\|isinteractive\|summarysize\|require\|compilecache\|__precompile__\|include\|include\|include_string\|include_dependency\|which\|methods\|ans\|active_project\)\>"
+" Essentials
+syntax match    juliaGettingAround   display "\<\%(exit\|atexit\|isinteractive\|summarysize\|require\|compilecache\|__precompile__\|include\|include\|include_string\|include_dependency\|which\|methods\|ans\|active_project\)\>"
 syntax match    juliaStandardModules    display "\<\%(Main\|Core\|Base\)\>"
 syntax match    juliaBaseSubmodules display "\<\%(Broadcast\|Docs\|Iterators\|Libc\|Meta\|Stacktraces\|Sys\|Threads\|GC\)\>"
 syntax match    juliaObjects display "\<\%(isa\|isequal\|isless\|ifelse\|typeassert\|typeof\|tuple\|ntuple\|objectid\|hash\|finalizer\|finalize\|copy\|deepcopy\|getproperty\|setproperty!\|propertynames\|hasproperty\|getfield\|setfield!\|isdefined\|@isdefined\|convert\|promote\|oftype\|widen\|identity\)\>"
@@ -180,6 +181,9 @@ syntax match    juliaEvents    display "\<\%(Timer\|AsyncCondition\)\>"
 syntax match    juliaReflection    display "\<\%(nameof\|parentmodule\|pathof\|pkgdir\|moduleroot\|__module__\|__source__\|@__MODULE__\|@__FILE__\|@__DIR__\|@__LINE__\|fullname\|names\|nfields\|isconst\|nameof\|functionloc\)\>"
 syntax match    juliaInternals    display "\<\%(gc\|enable\|@preserve\|safepoint\|lower\|@lower\|parse\|ParseError\|QuoteNode\|macroexpand\|@macroexpand\|@macroexpand1\|code_lowered\|code_typed\|precompile\)\>"
 syntax match    juliaMeta    display "\<\%(quot\|isexpr\|isidentifier\|isoperator\|isunaryoperator\|isbinaryoperator\|show_sexpr\)\>"
+
+" Collections and Data Structures
+syntax match    juliaIteration    display "\<\%(iterate\|IteratorSize\|IteratorEltype\)\>"
 
 
 syntax match   juliaBaseTypeBasic	display "\<\%(\%(N\|Named\)\?Tuple\|Symbol\|Function\|Union\%(All\)\?\|Type\%(Name\|Var\)\?\|Any\|ANY\|Vararg\|Ptr\|Exception\|Module\|Expr\|DataType\|\%(LineNumber\|Quote\)Node\|\%(Weak\|Global\)\?Ref\|Method\|Pair\|Val\|Nothing\|Some\|Missing\)\>"
