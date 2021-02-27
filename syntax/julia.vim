@@ -186,6 +186,7 @@ syntax match    juliaMeta    display "\<\%(quot\|isexpr\|isidentifier\|isoperato
 syntax match    juliaIteration    display "\<\%(iterate\|IteratorSize\|IteratorEltype\)\>"
 syntax match    juliaConstructorsAndTypes    display "\<\%(AbstractRange\|OrdinalRange\|AbstractUnitRange\|StepRange\|UnitRange\|LinRange\)\>"
 syntax match    juliaGeneralCollections    display "\<\%(isempty\|empty!\|length\)\>"
+syntax match    juliaIterableCollections    display "\<\%(in\|eltype\|indexin\|unique\|unique!\|allunique\|reduce\|foldl\|foldr\|maximum\|maximum!\|minimum\|minimum!\|extrema\|argmax\|argmin\|findmax\|findmin\|findmax!\|findmin!\|sum\|sum!\|prod\|prod!\|any\|any!\|all\|all!\|count\|any\|all\|foreach\|map\|map!\|mapreduce\|mapfoldl\|mapfoldr\|first\|last\|front\|tail\|step\|collect\|filter\|filter!\|replace\|replace!\|rest\)\>"
 
 
 syntax match   juliaBaseTypeBasic	display "\<\%(\%(N\|Named\)\?Tuple\|Symbol\|Function\|Union\%(All\)\?\|Type\%(Name\|Var\)\?\|Any\|ANY\|Vararg\|Ptr\|Exception\|Module\|Expr\|DataType\|\%(LineNumber\|Quote\)Node\|\%(Weak\|Global\)\?Ref\|Method\|Pair\|Val\|Nothing\|Some\|Missing\)\>"
