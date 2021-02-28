@@ -202,7 +202,7 @@ syntax match   juliaConstGeneric	display "\<\%(nothing\|Main\|undef\|missing\)\>
 exec 'syntax region  juliaParamTypeR	transparent start="' . s:idregex . '\%(\.' . s:idregex . '\)*\s*{" end="}\@'.s:d(1).'<=" contains=juliaType,@juliaExpressions'
 exec 'syntax match   juliaType		contained "' . s:idregex . '\%(\.' . s:idregex . '\)*"'
 
-exec 'syntax region  juliaFunctionCallR	transparent start="' . s:idregex . '\%(\.' . s:idregex . '\)*\s*(" end=")\@'.s:d(1).'<=" contains=juliaFunctionCall,juliaParBlock'
+exec 'syntax region  juliaFunctionCallR	transparent start="' . s:idregex . '\%(\.' . s:idregex . '\)*\%(\<function\>\)\@'.s:d(8).'<!\s*(" end=")\@'.s:d(1).'<=" contains=juliaFunctionCall,juliaParBlock'
 exec 'syntax match   juliaFunctionCall	contained "' . s:idregex . '\%(\.' . s:idregex . '\)*"'
 
 exec 'syntax match   juliaFunctionDef	contained transparent "\%(\<\%(function\|macro\)\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*\ze\s\+\%(end\>\|$\)" contains=juliaFunctionName'
