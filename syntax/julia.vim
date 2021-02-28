@@ -126,6 +126,13 @@ syntax region  juliaSqBraIdxBlock	matchgroup=juliaParDelim start="\[" end="\]" c
 exec 'syntax region  juliaSqBraBlock	matchgroup=juliaParDelim start="\%(^\|\s\|' . s:operators . '\)\@'.s:d(3).'<=\[" end="\]" contains=@juliaExpressions,juliaComprehensionFor,juliaSymbolS,juliaQuotedParBlockS,juliaQuotedQMarkParS'
 syntax region  juliaCurBraBlock		matchgroup=juliaParDelim start="{" end="}" contains=juliaType,@juliaExpressions
 
+exec 'syntax region  juliaFunctionCallR	transparent start="' . s:idregex . '\%(\.' . s:idregex . '\)*\s*(" end=")\@'.s:d(1).'<=" contains=juliaFunctionCall,juliaParBlock'
+exec 'syntax match   juliaFunctionCall	contained "\%(' . s:idregex . '\.\)*\zs' . s:idregex . '"'
+
+exec 'syntax match   juliaFunctionDef	contained transparent "\%(\<\%(function\|macro\)\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*\ze\s\+\%(end\>\|$\)" contains=juliaFunctionName'
+exec 'syntax region  juliaFunctionDefP	contained transparent start="\%(\<\%(function\|macro\)\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*\s*(" end=")\@'.s:d(1).'<=" contains=juliaFunctionName,juliaParBlock'
+exec 'syntax match   juliaFunctionName	contained "\%(\<\%(function\|macro\)\s\+\)\@'.s:d(20).'<=\%(' . s:idregex . '\.\)*\zs' . s:idregex . '"'
+
 exec 'syntax match   juliaKeyword		display "'.s:nodot.'\<\%(return\|local\|global\|const\)\>"'
 syntax match   juliaInfixKeyword	display "\%(=\s*\)\@<!\<\%(in\|isa\)\>\S\@!\%(\s*=\)\@!"
 
@@ -151,7 +158,7 @@ exec 'syntax region  juliaDoBlock		matchgroup=juliaBlKeyword start="'.s:nodot.'\
 exec 'syntax region  juliaModuleBlock		matchgroup=juliaBlKeyword start="\%(\%(\.\s*\)\@'.s:d(6).'<!\|\%(@\s*\.\s*\)\@'.s:d(6).'<=\)\<\%(bare\)\?module\>" end="\<end\>" contains=@juliaExpressions fold'
 exec 'syntax region  juliaExceptionBlock	matchgroup=juliaException start="'.s:nodot.'\<try\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions,juliaCatchBlock,juliaFinallyBlock fold'
 exec 'syntax region  juliaCatchBlock		matchgroup=juliaException transparent contained start="'.s:nodot.'\<catch\>" end="'.s:nodot.'\<end\>"me=s-1 contains=@juliaExpressions,juliaFinallyBlock'
-exec 'syntax region  juliaFinallyBlock	matchgroup=juliaException transparent contained start="'.s:nodot.'\<finally\>" end="'.s:nodot.'\<end\>"me=s-1 contains=@juliaExpressions'
+exec 'syntax region  juliaFinallyBlock		matchgroup=juliaException transparent contained start="'.s:nodot.'\<finally\>" end="'.s:nodot.'\<end\>"me=s-1 contains=@juliaExpressions'
 " AbstractBlock needs to come after to take precedence
 exec 'syntax region  juliaAbstractBlock	matchgroup=juliaBlKeyword start="'.s:nodot.'\<abstract\s\+type\>" end="'.s:nodot.'\<end\>" fold contains=@juliaExpressions'
 exec 'syntax region  juliaPrimitiveBlock	matchgroup=juliaBlKeyword start="'.s:nodot.'\<primitive\s\+type\>" end="'.s:nodot.'\<end\>" fold contains=@juliaExpressions'
@@ -201,13 +208,6 @@ syntax match   juliaConstGeneric	display "\<\%(nothing\|Main\|undef\|missing\)\>
 
 exec 'syntax region  juliaParamTypeR	transparent start="' . s:idregex . '\%(\.' . s:idregex . '\)*\s*{" end="}\@'.s:d(1).'<=" contains=juliaType,@juliaExpressions'
 exec 'syntax match   juliaType		contained "' . s:idregex . '\%(\.' . s:idregex . '\)*"'
-
-exec 'syntax region  juliaFunctionCallR	transparent start="' . s:idregex . '\%(\.' . s:idregex . '\)*\%(\<function\>\)\@'.s:d(8).'<!\s*(" end=")\@'.s:d(1).'<=" contains=juliaFunctionCall,juliaParBlock'
-exec 'syntax match   juliaFunctionCall	contained "\%(' . s:idregex . '\.\)*\zs' . s:idregex . '"'
-
-exec 'syntax match   juliaFunctionDef	contained transparent "\%(\<\%(function\|macro\)\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*\ze\s\+\%(end\>\|$\)" contains=juliaFunctionName'
-exec 'syntax region  juliaFunctionDefP	contained transparent start="\%(\<\%(function\|macro\)\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*\s*(" end=")\@'.s:d(1).'<=" contains=juliaFunctionName,juliaParBlock'
-exec 'syntax match   juliaFunctionName	contained "\%(\<\%(function\|macro\)\s\+\)\@'.s:d(20).'<=\%(' . s:idregex . '\.\)*\zs' . s:idregex . '"'
 
 syntax match   juliaPossibleMacro	transparent "@" contains=juliaMacroCall,juliaMacroCallP,juliaPrintfMacro
 
