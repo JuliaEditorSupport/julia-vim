@@ -21,3 +21,14 @@ function! s:L2UTrigger()
   augroup END
 endfunction
 autocmd BufEnter *                   call s:L2UTrigger()
+
+function! s:HighlightJuliaMarkdown()
+  if !exists('g:markdown_fenced_languages')
+    let g:markdown_fenced_languages = []
+  endif
+  if index(g:markdown_fenced_languages, 'julia') == -1
+    call add(g:markdown_fenced_languages, 'julia')
+  endif
+endfunction
+autocmd BufRead,BufNewFile *.jmd     call s:HighlightJuliaMarkdown()
+autocmd BufRead,BufNewFile *.jmd     set filetype=markdown
