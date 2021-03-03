@@ -259,8 +259,8 @@ exec 'syntax match   juliaNumber	contained "' . s:int_regex . '" contains=juliaC
 exec 'syntax match   juliaFloat		contained "' . s:float_regex . '" contains=juliaComplexUnit'
 syntax match   juliaComplexUnit		display	contained "\<im\>"
 
-exec 'syntax match   juliaOperator	"' . s:operators . '"'
 syntax match   juliaRangeOperator	display ":"
+exec 'syntax match   juliaOperator	"' . s:operators . '"'
 exec 'syntax region  juliaTernaryRegion	matchgroup=juliaTernaryOperator start="\s\zs?\ze\s" skip="\%(:\(:\|[^:[:space:]'."'".'"({[]\+\s*\ze:\)\|\%(?\s*\)\@'.s:d(6).'<=:(\)" end=":" contains=@juliaExpressions,juliaErrorSemicol'
 
 let s:interp_dollar = '\([' . s:nonidS_chars . s:uniop_chars . s:binop_chars . '!]\|^\)\@'.s:d(1).'<=\$'
@@ -345,7 +345,7 @@ let s:quoting_colonS = '\s\@'.s:d(1).'<=:'
 " (Note that such `a :b` expressions only allows at most 5 spaces between
 " the identifier and the colon anyway.)
 
-exec 'syntax match   juliaSymbol	contained "' .s:quoting_colon . s:quotable . '"'
+exec 'syntax match   juliaSymbol	contained "' . s:quoting_colon . s:quotable . '"'
 exec 'syntax match   juliaSymbolS	contained "' . s:quoting_colonS . s:quotable . '"'
 
 " same as above for quoted expressions such as :(expr)
