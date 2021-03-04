@@ -38,10 +38,6 @@ function! s:L2U_Setup()
   let b:l2u_found_completion = 0
   " Is the cursor just after a single backslash
   let b:l2u_singlebslash = 0
-  " Backup value of the completeopt settings
-  " (since we temporarily add the 'longest' setting while
-  "  attempting LaTeX-to-Unicode)
-  let b:l2u_backup_commpleteopt = &completeopt
   " Are we in the middle of a L2U tab completion?
   let b:l2u_tab_completing = 0
   " Are we calling the tab fallback?
@@ -389,12 +385,6 @@ function! LaTeXtoUnicode#Tab()
   " reset the in_fallback info
   let b:l2u_in_fallback = 0
   let b:l2u_tab_completing = 1
-  " temporary change to completeopt to use the `longest` setting, which is
-  " probably the only one which makes sense given that the goal of the
-  " completion is to substitute the final string
-  let b:l2u_backup_commpleteopt = &completeopt
-  set completeopt+=longest
-  set completeopt-=noinsert
   " invoke completion; failure to perform LaTeX-to-Unicode completion is
   " handled by the CompleteDone autocommand.
   call feedkeys("\<C-X>\<C-U>", 'n')
@@ -408,9 +398,6 @@ function! LaTeXtoUnicode#FallbackCallback()
   if !b:l2u_tab_completing
     " completion was not initiated by L2U, nothing to do
     return
-  else
-    " completion was initiated by L2U, restore completeopt
-    let &completeopt = b:l2u_backup_commpleteopt
   endif
   " at this point L2U tab completion is over
   let b:l2u_tab_completing = 0
@@ -473,19 +460,30 @@ function! LaTeXtoUnicode#CmdTab(trigger)
 endfunction
 
 function! s:L2U_InsertCompleteDoneAutocommand()
+  " temporary change to completeopt to use the `longest` setting, which is
+  " probably the only one which makes sense given that the goal of the
+  " completion is to substitute the final string
+  if !exists('b:l2u_backup_completeopt')
+    let b:l2u_backup_completeopt = &completeopt
+  endif
+  noautocmd set completeopt+=longest
+  noautocmd set completeopt-=noinsert
+
   augroup L2UTab
     autocmd! * <buffer>
     " Every time a L2U completion finishes, the fallback may be invoked
     autocmd CompleteDone <buffer> call LaTeXtoUnicode#FallbackCallback()
   augroup END
-  return ''
 endfunction
 
 function! s:L2U_RemoveCompleteDoneAutocommand()
   augroup L2UTab
     autocmd! * <buffer>
   augroup END
-  return ''
+  if exists('b:l2u_backup_completeopt')
+    noautocmd let &completeopt = b:l2u_backup_completeopt
+    unlet b:l2u_backup_completeopt
+  endif
 endfunction
 
 " Setup the L2U tab mapping
