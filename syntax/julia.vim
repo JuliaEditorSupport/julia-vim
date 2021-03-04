@@ -126,6 +126,8 @@ syntax region  juliaSqBraIdxBlock	matchgroup=juliaParDelim start="\[" end="\]" c
 exec 'syntax region  juliaSqBraBlock	matchgroup=juliaParDelim start="\%(^\|\s\|' . s:operators . '\)\@'.s:d(3).'<=\[" end="\]" contains=@juliaExpressions,juliaComprehensionFor,juliaSymbolS,juliaQuotedParBlockS,juliaQuotedQMarkParS'
 syntax region  juliaCurBraBlock		matchgroup=juliaParDelim start="{" end="}" contains=juliaType,@juliaExpressions
 
+exec 'syntax match   juliaType		contained "' . s:idregex . '\%(\.' . s:idregex . '\)*"'
+
 exec 'syntax region  juliaFunctionCallR	transparent start="' . s:idregex . '\%(\.' . s:idregex . '\)*\s*(" end=")\@'.s:d(1).'<=" contains=juliaFunctionCall,juliaParBlock'
 exec 'syntax match   juliaFunctionCall	contained "\%(' . s:idregex . '\.\)*\zs' . s:idregex . '"'
 
@@ -209,7 +211,6 @@ syntax match   juliaConstC		display "\<\%(C_NULL\)\>"
 syntax match   juliaConstGeneric	display "\<\%(nothing\|Main\|undef\|missing\)\>"
 
 exec 'syntax region  juliaParamTypeR	transparent start="' . s:idregex . '\%(\.' . s:idregex . '\)*\s*{" end="}\@'.s:d(1).'<=" contains=juliaType,@juliaExpressions'
-exec 'syntax match   juliaType		contained "' . s:idregex . '\%(\.' . s:idregex . '\)*"'
 
 syntax match   juliaPossibleMacro	transparent "@" contains=juliaMacroCall,juliaMacroCallP,juliaPrintfMacro,juliaDocMacro
 
@@ -355,9 +356,9 @@ exec 'syntax region   juliaQuotedParBlockS	matchgroup=juliaQParDelim contained s
 
 
 " force precedence over Symbols
-exec 'syntax match   juliaTypeOperatorR	transparent "[<>:]:\s*\%(' . s:idregex . '\.\)*' . s:idregex . '\>\%(\s*(\)\@!" contains=juliaTypeOperator,juliaType,@juliaExpressions'
-exec 'syntax match   juliaTypeOperatorR	transparent "' . s:idregex . '\%(\.' . s:idregex . '\)*\s*[<>]:\s*\%(\%(' . s:idregex . '\.\)*' . s:idregex . '\>\%(\s*(\)\@!\)\?" contains=juliaTypeOperator,juliaType,@juliaExpressions'
-exec 'syntax match   juliaTypeOperatorR	transparent "\<isa\s\+\%(' . s:idregex . '\.\)*' . s:idregex . '\>\%(\s*(\)\@!" contains=juliaIsaKeyword,juliaType,@juliaExpressions'
+exec 'syntax match   juliaTypeOperatorR	transparent "[<>:]:\s*\%(' . s:idregex . '\.\)*' . s:idregex . '" contains=juliaTypeOperator,juliaType,@juliaExpressions'
+exec 'syntax match   juliaTypeOperatorR	transparent "' . s:idregex . '\%(\.' . s:idregex . '\)*\s*[<>]:\s*\%(\%(' . s:idregex . '\.\)*' . s:idregex . '\)\?" contains=juliaTypeOperator,juliaType,@juliaExpressions'
+exec 'syntax match   juliaTypeOperatorR	transparent "\<isa\s\+\%(' . s:idregex . '\.\)*' . s:idregex . '" contains=juliaIsaKeyword,juliaType,@juliaExpressions'
 syntax match   juliaTypeOperator	contained "[:<>]:"
 syntax match   juliaIsaKeyword		contained "\<isa\>"
 
