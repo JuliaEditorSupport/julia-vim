@@ -258,7 +258,7 @@ function! LaTeXtoUnicode#completefunc(findstart, base)
       let b:l2u_in_fallback = 0
       return -3
     endif
-    let b:l2u_in_fallback = 0
+    call s:L2U_InsertCompleteDoneAutocommand()
     " set info for the callback
     let b:l2u_found_completion = 1
     " analyse current line
@@ -404,6 +404,7 @@ endfunction
 " This function is called at every CompleteDone event, and is meant to handle
 " the failures of LaTeX-to-Unicode completion by calling a fallback
 function! LaTeXtoUnicode#FallbackCallback()
+  call s:L2U_RemoveCompleteDoneAutocommand()
   if !b:l2u_tab_completing
     " completion was not initiated by L2U, nothing to do
     return
@@ -471,6 +472,22 @@ function! LaTeXtoUnicode#CmdTab(trigger)
   return ''
 endfunction
 
+function! s:L2U_InsertCompleteDoneAutocommand()
+  augroup L2UTab
+    autocmd! * <buffer>
+    " Every time a L2U completion finishes, the fallback may be invoked
+    autocmd CompleteDone <buffer> call LaTeXtoUnicode#FallbackCallback()
+  augroup END
+  return ''
+endfunction
+
+function! s:L2U_RemoveCompleteDoneAutocommand()
+  augroup L2UTab
+    autocmd! * <buffer>
+  augroup END
+  return ''
+endfunction
+
 " Setup the L2U tab mapping
 function! s:L2U_SetTab(wait_insert_enter)
   let opt_do_cmdtab = index(["on", "command", "cmd"], get(g:, "latex_to_unicode_tab", "on")) != -1
@@ -507,12 +524,6 @@ function! s:L2U_SetTab(wait_insert_enter)
   imap <buffer> <Tab> <Plug>L2UTab
   inoremap <buffer><expr> <Plug>L2UTab LaTeXtoUnicode#Tab()
 
-  augroup L2UTab
-    autocmd! * <buffer>
-    " Every time a completion finishes, the fallback may be invoked
-    autocmd CompleteDone <buffer> call LaTeXtoUnicode#FallbackCallback()
-  augroup END
-
   let b:l2u_tab_set = 1
 endfunction
 
@@ -534,9 +545,6 @@ function! s:L2U_UnsetTab()
   endif
   iunmap <buffer> <Plug>L2UTab
   exe 'iunmap <buffer> ' . s:l2u_fallback_trigger
-  augroup L2UTab
-    autocmd! * <buffer>
-  augroup END
   let b:l2u_tab_set = 0
 endfunction
 
