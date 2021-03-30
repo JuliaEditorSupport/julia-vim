@@ -261,6 +261,7 @@ function! LaTeXtoUnicode#completefunc(findstart, base)
     call s:L2U_SetCompleteopt()
     " setup the cleanup/fallback operations when we're done
     call s:L2U_InsertCompleteDoneAutocommand()
+    call s:L2U_InsertInsertLeaveAutocommand()
     " set info for the callback
     let b:l2u_found_completion = 1
     " analyse current line
@@ -500,7 +501,7 @@ function! s:L2U_RestoreCompleteopt()
 endfunction
 
 function! s:L2U_InsertCompleteDoneAutocommand()
-  augroup L2UTab
+  augroup L2UCompleteDone
     autocmd! * <buffer>
     " Every time a L2U completion finishes, the fallback may be invoked
     autocmd CompleteDone <buffer> call LaTeXtoUnicode#FallbackCallback()
@@ -508,8 +509,22 @@ function! s:L2U_InsertCompleteDoneAutocommand()
 endfunction
 
 function! s:L2U_RemoveCompleteDoneAutocommand()
-  augroup L2UTab
+  augroup L2UCompleteDone
     autocmd! * <buffer>
+  augroup END
+endfunction
+
+function s:L2U_InsertLeaveClenup()
+    call s:L2U_ResetLastCompletionInfo()
+    augroup L2UInsertLeave
+      autocmd! * <buffer>
+    augroup END
+endfunction
+
+function! s:L2U_InsertInsertLeaveAutocommand()
+  augroup L2UInsertLeave
+    autocmd! * <buffer>
+    autocmd InsertLeave <buffer> call s:L2U_InsertLeaveClenup()
   augroup END
 endfunction
 
