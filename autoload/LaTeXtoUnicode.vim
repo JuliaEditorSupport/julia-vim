@@ -590,13 +590,25 @@ endfunction
 
 " Function which looks for viable LaTeX-to-Unicode supstitutions as you type
 function! LaTeXtoUnicode#AutoSub(...)
+  " avoid recursive calls
+  if get(b:, "l2u_in_autosub", 0)
+    return ''
+  endif
   let vc = a:0 == 0 ? v:char : a:1
+  " for some reason function keys seem to be passed as characters 149 (F1-F12)
+  " or 186 (F13-F37, these are entered with shift/ctrl). In such cases, we
+  " can't really do any better than giving up.
+  if char2nr(vc) == 149 || char2nr(vc) == 186
+    return ''
+  endif
+  let b:l2u_in_autosub = 1
   let col1 = col('.')
   let lnum = line('.')
   if col1 == 1
     if a:0 > 1
       call feedkeys(a:2, 'n')
     endif
+    let b:l2u_in_autosub = 0
     return ''
   endif
   let bs = (vc != "\n")
@@ -606,19 +618,40 @@ function! LaTeXtoUnicode#AutoSub(...)
     if a:0 > 1
       call feedkeys(a:2, 'n')
     endif
+    let b:l2u_in_autosub = 0
     return ''
   endif
-  let base = l[col0 : -1-bs]
+  let base = l[col0 : col1-1-bs]
   let unicode = get(g:l2u_symbols_dict, base, '')
   if empty(unicode)
     if a:0 > 1
       call feedkeys(a:2, 'n')
     endif
+    let b:l2u_in_autosub = 0
     return ''
   endif
+
+  " create a temporary (fake) key mapping to reset b:l2u_in_autosub when done
+  " (when invoked, it removes itself)
+  imap <buffer> <AUTOSUBCLEANUP> <Plug>L2UAutosubReset
+  inoremap <buffer><expr> <Plug>L2UAutosubReset <SID>L2U_AutosubReset()
+
+  " perform the substitution, wrapping it in undo breakpoints so that
+  " we can revert it as a whole
   call feedkeys("\<C-G>u", 'n')
   call feedkeys(repeat("\b", len(base) + bs) . unicode . vc . s:l2u_esc_sequence, 'nt')
   call feedkeys("\<C-G>u", 'n')
+  " enqueue the reset mechanism
+  call feedkeys("\<AUTOSUBCLEANUP>")
+  return ''
+endfunction
+
+function! s:L2U_AutosubReset()
+  " no longer doing substitution
+  let b:l2u_in_autosub = 0
+  " remove the mapping that triggered this function
+  iunmap <buffer> <AUTOSUBCLEANUP>
+  iunmap <buffer> <Plug>L2UAutosubReset
   return ''
 endfunction
 
