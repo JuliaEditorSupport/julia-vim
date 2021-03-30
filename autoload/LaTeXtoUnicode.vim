@@ -199,7 +199,7 @@ function! s:L2U_ismatch()
   if col0 == -1
     return 0
   endif
-  let base = l[col0 : col1-1]
+  let base = l[col0:col1-2]
   return has_key(g:l2u_symbols_dict, base)
 endfunction
 
@@ -254,7 +254,12 @@ function! LaTeXtoUnicode#completefunc(findstart, base)
       let b:l2u_in_fallback = 0
       return -3
     endif
+    " make sure that the options are still set
+    " (it may happen that <C-X><C-U> itself triggers the fallback before
+    " restarting, thus reseetting them; this happens when the prompt is
+    " waiting for ^U^N^P during a partial completion)
     call s:L2U_SetCompleteopt()
+    " setup the cleanup/fallback operations when we're done
     call s:L2U_InsertCompleteDoneAutocommand()
     " set info for the callback
     let b:l2u_found_completion = 1
@@ -378,11 +383,13 @@ endfunction
 function! LaTeXtoUnicode#Tab()
   " the <Tab> is passed through to the fallback mapping if the completion
   " menu is present, and it hasn't been raised by the L2U tab, and there
-  " isn't an exact match before the cursor when suggestions are disabled
-  if pumvisible() && !b:l2u_tab_completing && (get(g:, "latex_to_unicode_suggestions", 1) || !s:L2U_ismatch())
+  " isn't an exact match before the cursor
+  if pumvisible() && !b:l2u_tab_completing && !s:L2U_ismatch()
     call feedkeys(s:l2u_fallback_trigger)
     return ''
   endif
+  " ensure that we start completion with some reasonable options
+  call s:L2U_SetCompleteopt()
   " reset the in_fallback info
   let b:l2u_in_fallback = 0
   let b:l2u_tab_completing = 1
