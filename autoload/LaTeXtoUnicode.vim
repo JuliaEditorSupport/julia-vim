@@ -84,6 +84,9 @@ function! s:L2U_SetupGlobal()
   " Trigger for the previous mapping of <Tab>
   let s:l2u_fallback_trigger = "\u0091L2UFallbackTab"
 
+  " Trigger for the previous mapping of <CR>
+  let s:l2u_fallback_trigger_cr = "\u0091L2UFallbackCR"
+
 endfunction
 
 " Each time the filetype changes, we may need to enable or
@@ -606,7 +609,7 @@ function! LaTeXtoUnicode#AutoSub(...)
   let lnum = line('.')
   if col1 == 1
     if a:0 > 1
-      call feedkeys(a:2, 'n')
+      call feedkeys(a:2, 't')
     endif
     let b:l2u_in_autosub = 0
     return ''
@@ -616,7 +619,7 @@ function! LaTeXtoUnicode#AutoSub(...)
   let col0 = match(l, '\\\%([_^]\?[A-Za-z]\+\%' . col1 . 'c\%([^A-Za-z]\|$\)\|[_^]\%([0-9()=+-]\)\%' . col1 .'c\%(.\|$\)\)')
   if col0 == -1
     if a:0 > 1
-      call feedkeys(a:2, 'n')
+      call feedkeys(a:2, 't')
     endif
     let b:l2u_in_autosub = 0
     return ''
@@ -625,7 +628,7 @@ function! LaTeXtoUnicode#AutoSub(...)
   let unicode = get(g:l2u_symbols_dict, base, '')
   if empty(unicode)
     if a:0 > 1
-      call feedkeys(a:2, 'n')
+      call feedkeys(a:2, 't')
     endif
     let b:l2u_in_autosub = 0
     return ''
@@ -670,8 +673,10 @@ function! s:L2U_SetAutoSub(wait_insert_enter)
   " Viable substitutions are searched at every character insertion via the
   " autocmd InsertCharPre. The <Enter> key does not seem to be catched in
   " this way though, so we use a mapping for that case.
+
+  call s:L2U_SetFallbackMapping('<CR>', s:l2u_fallback_trigger_cr)
   imap <buffer> <CR> <Plug>L2UAutoSub
-  inoremap <buffer><expr> <Plug>L2UAutoSub LaTeXtoUnicode#AutoSub("\n", "\<CR>")
+  exec 'inoremap <buffer><expr> <Plug>L2UAutoSub LaTeXtoUnicode#AutoSub("\n", "' . s:l2u_fallback_trigger_cr . '")'
 
   augroup L2UAutoSub
     autocmd! * <buffer>
@@ -688,7 +693,11 @@ function! s:L2U_UnsetAutoSub()
   endif
 
   iunmap <buffer> <CR>
+  if empty(maparg("<CR>", "i"))
+    exec 'call s:L2U_SetFallbackMapping("' . s:l2u_fallback_trigger_cr . '", "\<CR>")'
+  endif
   iunmap <buffer> <Plug>L2UAutoSub
+  exe 'iunmap <buffer> ' . s:l2u_fallback_trigger_cr
   augroup L2UAutoSub
     autocmd! * <buffer>
   augroup END
