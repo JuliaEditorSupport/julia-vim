@@ -64,7 +64,7 @@ let s:idregex = '\%([^' . s:nonidS_chars . '0-9!' . s:uniop_chars . s:binop_char
 
 let s:operators = '\%(' . '\.\%([-+*/^÷%|&!]\|//\|\\\|<<\|>>>\?\)\?=' .
       \           '\|'  . '[:$<>]=\|||\|&&\||>\|<|\|<:\|>:\|::\|<<\|>>>\?\|//\|[-=]>\|\.\{3\}' .
-      \           '\|'  . '\.\?[' . s:uniop_chars . '!$]' .
+      \           '\|'  . '\.\?[' . s:uniop_chars . '!]' .
       \           '\|'  . '\.\?[' . s:binop_chars . s:binop_chars_extra . ']' .
       \           '\)'
 
