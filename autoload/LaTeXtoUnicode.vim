@@ -87,6 +87,9 @@ function! s:L2U_SetupGlobal()
   " Trigger for the previous mapping of <CR>
   let s:l2u_fallback_trigger_cr = "\u0091L2UFallbackCR"
 
+  " Trigger for autosub completion cleanup autocommand
+  let s:l2u_autosub_cleanup_trigger = "\u0091L2UAutosubCleanup"
+
 endfunction
 
 " Each time the filetype changes, we may need to enable or
@@ -634,9 +637,9 @@ function! LaTeXtoUnicode#AutoSub(...)
     return ''
   endif
 
-  " create a temporary (fake) key mapping to reset b:l2u_in_autosub when done
+  " create a temporary mapping to reset b:l2u_in_autosub when done
   " (when invoked, it removes itself)
-  imap <buffer> <AUTOSUBCLEANUP> <Plug>L2UAutosubReset
+  exec 'imap <buffer> ' . s:l2u_autosub_cleanup_trigger . ' <Plug>L2UAutosubReset'
   inoremap <buffer><expr> <Plug>L2UAutosubReset <SID>L2U_AutosubReset()
 
   " perform the substitution, wrapping it in undo breakpoints so that
@@ -645,7 +648,7 @@ function! LaTeXtoUnicode#AutoSub(...)
   call feedkeys(repeat("\b", len(base) + bs) . unicode . vc . s:l2u_esc_sequence, 'nt')
   call feedkeys("\<C-G>u", 'n')
   " enqueue the reset mechanism
-  call feedkeys("\<AUTOSUBCLEANUP>")
+  call feedkeys(s:l2u_autosub_cleanup_trigger)
   return ''
 endfunction
 
@@ -653,7 +656,7 @@ function! s:L2U_AutosubReset()
   " no longer doing substitution
   let b:l2u_in_autosub = 0
   " remove the mapping that triggered this function
-  iunmap <buffer> <AUTOSUBCLEANUP>
+  exec 'iunmap <buffer> ' . s:l2u_autosub_cleanup_trigger
   iunmap <buffer> <Plug>L2UAutosubReset
   return ''
 endfunction
