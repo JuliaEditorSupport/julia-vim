@@ -128,12 +128,12 @@ syntax region  juliaCurBraBlock		matchgroup=juliaParDelim start="{" end="}" cont
 
 exec 'syntax match   juliaType		contained "' . s:idregex . '\%(\.' . s:idregex . '\)*"'
 
-exec 'syntax region  juliaFunctionCallR	transparent start="' . s:idregex . '\%(\.' . s:idregex . '\)*\s*(" end=")\@'.s:d(1).'<=" contains=juliaFunctionCall,juliaParBlock'
+exec 'syntax region  juliaFunctionCallR	transparent start="' . s:idregex . '\%(\.' . s:idregex . '\)*\.\?(" end=")\@'.s:d(1).'<=" contains=juliaFunctionCall,juliaParBlock'
 exec 'syntax match   juliaFunctionCall	contained "\%(' . s:idregex . '\.\)*\zs' . s:idregex . '"'
 
 " note: we would in principle add a "s:nodot" before function/macro/struct/... but it shouldn't come up in valid code
 exec 'syntax match   juliaFunctionDef	contained transparent "\%(\<\%(function\|macro\)\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*\ze\s\+\%(end\>\|$\)" contains=juliaFunctionName'
-exec 'syntax region  juliaFunctionDefP	contained transparent start="\%(\<\%(function\|macro\)\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*\s*(" end=")\@'.s:d(1).'<=" contains=juliaFunctionName,juliaParBlock'
+exec 'syntax region  juliaFunctionDefP	contained transparent start="\%(\<\%(function\|macro\)\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*(" end=")\@'.s:d(1).'<=" contains=juliaFunctionName,juliaParBlock'
 exec 'syntax match   juliaFunctionName	contained "\%(\<\%(function\|macro\)\s\+\)\@'.s:d(20).'<=\%(' . s:idregex . '\.\)*\zs' . s:idregex . '"'
 
 exec 'syntax match   juliaStructR	contained transparent "\%(\<\%(\%(mutable\s\+\)\?struct\|\%(abstract\|primitive\)\s\+type\)\s\+\)\@'.s:d(20).'<=\%(' . s:idregex . '\.\)*' . s:idregex . '\>\(\s*(\)\@!" contains=juliaType'
