@@ -51,7 +51,7 @@ git clone git://github.com/JuliaEditorSupport/julia-vim.git
 
 ### Using built-in package management
 
-Load plugin on Vim startup:
+Load plugin on Vim startup (see `:help packages`):
 
 ```bash
 cd ~/.vim
