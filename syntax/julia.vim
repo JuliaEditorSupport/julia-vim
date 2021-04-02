@@ -378,7 +378,7 @@ syntax cluster juliaContinuationItems	contains=juliaContinuationComma,juliaConti
 exec 'syntax region  juliaContinuationComma	matchgroup=juliaComma contained start=",\ze'.s:eol.'" end="\n\+\ze." contains=@juliaCommentItems'
 exec 'syntax region  juliaContinuationColon	matchgroup=juliaColon contained start=":\ze'.s:eol.'" end="\n\+\ze." contains=@juliaCommentItems'
 exec 'syntax region  juliaContinuationNone	matchgroup=NONE contained start="\%(\<\%(import\|using\|export\)\>\|^\)\@'.s:d(6).'<=\ze'.s:eol.'" end="\n\+\ze." contains=@juliaCommentItems,juliaAsKeyword'
-exec 'syntax match   juliaMacroName		"@' . s:idregex . '\%(\.' . s:idregex . '\)*"'
+exec 'syntax match   juliaMacroName		contained "@' . s:idregex . '\%(\.' . s:idregex . '\)*"'
 
 " the following are disabled by default, but
 " can be enabled by entering e.g.
