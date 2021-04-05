@@ -59,13 +59,9 @@ function! s:L2U_SetupGlobal()
     let g:latex_to_unicode_suggestions = 0
   endif
 
-  " A hack to forcibly get out of completion mode: feed
-  " this string with feedkeys()
-  if has("win32") || has("win64")
-    let s:l2u_esc_sequence = "\u0006"
-  else
-    let s:l2u_esc_sequence = "\u0091\b"
-  end
+  " Forcibly get out of completion mode: feed
+  " this string with feedkeys(s:l2u_esc_sequence, 'n')
+  let s:l2u_esc_sequence = " \b"
 
   " Trigger for the previous mapping of <Tab>
   let s:l2u_fallback_trigger = "\u0091L2UFallbackTab"
