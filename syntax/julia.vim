@@ -132,8 +132,7 @@ exec 'syntax region  juliaFunctionCallR	transparent start="' . s:idregex . '\%(\
 exec 'syntax match   juliaFunctionCall	contained "\%(' . s:idregex . '\.\)*\zs' . s:idregex . '"'
 
 " note: we would in principle add a "s:nodot" before function/macro/struct/... but it shouldn't come up in valid code
-exec 'syntax match   juliaFunctionDef	contained transparent "\%(\<\%(function\|macro\)\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*\ze\s\+\%(end\>\|$\)" contains=juliaFunctionName'
-exec 'syntax region  juliaFunctionDefP	contained transparent start="\%(\<\%(function\|macro\)\s\+\)\@'.s:d(20).'<=' . s:idregex . '\%(\.' . s:idregex . '\)*(" end=")\@'.s:d(1).'<=" contains=juliaFunctionName,juliaParBlock'
+exec 'syntax match   juliaFunctionDef	contained transparent "\%(\<\%(function\|macro\)\)\@'.s:d(8).'<=\s\+\zs' . s:idregex . '\%(\.' . s:idregex . '\)*\ze\s*\%((\|\send\>\|$\)" contains=juliaFunctionName'
 exec 'syntax match   juliaFunctionName	contained "\%(\<\%(function\|macro\)\s\+\)\@'.s:d(20).'<=\%(' . s:idregex . '\.\)*\zs' . s:idregex . '"'
 
 exec 'syntax match   juliaStructR	contained transparent "\%(\<\%(\%(mutable\s\+\)\?struct\|\%(abstract\|primitive\)\s\+type\)\s\+\)\@'.s:d(20).'<=\%(' . s:idregex . '\.\)*' . s:idregex . '\>\(\s*(\)\@!" contains=juliaType'
@@ -153,8 +152,8 @@ exec 'syntax region  juliaConditionalEBlock	matchgroup=juliaConditional transpar
 exec 'syntax region  juliaWhileBlock		matchgroup=juliaRepeat start="'.s:nodot.'\<while\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions fold'
 exec 'syntax region  juliaForBlock		matchgroup=juliaRepeat start="'.s:nodot.'\<for\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions,juliaOuter fold'
 exec 'syntax region  juliaBeginBlock		matchgroup=juliaBlKeyword start="'.s:nodot.'\<begin\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions fold'
-exec 'syntax region  juliaFunctionBlock		matchgroup=juliaBlKeyword start="'.s:nodot.'\<function\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions,juliaFunctionDef,juliaFunctionDefP fold'
-exec 'syntax region  juliaMacroBlock		matchgroup=juliaBlKeyword start="'.s:nodot.'\<macro\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions,juliaFunctionDef,juliaFunctionDefP fold'
+exec 'syntax region  juliaFunctionBlock		matchgroup=juliaBlKeyword start="'.s:nodot.'\<function\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions,juliaFunctionDef fold'
+exec 'syntax region  juliaMacroBlock		matchgroup=juliaBlKeyword start="'.s:nodot.'\<macro\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions,juliaFunctionDef fold'
 exec 'syntax region  juliaQuoteBlock		matchgroup=juliaBlKeyword start="'.s:nodot.'\<quote\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions fold'
 exec 'syntax region  juliaStructBlock		matchgroup=juliaBlKeyword start="'.s:nodot.'\<struct\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions,juliaStructR fold'
 exec 'syntax region  juliaMutableStructBlock	matchgroup=juliaBlKeyword start="'.s:nodot.'\<mutable\s\+struct\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions,juliaStructR fold'
