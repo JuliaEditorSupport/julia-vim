@@ -48,6 +48,10 @@ is found (e.g. `\al`), a list of possible completions is suggested (e.g. `\aleph
 `\alpha`), and it will be refined while you enter more characters; when only one match is left, pressing
 <kbd>Tab</kbd> will complete it and pressing it again will perform the substitution to Unicode.
 
+If you activate a "smart" mode by setting `g:latex_to_unicode_smart_tab = 1`, then you will also be
+able to navigate the menu of suggestions with <kbd>Tab</kbd> and <kbd>SHIFT-Tab</kbd>, and to accept your
+choice with <kbd>Enter</kbd>, similarly to other completion plugins.
+
 If no suitable substitution is found, the action will fall back to whatever mapping was previously
 defined: by default, inserting a literal `<Tab>` character, or invoking some other action if another
 plug-in is installed, e.g. [supertab] or [YouCompleteMe].
