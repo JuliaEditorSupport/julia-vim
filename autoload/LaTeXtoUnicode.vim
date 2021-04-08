@@ -8,28 +8,14 @@ function! s:L2U_Setup()
 
   " Keep track of whether LaTeX-to-Unicode is activated
   " (used when filetype changes)
-  if !has_key(b:, "l2u_enabled")
-    let b:l2u_enabled = 0
-  endif
-  if !has_key(b:, "l2u_autodetect_enable")
-    let b:l2u_autodetect_enable = 1
-  endif
+  let b:l2u_enabled = get(b:, "l2u_enabled", 0)
+  let b:l2u_autodetect_enable = get(b:, "l2u_autodetect_enable", 1)
 
-  " Did we install the L2U tab mappings?
-  if !has_key(b:, "l2u_tab_set")
-    let b:l2u_tab_set = 0
-  endif
-  if !has_key(b:, "l2u_cmdtab_set")
-    let b:l2u_cmdtab_set = 0
-  endif
-  if !has_key(b:, "l2u_keymap_set")
-    let b:l2u_keymap_set = 0
-  endif
-
-  " Did we activate the L2U as-you-type substitutions?
-  if !has_key(b:, "l2u_autosub_set")
-    let b:l2u_autosub_set = 0
-  endif
+  " Did we install the L2U tab/as-you-type/keymap... mappings?
+  let b:l2u_tab_set = get(b:, "l2u_tab_set", 0)
+  let b:l2u_cmdtab_set = get(b:, "l2u_cmdtab_set", 0)
+  let b:l2u_autosub_set = get(b:, "l2u_autosub_set", 0)
+  let b:l2u_keymap_set = get(b:, "l2u_keymap_set", 0)
 
   " Following are some flags used to pass information between the function which
   " attempts the LaTeX-to-Unicode completion and the fallback function
@@ -367,12 +353,8 @@ function! s:L2U_SetFallbackMapping(s, k)
     return
   endif
   let pre = '<buffer>'
-  if mmdict["silent"]
-    let pre = pre . '<silent>'
-  endif
-  if mmdict["expr"]
-    let pre = pre . '<expr>'
-  endif
+  let pre = pre . (mmdict["silent"] ? '<silent>' : '')
+  let pre = pre . (mmdict["expr"] ? '<expr>' : '')
   if mmdict["noremap"]
     let cmd = 'inoremap '
   else
@@ -561,8 +543,8 @@ function! s:L2U_SetTab(wait_insert_enter)
   endif
 
   " Backup the previous completefunc (the check is probably not really needed)
-  if get(b:, "prev_completefunc", "") != "LaTeXtoUnicode#completefunc"
-    let b:prev_completefunc = &completefunc
+  if get(b:, "l2u_prev_completefunc", "") != "LaTeXtoUnicode#completefunc"
+    let b:l2u_prev_completefunc = &completefunc
   endif
   setlocal completefunc=LaTeXtoUnicode#completefunc
 
@@ -584,7 +566,7 @@ function! s:L2U_UnsetTab()
   if !b:l2u_tab_set
     return
   endif
-  exec "setlocal completefunc=" . get(b:, "prev_completefunc", "")
+  exec "setlocal completefunc=" . get(b:, "l2u_prev_completefunc", "")
   iunmap <buffer> <Tab>
   if empty(maparg("<Tab>", "i"))
     call s:L2U_SetFallbackMapping(s:l2u_fallback_trigger, '<Tab>')
