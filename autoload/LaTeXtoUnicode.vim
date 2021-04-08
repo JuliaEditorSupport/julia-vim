@@ -346,16 +346,18 @@ endfunction
 
 " Function which saves the current insert-mode mapping of a key sequence `s`
 " and associates it with another key sequence `k` (e.g. stores the current
-" <Tab> mapping into the Fallback trigger)
+" <Tab> mapping into the Fallback trigger).
+" It returns the previous maparg dictionary, so that the previous mapping can
+" be reinstated if needed.
 function! s:L2U_SetFallbackMapping(s, k)
   let mmdict = maparg(a:s, 'i', 0, 1)
   if empty(mmdict)
     exe 'inoremap <buffer> ' . a:k . ' ' . a:s
-    return
+    return mmdict
   endif
   let rhs = mmdict["rhs"]
   if rhs =~# '^<Plug>L2U'
-    return
+    return mmdict
   endif
   let pre = '<buffer>'
   let pre = pre . (mmdict["silent"] ? '<silent>' : '')
@@ -382,6 +384,25 @@ function! s:L2U_SetFallbackMapping(s, k)
     endif
   endif
   exe cmd . pre . ' ' . a:k . ' ' . rhs
+  return mmdict
+endfunction
+
+" Reinstate a mapping from the maparg dict returned by SetFallbackMapping
+" (only if buffer-local, since otherwise it should still be available)
+function! s:L2U_ReinstateMapping(mmdict)
+  if empty(a:mmdict) || !a:mmdict["buffer"]
+    return ''
+  endif
+  let lhs = a:mmdict["lhs"]
+  let rhs = a:mmdict["rhs"]
+  if rhs =~# '^<Plug>L2U'
+    return ''
+  endif
+  let pre = '<buffer>'
+  let pre = pre . (a:mmdict["silent"] ? '<silent>' : '')
+  let pre = pre . (a:mmdict["expr"] ? '<expr>' : '')
+  let cmd = a:mmdict["noremap"] ? 'inoremap ' : 'imap '
+  exe cmd . pre . ' ' . lhs . ' ' . rhs
 endfunction
 
 " This is the function which is mapped to <Tab>
@@ -564,7 +585,7 @@ function! s:L2U_SetTab(wait_insert_enter)
   endif
   setlocal completefunc=LaTeXtoUnicode#completefunc
 
-  call s:L2U_SetFallbackMapping('<Tab>', s:l2u_fallback_trigger)
+  let b:l2u_prev_map_tab = s:L2U_SetFallbackMapping('<Tab>', s:l2u_fallback_trigger)
   imap <buffer> <Tab> <Plug>L2UTab
   inoremap <buffer><expr> <Plug>L2UTab LaTeXtoUnicode#Tab()
 
@@ -585,7 +606,7 @@ function! s:L2U_UnsetTab()
   exec "setlocal completefunc=" . get(b:, "l2u_prev_completefunc", "")
   iunmap <buffer> <Tab>
   if empty(maparg("<Tab>", "i"))
-    call s:L2U_SetFallbackMapping(s:l2u_fallback_trigger, '<Tab>')
+    call s:L2U_ReinstateMapping(b:l2u_prev_map_tab)
   endif
   iunmap <buffer> <Plug>L2UTab
   exe 'iunmap <buffer> ' . s:l2u_fallback_trigger
@@ -675,7 +696,7 @@ function! s:L2U_SetAutoSub(wait_insert_enter)
   " autocmd InsertCharPre. The <Enter> key does not seem to be catched in
   " this way though, so we use a mapping for that case.
 
-  call s:L2U_SetFallbackMapping('<CR>', s:l2u_fallback_trigger_cr)
+  let b:l2u_prev_map_cr = s:L2U_SetFallbackMapping('<CR>', s:l2u_fallback_trigger_cr)
   imap <buffer> <CR> <Plug>L2UAutoSub
   exec 'inoremap <buffer><expr> <Plug>L2UAutoSub LaTeXtoUnicode#AutoSub("\n", "' . s:l2u_fallback_trigger_cr . '")'
 
@@ -695,7 +716,7 @@ function! s:L2U_UnsetAutoSub()
 
   iunmap <buffer> <CR>
   if empty(maparg("<CR>", "i"))
-    exec 'call s:L2U_SetFallbackMapping("' . s:l2u_fallback_trigger_cr . '", "\<CR>")'
+    call s:L2U_ReinstateMapping(b:l2u_prev_map_cr)
   endif
   iunmap <buffer> <Plug>L2UAutoSub
   exe 'iunmap <buffer> ' . s:l2u_fallback_trigger_cr
