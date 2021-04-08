@@ -13,9 +13,11 @@ function! s:L2U_Setup()
 
   " Did we install the L2U tab/as-you-type/keymap... mappings?
   let b:l2u_tab_set = get(b:, "l2u_tab_set", 0)
+  let b:l2u_stab_set = get(b:, "l2u_stab_set", 0)
   let b:l2u_cmdtab_set = get(b:, "l2u_cmdtab_set", 0)
   let b:l2u_autosub_set = get(b:, "l2u_autosub_set", 0)
   let b:l2u_keymap_set = get(b:, "l2u_keymap_set", 0)
+  let b:l2u_cr_set = get(b:, "l2u_cr_set", 0)
 
   " Following are some flags used to pass information between the function which
   " attempts the LaTeX-to-Unicode completion and the fallback function
@@ -28,6 +30,8 @@ function! s:L2U_Setup()
   let b:l2u_tab_completing = 0
   " Are we calling the tab fallback?
   let b:l2u_in_fallback = 0
+  " Are we forcing acceptance?
+  let b:l2u_accept_choice = 0
 
 endfunction
 
@@ -63,8 +67,9 @@ function! s:L2U_SetupGlobal()
   " this string with feedkeys(s:l2u_esc_sequence, 'n')
   let s:l2u_esc_sequence = " \b"
 
-  " Trigger for the previous mapping of <Tab>
+  " Trigger for the previous mapping of <Tab>/<S-Tab>
   let s:l2u_fallback_trigger = "\u0091L2UFallbackTab"
+  let s:l2u_fallback_trigger_stab = "\u0091L2UFallbackSTab"
 
   " Trigger for the previous mapping of <CR>
   let s:l2u_fallback_trigger_cr = "\u0091L2UFallbackCR"
@@ -283,7 +288,8 @@ function! LaTeXtoUnicode#completefunc(findstart, base)
   else
     " read settings (eager mode is implicit when suggestions are disabled)
     let suggestions = get(g:, "latex_to_unicode_suggestions", 1)
-    let eager = get(g:, "latex_to_unicode_eager", 1) || !suggestions
+    let eager = get(g:, "latex_to_unicode_eager", 1) || !suggestions || b:l2u_accept_choice
+    let b:l2u_accept_choice = 0
     " search for matches
     let partmatches = []
     let exact_match = 0
@@ -403,6 +409,19 @@ endfunction
 
 " This is the function which is mapped to <Tab>
 function! LaTeXtoUnicode#Tab()
+  if get(g:, "latex_to_unicode_smart_tab", 0) && pumvisible() && b:l2u_tab_completing
+    let do_nextitem = 1
+    if exists('*complete_info') && exists('*pum_getpos')
+      let info = complete_info()
+      if info['mode'] == "function" && pum_getpos()['size'] == 1 && info['selected'] != -1 && s:L2U_ismatch()
+        let do_nextitem = 0
+      endif
+    endif
+    if do_nextitem
+      call feedkeys("\<C-N>", 'n')
+      return ''
+    endif
+  endif
   " the <Tab> is passed through to the fallback mapping if the completion
   " menu is present, and it hasn't been raised by the L2U tab, and there
   " isn't an exact match before the cursor
@@ -419,6 +438,15 @@ function! LaTeXtoUnicode#Tab()
   " handled by the CompleteDone autocommand.
   call feedkeys("\<C-X>\<C-U>", 'n')
   return ""
+endfunction
+
+function! LaTeXtoUnicode#STab()
+  if get(g:, "latex_to_unicode_smart_tab", 0) && pumvisible() && b:l2u_tab_completing
+    call feedkeys("\<C-P>", 'n')
+  else
+    call feedkeys(s:l2u_fallback_trigger_stab)
+  endif
+  return ''
 endfunction
 
 " This function is called at every CompleteDone event, and is meant to handle
@@ -585,6 +613,13 @@ function! s:L2U_SetTab(wait_insert_enter)
   imap <buffer> <Tab> <Plug>L2UTab
   inoremap <buffer><expr> <Plug>L2UTab LaTeXtoUnicode#Tab()
 
+  if get(g:, "latex_to_unicode_smart_tab", 0)
+    let b:l2u_stab_set = 1
+    let b:l2u_prev_map_stab = s:L2U_SetFallbackMapping('<S-Tab>', s:l2u_fallback_trigger_stab)
+    imap <buffer> <S-Tab> <Plug>L2USTab
+    inoremap <buffer><expr> <Plug>L2USTab LaTeXtoUnicode#STab()
+  endif
+
   let b:l2u_tab_set = 1
 endfunction
 
@@ -606,7 +641,68 @@ function! s:L2U_UnsetTab()
   endif
   iunmap <buffer> <Plug>L2UTab
   exe 'iunmap <buffer> ' . s:l2u_fallback_trigger
+
+  if b:l2u_stab_set
+    iunmap <buffer> <S-Tab>
+    if empty(maparg("<S-Tab>", "i"))
+      call s:L2U_ReinstateMapping(b:l2u_prev_map_stab)
+    endif
+    iunmap <buffer> <Plug>L2USTab
+    exe 'iunmap <buffer> ' . s:l2u_fallback_trigger_stab
+    let b:l2u_stab_set = 0
+  endif
+
   let b:l2u_tab_set = 0
+endfunction
+
+function! s:L2U_SetCR(wait_insert_enter)
+  if b:l2u_cr_set
+    return
+  endif
+  if !(b:l2u_enabled && ((b:l2u_tab_set && get(g:, "latex_to_unicode_smart_tab", 0)) || b:l2u_autosub_set))
+    return
+  endif
+  " g:did_insert_enter is set from an autocommand in ftdetect
+  if a:wait_insert_enter && !get(g:, "did_insert_enter", 0)
+    return
+  endif
+
+  let b:l2u_prev_map_cr = s:L2U_SetFallbackMapping('<CR>', s:l2u_fallback_trigger_cr)
+  imap <buffer> <CR> <Plug>L2UCR
+  inoremap <buffer><expr> <Plug>L2UCR LaTeXtoUnicode#CR()
+
+  let b:l2u_cr_set = 1
+endfunction
+
+function! s:L2U_UnsetCR()
+  if !b:l2u_cr_set
+    return
+  endif
+  iunmap <buffer> <CR>
+  if empty(maparg("<CR>", "i"))
+    call s:L2U_ReinstateMapping(b:l2u_prev_map_cr)
+  endif
+  iunmap <buffer> <Plug>L2UCR
+  exe 'iunmap <buffer> ' . s:l2u_fallback_trigger_cr
+  let b:l2u_cr_set = 0
+endfunction
+
+function! LaTeXtoUnicode#CR(...)
+  if b:l2u_tab_set && get(g:, "latex_to_unicode_smart_tab", 0) && pumvisible() && b:l2u_tab_completing
+    " accept the selection if any
+    call feedkeys("\<C-Y>", 'n')
+    if s:L2U_ismatch()
+      let b:l2u_accept_choice = 1
+      call feedkeys("\<Tab>")
+    endif
+    return ''
+  elseif b:l2u_autosub_set
+    exec 'call LaTeXtoUnicode#AutoSub("\n", "' . s:l2u_fallback_trigger_cr . '")'
+    return ''
+  else
+    call feedkeys(s:l2u_fallback_trigger_cr)
+    return ''
+  endif
 endfunction
 
 " Function which looks for viable LaTeX-to-Unicode supstitutions as you type
@@ -690,11 +786,8 @@ function! s:L2U_SetAutoSub(wait_insert_enter)
   endif
   " Viable substitutions are searched at every character insertion via the
   " autocmd InsertCharPre. The <Enter> key does not seem to be catched in
-  " this way though, so we use a mapping for that case.
-
-  let b:l2u_prev_map_cr = s:L2U_SetFallbackMapping('<CR>', s:l2u_fallback_trigger_cr)
-  imap <buffer> <CR> <Plug>L2UAutoSub
-  exec 'inoremap <buffer><expr> <Plug>L2UAutoSub LaTeXtoUnicode#AutoSub("\n", "' . s:l2u_fallback_trigger_cr . '")'
+  " this way though, so we use a mapping for that case, which is handled
+  " by the L2U_SetCR function
 
   augroup L2UAutoSub
     autocmd! * <buffer>
@@ -710,12 +803,6 @@ function! s:L2U_UnsetAutoSub()
     return
   endif
 
-  iunmap <buffer> <CR>
-  if empty(maparg("<CR>", "i"))
-    call s:L2U_ReinstateMapping(b:l2u_prev_map_cr)
-  endif
-  iunmap <buffer> <Plug>L2UAutoSub
-  exe 'iunmap <buffer> ' . s:l2u_fallback_trigger_cr
   augroup L2UAutoSub
     autocmd! * <buffer>
   augroup END
@@ -750,9 +837,11 @@ function! LaTeXtoUnicode#Init(...)
   call s:L2U_UnsetTab()
   call s:L2U_UnsetAutoSub()
   call s:L2U_UnsetKeymap()
+  call s:L2U_UnsetCR()
 
   call s:L2U_SetTab(wait_insert_enter)
   call s:L2U_SetAutoSub(wait_insert_enter)
+  call s:L2U_SetCR(wait_insert_enter)
   call s:L2U_SetKeymap()
   return ''
 endfunction
