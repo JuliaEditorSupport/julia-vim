@@ -138,7 +138,7 @@ plug-in which is known to be incompatible with this feature is detected: see
 
 Some LaTeX sequences can be valid both as they are and as partial matches for
 other sequences, e.g. `\ne` is associated with `≠`, but it is also a partial
-match for `\nequiv` (`≢`). By default, if <Tab> finds an exact match performs
+match for `\nequiv` (`≢`). By default, if <Tab> finds an exact match it performs
 the substitution, but this can be controlled by the |g:latex_to_unicode_eager|
 setting.
 
@@ -198,7 +198,7 @@ uses |keymap| to generate the mappings. This has the advantage that it works
 in more circumstances, e.g. in |Command-line| mode or when searching within a
 line with |f| or |t| (since it uses |language-mapping| underneath). It can
 also be easily turned on or off like any other keymap (see |i_CTRL-^| and
-|c_CTRL-^|). Like the as-you-type fature, it doesn't work with emojis.
+|c_CTRL-^|). Like the as-you-type feature, it doesn't work with emojis.
 The disadvantage is that you don't see the whole sequence as you're typing
 it, and you can't fix mistakes with backspace, for example.
 Another difference is that there is a |timeout| like for any other mapping.
@@ -208,7 +208,9 @@ You can use it in parallel with the other methods, they don't interfere. For
 example, typing a partial sequence and pressing <Tab> still triggers
 completions and suggestions if |g:latex_to_unicode_tab| is active.
 
-If you use this feature, it's also useful to set |lCursor|.
+When this feature is active, in insert or replace mode you'll see `(L2U)` in
+the mode indicator. If you use this feature, and you use a GUI, it may also
+be useful to set |lCursor|.
 
 ------------------------------------------------------------------------------
 LATEX TO UNICODE ON DIFFERENT FILE TYPES         *julia-vim-L2U-file-types*
