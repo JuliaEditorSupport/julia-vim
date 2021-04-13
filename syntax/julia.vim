@@ -209,7 +209,7 @@ syntax match   juliaConstIO		display "\<\%(std\%(out\|in\|err\)\|devnull\)\>"
 syntax match   juliaConstC		display "\<\%(C_NULL\)\>"
 syntax match   juliaConstGeneric	display "\<\%(nothing\|Main\|undef\|missing\)\>"
 
-exec 'syntax region  juliaParamTypeR	transparent start="' . s:idregex . '\%(\.' . s:idregex . '\)*\s*{" end="}\@'.s:d(1).'<=" contains=juliaType,@juliaExpressions'
+exec 'syntax region  juliaParamTypeR	transparent start="' . s:idregex . '{" end="}\@'.s:d(1).'<=" contains=juliaType,@juliaExpressions'
 
 syntax match   juliaPossibleMacro	transparent "@" contains=juliaMacroCall,juliaMacroCallP,juliaPrintfMacro,juliaDocMacro
 
