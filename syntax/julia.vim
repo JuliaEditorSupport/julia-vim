@@ -354,11 +354,11 @@ exec 'syntax region   juliaQuotedParBlockS	matchgroup=juliaQParDelim contained s
 
 
 " force precedence over Symbols
-exec 'syntax match   juliaTypeOperatorR	transparent "[<>:]:\s*\%(' . s:idregex . '\.\)*' . s:idregex . '" contains=juliaTypeOperator,juliaType,@juliaExpressions'
-exec 'syntax match   juliaTypeOperatorR	transparent "' . s:idregex . '\%(\.' . s:idregex . '\)*\s*[<>]:\s*\%(\%(' . s:idregex . '\.\)*' . s:idregex . '\)\?" contains=juliaTypeOperator,juliaType,@juliaExpressions'
-exec 'syntax match   juliaTypeOperatorR	transparent "\<isa\s\+\%(' . s:idregex . '\.\)*' . s:idregex . '" contains=juliaIsaKeyword,juliaType,@juliaExpressions'
-syntax match   juliaTypeOperator	contained "[:<>]:"
+exec 'syntax match   juliaTypeOperatorR	transparent "' . s:idregex . '\%(\s*[<>]:\)\@=" contains=juliaType,@juliaExpressions'
+syntax match   juliaTypeOperator	contained "[<>:]:"
+exec 'syntax match   juliaTypeOperatorR	transparent "[<>:]:\s*\%(' . s:idregex . '\.\)*' . s:idregex . '" contains=juliaTypeOperator,juliaType,@juliaExpressions nextgroup=juliaTypeOperator'
 syntax match   juliaIsaKeyword		contained "\<isa\>"
+exec 'syntax match   juliaTypeOperatorR	transparent "\<isa\s\+\%(' . s:idregex . '\.\)*' . s:idregex . '" contains=juliaIsaKeyword,juliaType,@juliaExpressions nextgroup=juliaIsaKeyword'
 
 syntax match   juliaWhereKeyword       	"\<where\>"
 exec 'syntax match   juliaWhereR	transparent "\<where\s\+' . s:idregex . '" contains=juliaWhereKeyword,juliaType,juliaTypeOperatorR'
