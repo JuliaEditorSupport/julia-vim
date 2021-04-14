@@ -89,7 +89,7 @@ syntax cluster juliaOperatorItems	contains=juliaOperator,juliaRangeOperator,juli
 syntax cluster juliaCommentItems	contains=juliaCommentL,juliaCommentM
 syntax cluster juliaErrorItems		contains=juliaErrorPar,juliaErrorEnd,juliaErrorElse,juliaErrorCatch,juliaErrorFinally
 
-syntax cluster juliaSyntaxRegions	contains=juliaParamTypeR,juliaFunctionCallR,juliaTypeOperatorR,juliaWhereR
+syntax cluster juliaSyntaxRegions	contains=juliaParamType,juliaFunctionCall,juliaTypeOperatorR,juliaWhereR
 
 syntax cluster juliaSpellcheckStrings		contains=@spell
 syntax cluster juliaSpellcheckDocStrings	contains=@spell
@@ -126,10 +126,9 @@ syntax region  juliaSqBraIdxBlock	matchgroup=juliaParDelim start="\[" end="\]" c
 exec 'syntax region  juliaSqBraBlock	matchgroup=juliaParDelim start="\%(^\|\s\|' . s:operators . '\)\@'.s:d(3).'<=\[" end="\]" contains=@juliaExpressions,juliaComprehensionFor,juliaSymbolS,juliaQuotedParBlockS,juliaQuotedQMarkParS'
 syntax region  juliaCurBraBlock		matchgroup=juliaParDelim start="{" end="}" contains=juliaType,@juliaExpressions
 
-exec 'syntax match   juliaType		contained "' . s:idregex . '\%(\.' . s:idregex . '\)*"'
+exec 'syntax match   juliaType		contained "\%(' . s:idregex . '\.\)*\zs' . s:idregex . '"'
 
-exec 'syntax region  juliaFunctionCallR	transparent start="' . s:idregex . '\%(\.' . s:idregex . '\)*\.\?(" end=")\@'.s:d(1).'<=" contains=juliaFunctionCall,juliaParBlock'
-exec 'syntax match   juliaFunctionCall	contained "\%(' . s:idregex . '\.\)*\zs' . s:idregex . '"'
+exec 'syntax match  juliaFunctionCall	"' . s:idregex . '\.\?(\@=" nextgroup=juliaParBlock'
 
 " note: we would in principle add a "s:nodot" before function/macro/struct/... but it shouldn't come up in valid code
 exec 'syntax match   juliaFunctionDef	contained transparent "\%(\<\%(function\|macro\)\)\@'.s:d(8).'<=\s\+\zs' . s:idregex . '\%(\.' . s:idregex . '\)*\ze\s*\%((\|\send\>\|$\)" contains=juliaFunctionName'
@@ -209,7 +208,7 @@ syntax match   juliaConstIO		display "\<\%(std\%(out\|in\|err\)\|devnull\)\>"
 syntax match   juliaConstC		display "\<\%(C_NULL\)\>"
 syntax match   juliaConstGeneric	display "\<\%(nothing\|Main\|undef\|missing\)\>"
 
-exec 'syntax region  juliaParamTypeR	transparent start="' . s:idregex . '{" end="}\@'.s:d(1).'<=" contains=juliaType,@juliaExpressions'
+exec 'syntax match  juliaParamType	"' . s:idregex . '\ze{"'
 
 syntax match   juliaPossibleMacro	transparent "@" contains=juliaMacroCall,juliaMacroCallP,juliaPrintfMacro,juliaDocMacro
 
@@ -429,6 +428,7 @@ hi def link juliaBaseTypeTime		Type
 hi def link juliaBaseTypeOther		Type
 
 hi def link juliaType			Type
+hi def link juliaParamType		Type
 
 " NOTE: deprecated constants are not highlighted as such. For once,
 " one can still legitimately use them by importing Base.MathConstants.
