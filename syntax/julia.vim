@@ -133,9 +133,9 @@ exec 'syntax match   juliaType		contained "\%(' . s:idregex . '\.\)*\zs' . s:idr
 " It's used to recognize one of the contained regions looking for identifiers
 " only once. Once recognized, those regions no longer need to use the
 " expensive s:idregex.
-exec 'syntax match   juliaIdSymbol	transparent "' . s:idregex . '\%(\s*[<>]:\|\.\?(\|{\|\"\%(\"\"\)\?\)\@=" contains=juliaFunctionCall,juliaParamType,juliaStringPrefixed,juliaTypeOperatorR1'
+exec 'syntax match   juliaIdSymbol	transparent "' . s:idregex . '\%(\s*[<>]:\|\.\?(\|{\|\"\)\@=" contains=juliaFunctionCall,juliaParamType,juliaStringPrefixed,juliaTypeOperatorR1'
 
-syntax match  juliaFunctionCall		contained "[^{([:space:]\"]\+(\@=" nextgroup=juliaParBlock
+syntax match  juliaFunctionCall		contained "[^{([:space:]<>\"]\+(\@=" nextgroup=juliaParBlock
 
 " note: we would in principle add a "s:nodot" before function/macro/struct/... but it shouldn't come up in valid code
 exec 'syntax match   juliaFunctionDef	contained transparent "\%(\<\%(function\|macro\)\)\@'.s:d(8).'<=\s\+\zs' . s:idregex . '\%(\.' . s:idregex . '\)*\ze\s*\%((\|\send\>\|$\)" contains=juliaFunctionName'
@@ -215,7 +215,7 @@ syntax match   juliaConstIO		display "\<\%(std\%(out\|in\|err\)\|devnull\)\>"
 syntax match   juliaConstC		display "\<\%(C_NULL\)\>"
 syntax match   juliaConstGeneric	display "\<\%(nothing\|Main\|undef\|missing\)\>"
 
-syntax match  juliaParamType		contained "[^{([:space:]\"]\+\ze{" nextgroup=juliaCurBraBlock
+syntax match  juliaParamType		contained "[^{([:space:]<>\"]\+\ze{" nextgroup=juliaCurBraBlock
 
 syntax match   juliaPossibleMacro	transparent "@" contains=juliaMacroCall,juliaMacroCallP,juliaPrintfMacro,juliaDocMacro
 
@@ -286,7 +286,7 @@ exec 'syntax match   juliaCTransOperator	"[[:space:]}' . s:nonid_chars . s:uniop
 " TODO: some of these might be specialized; the rest could be just left to the
 "       generic juliaStringPrefixed fallback
 syntax region  juliaString		matchgroup=juliaStringDelim start=+\z("\(""\)\?\)+ skip=+\%(\\\\\)*\\"+ end=+\z1+ contains=@juliaStringVars,@juliaSpecialChars,@juliaSpellcheckStrings
-syntax region  juliaStringPrefixed	contained matchgroup=juliaStringDelim start=+[^{([:space:]"]\+\z("\(""\)\?\)+ skip=+\%(\\\\\)*\\"+ end=+\z1+ contains=@juliaSpecialCharsRaw
+syntax region  juliaStringPrefixed	contained matchgroup=juliaStringDelim start=+[^{([:space:]<>"]\+\z("\(""\)\?\)+ skip=+\%(\\\\\)*\\"+ end=+\z1+ contains=@juliaSpecialCharsRaw
 syntax region  juliabString		matchgroup=juliaStringDelim start=+\<b\z("\(""\)\?\)+ skip=+\%(\\\\\)*\\"+ end=+\z1+ contains=@juliaSpecialChars
 syntax region  juliasString		matchgroup=juliaStringDelim start=+\<s\z("\(""\)\?\)+ skip=+\%(\\\\\)*\\"+ end=+\z1+ contains=@juliaSpecialChars
 
@@ -352,7 +352,7 @@ exec 'syntax match    juliaQuotedQMarkPar	"' . s:quoting_colon . '(\s*?\s*)" con
 exec 'syntax region   juliaQuotedParBlockS	matchgroup=juliaQParDelim contained start="' . s:quoting_colonS . '(" end=")" contains=@juliaExpressions'
 
 
-syntax match   juliaTypeOperatorR1	contained transparent "[^{([:space:]\"]\+\%(\s*[<>]:\)\@=" contains=juliaType,@juliaExpressions
+syntax match   juliaTypeOperatorR1	contained "[^{([:space:]<>\"]\+\%(\s*[<>]:\)\@="
 
 " force precedence over Symbols
 syntax match   juliaTypeOperator	contained "[<>:]:"
@@ -429,6 +429,7 @@ hi def link juliaBaseTypeOther		Type
 
 hi def link juliaType			Type
 hi def link juliaParamType		Type
+hi def link juliaTypeOperatorR1		Type
 
 " NOTE: deprecated constants are not highlighted as such. For once,
 " one can still legitimately use them by importing Base.MathConstants.
