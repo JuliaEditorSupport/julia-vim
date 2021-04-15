@@ -29,44 +29,59 @@ let s:julia_spellcheck_comments = get(g:, "julia_spellcheck_comments", 1)
 
 let s:julia_highlight_operators = get(g:, "julia_highlight_operators", 1)
 
-" characters which cannot be used in identifiers. This list is very incomplete:
-" 1) it only cares about charactes below 256
-" 2) it doesn't distinguish between what's allowed as the 1st char vs in the
-"    rest of an identifier (e.g. digits and `!`)
-" Despite these shortcomings, it seems to do a decent job.
-" note: \U5B and \U5D are '[' and ']'
-let s:nonid_chars = "\U01-\U07" . "\U0E-\U1F" .
-      \             "?\"#$'(,.:;=@`\\U5B{" .
-      \             "\U80-\UA1" . "\UA7\UA8\UAB\UAD\UAF\UB4" . "\UB6-\UB8" . "\UBB\UBF"
+" List of characters, up to \UFF, which cannot be used in identifiers.
+" (It includes operator characters; we don't consider them identifiers.)
+" This is used mostly in lookbehinds with `\@<=`, e.g. when we need to check
+" that that we're not in the middle of an identifier.
+" It doesn't include a few characters (spaces and all closing parentheses)
+" because those may or may not be valid in the lookbehind on a case-by-case
+" basis.
+let s:nonid_chars = '\U00-\U08' . '\U0A-\U1F' .
+      \             '\U21-\U28' . '\U2A-\U2F' . '\U3A-\U40' . '\U5B-\U5E' . '\U60' . '\U7B\U7C' .
+      \             '\U7E-\UA1' . '\UA7\UA8' . '\UAB-\UAD' . '\UAF\UB1\UB4' . '\UB6-\UB8' . '\UBB\UBF' . '\UD7\UF7'
 
-let s:nonidS_chars = "[:space:])\\U5D}" . s:nonid_chars
+" The complete list
+let s:nonidS_chars = '[:space:])\U5D}' . s:nonid_chars
 
-" the following excludes '!' since it can be used as an identifier,
-" and '$' since it can be used in interpolations
-" note that \U2D is '-'
-let s:uniop_chars = "+\\U2D~¬√∛∜⋆"
 
-let s:binop_chars = "=+\\U2D*/\\%÷^&|⊻<>≤≥≡≠≢∈∉⋅×∪∩⊆⊈⊂⊄⊊←→∋∌⊕⊖⊞⊟∘∧⊗⊘↑↓∨⊠±⟂⋆"
+" List of all valid operator chars up to \UFF (NOTE: they must all be included
+" in s:nonidS_chars, so that if we include that, then this is redundant)
+" It does not include '!' since it can be used in an identifier.
+" The list contains the following characters: '%&*+-/<=>\\^|~¬±×÷'
+let s:op_chars = '\U25\U26\U2A\U2B\U2D\U2F\U3C-\U3E\U5C\U5E\U7C\U7E\UAC\UB1\UD7\UF7'
 
-" the following is a list of all remainig valid operator chars,
-" but it's more efficient when expressed with ranges (see below)
-" let s:binop_chars_extra = "↔↚↛↠↣↦↮⇎⇏⇒⇔⇴⇶⇷⇸⇹⇺⇻⇼⇽⇾⇿⟵⟶⟷⟷⟹⟺⟻⟼⟽⟾⟿⤀⤁⤂⤃⤄⤅⤆⤇⤌⤍⤎⤏⤐⤑⤔⤕⤖⤗⤘⤝⤞⤟⤠⥄⥅⥆⥇⥈⥊⥋⥎⥐⥒⥓⥖⥗⥚⥛⥞⥟⥢⥤⥦⥧⥨⥩⥪⥫⥬⥭⥰⧴⬱⬰⬲⬳⬴⬵⬶⬷⬸⬹⬺⬻⬼⬽⬾⬿⭀⭁⭂⭃⭄⭇⭈⭉⭊⭋⭌￩￫" .
-"       \                   "∝∊∍∥∦∷∺∻∽∾≁≃≄≅≆≇≈≉≊≋≌≍≎≐≑≒≓≔≕≖≗≘≙≚≛≜≝≞≟≣≦≧≨≩≪≫≬≭≮≯≰≱≲≳≴≵≶≷≸≹≺≻≼≽≾≿⊀⊁⊃⊅⊇⊉⊋⊏⊐⊑⊒⊜⊩⊬⊮⊰⊱⊲⊳⊴⊵⊶⊷⋍⋐⋑⋕⋖⋗⋘⋙⋚⋛⋜⋝⋞⋟⋠⋡⋢⋣⋤⋥⋦⋧⋨⋩⋪⋫⋬⋭⋲⋳⋴⋵⋶⋷⋸⋹⋺⋻⋼⋽⋾⋿⟈⟉⟒⦷⧀⧁⧡⧣⧤⧥⩦⩧⩪⩫⩬⩭⩮⩯⩰⩱⩲⩳⩴⩵⩶⩷⩸⩹⩺⩻⩼⩽⩾⩿⪀⪁⪂⪃⪄⪅⪆⪇⪈⪉⪊⪋⪌⪍⪎⪏⪐⪑⪒⪓⪔⪕⪖⪗⪘⪙⪚⪛⪜⪝⪞⪟⪠⪡⪢⪣⪤⪥⪦⪧⪨⪩⪪⪫⪬⪭⪮⪯⪰⪱⪲⪳⪴⪵⪶⪷⪸⪹⪺⪻⪼⪽⪾⪿⫀⫁⫂⫃⫄⫅⫆⫇⫈⫉⫊⫋⫌⫍⫎⫏⫐⫑⫒⫓⫔⫕⫖⫗⫘⫙⫷⫸⫹⫺⊢⊣" .
-"       \                   "⊔∓∔∸≂≏⊎⊽⋎⋓⧺⧻⨈⨢⨣⨤⨥⨦⨧⨨⨩⨪⨫⨬⨭⨮⨹⨺⩁⩂⩅⩊⩌⩏⩐⩒⩔⩖⩗⩛⩝⩡⩢⩣" .
-"       \                   "⊙⊚⊛⊡⊓∗∙∤⅋≀⊼⋄⋇⋉⋊⋋⋌⋏⋒⟑⦸⦼⦾⦿⧶⧷⨇⨰⨱⨲⨳⨴⨵⨶⨷⨸⨻⨼⨽⩀⩃⩄⩋⩍⩎⩑⩓⩕⩘⩚⩜⩞⩟⩠⫛⊍▷⨝⟕⟖⟗" .
-"       \                   "⇵⟰⟱⤈⤉⤊⤋⤒⤓⥉⥌⥍⥏⥑⥔⥕⥘⥙⥜⥝⥠⥡⥣⥥⥮⥯￪￬"
+" List of all valid operator chars above \UFF
+" Written with ranges for performance reasons
+" The list contains the following characters: '…⁝⅋←↑→↓↔↚↛↜↝↞↠↢↣↤↦↩↪↫↬↮↶↷↺↻↼↽⇀⇁⇄⇆⇇⇉⇋⇌⇍⇎⇏⇐⇒⇔⇚⇛⇜⇝⇠⇢⇴⇵⇶⇷⇸⇹⇺⇻⇼⇽⇾⇿∈∉∊∋∌∍∓∔∗∘∙√∛∜∝∤∥∦∧∨∩∪∷∸∺∻∽∾≀≁≂≃≄≅≆≇≈≉≊≋≌≍≎≏≐≑≒≓≔≕≖≗≘≙≚≛≜≝≞≟≠≡≢≣≤≥≦≧≨≩≪≫≬≭≮≯≰≱≲≳≴≵≶≷≸≹≺≻≼≽≾≿⊀⊁⊂⊃⊄⊅⊆⊇⊈⊉⊊⊋⊍⊎⊏⊐⊑⊒⊓⊔⊕⊖⊗⊘⊙⊚⊛⊜⊞⊟⊠⊡⊢⊣⊩⊬⊮⊰⊱⊲⊳⊴⊵⊶⊷⊻⊼⊽⋄⋅⋆⋇⋉⋊⋋⋌⋍⋎⋏⋐⋑⋒⋓⋕⋖⋗⋘⋙⋚⋛⋜⋝⋞⋟⋠⋡⋢⋣⋤⋥⋦⋧⋨⋩⋪⋫⋬⋭⋮⋯⋰⋱⋲⋳⋴⋵⋶⋷⋸⋹⋺⋻⋼⋽⋾⋿⌿▷⟂⟈⟉⟑⟒⟕⟖⟗⟰⟱⟵⟶⟷⟹⟺⟻⟼⟽⟾⟿⤀⤁⤂⤃⤄⤅⤆⤇⤈⤉⤊⤋⤌⤍⤎⤏⤐⤑⤒⤓⤔⤕⤖⤗⤘⤝⤞⤟⤠⥄⥅⥆⥇⥈⥉⥊⥋⥌⥍⥎⥏⥐⥑⥒⥓⥔⥕⥖⥗⥘⥙⥚⥛⥜⥝⥞⥟⥠⥡⥢⥣⥤⥥⥦⥧⥨⥩⥪⥫⥬⥭⥮⥯⥰⦷⦸⦼⦾⦿⧀⧁⧡⧣⧤⧥⧴⧶⧷⧺⧻⨇⨈⨝⨟⨢⨣⨤⨥⨦⨧⨨⨩⨪⨫⨬⨭⨮⨰⨱⨲⨳⨴⨵⨶⨷⨸⨹⨺⨻⨼⨽⩀⩁⩂⩃⩄⩅⩊⩋⩌⩍⩎⩏⩐⩑⩒⩓⩔⩕⩖⩗⩘⩚⩛⩜⩝⩞⩟⩠⩡⩢⩣⩦⩧⩪⩫⩬⩭⩮⩯⩰⩱⩲⩳⩴⩵⩶⩷⩸⩹⩺⩻⩼⩽⩾⩿⪀⪁⪂⪃⪄⪅⪆⪇⪈⪉⪊⪋⪌⪍⪎⪏⪐⪑⪒⪓⪔⪕⪖⪗⪘⪙⪚⪛⪜⪝⪞⪟⪠⪡⪢⪣⪤⪥⪦⪧⪨⪩⪪⪫⪬⪭⪮⪯⪰⪱⪲⪳⪴⪵⪶⪷⪸⪹⪺⪻⪼⪽⪾⪿⫀⫁⫂⫃⫄⫅⫆⫇⫈⫉⫊⫋⫌⫍⫎⫏⫐⫑⫒⫓⫔⫕⫖⫗⫘⫙⫛⫷⫸⫹⫺⬰⬱⬲⬳⬴⬵⬶⬷⬸⬹⬺⬻⬼⬽⬾⬿⭀⭁⭂⭃⭄⭇⭈⭉⭊⭋⭌￩￪￫￬'
+let s:op_chars_wc = '\U2026\U205D\U214B\U2190-\U2194\U219A-\U219E\U21A0\U21A2-\U21A4\U21A6\U21A9-\U21AC\U21AE\U21B6\U21B7\U21BA-\U21BD\U21C0\U21C1\U21C4\U21C6\U21C7\U21C9\U21CB-\U21D0\U21D2\U21D4\U21DA-\U21DD\U21E0\U21E2\U21F4-\U21FF\U2208-\U220D\U2213\U2214\U2217-\U221D\U2224-\U222A\U2237\U2238\U223A\U223B\U223D\U223E\U2240-\U228B\U228D-\U229C\U229E-\U22A3\U22A9\U22AC\U22AE\U22B0-\U22B7\U22BB-\U22BD\U22C4-\U22C7\U22C9-\U22D3\U22D5-\U22FF\U233F\U25B7\U27C2\U27C8\U27C9\U27D1\U27D2\U27D5-\U27D7\U27F0\U27F1\U27F5-\U27F7\U27F9-\U27FF\U2900-\U2918\U291D-\U2920\U2944-\U2970\U29B7\U29B8\U29BC\U29BE-\U29C1\U29E1\U29E3-\U29E5\U29F4\U29F6\U29F7\U29FA\U29FB\U2A07\U2A08\U2A1D\U2A1F\U2A22-\U2A2E\U2A30-\U2A3D\U2A40-\U2A45\U2A4A-\U2A58\U2A5A-\U2A63\U2A66\U2A67\U2A6A-\U2AD9\U2ADB\U2AF7-\U2AFA\U2B30-\U2B44\U2B47-\U2B4C\UFFE9-\UFFEC'
 
-" same as above, but with character ranges, for performance
-let s:binop_chars_extra = "\\U214B\\U2190-\\U2194\\U219A\\U219B\\U21A0\\U21A3\\U21A6\\U21AE\\U21CE\\U21CF\\U21D2\\U21D4\\U21F4-\\U21FF\\U2208-\\U220D\\U2213\\U2214\\U2217-\\U2219\\U221D\\U2224-\\U222A\\U2237\\U2238\\U223A\\U223B\\U223D\\U223E\\U2240-\\U228B\\U228D-\\U229C\\U229E-\\U22A3\\U22A9\\U22AC\\U22AE\\U22B0-\\U22B7\\U22BB-\\U22BD\\U22C4-\\U22C7\\U22C9-\\U22D3\\U22D5-\\U22ED\\U22F2-\\U22FF\\U25B7\\U27C8\\U27C9\\U27D1\\U27D2\\U27D5-\\U27D7\\U27F0\\U27F1\\U27F5-\\U27F7\\U27F7\\U27F9-\\U27FF\\U2900-\\U2918\\U291D-\\U2920\\U2944-\\U2970\\U29B7\\U29B8\\U29BC\\U29BE-\\U29C1\\U29E1\\U29E3-\\U29E5\\U29F4\\U29F6\\U29F7\\U29FA\\U29FB\\U2A07\\U2A08\\U2A1D\\U2A22-\\U2A2E\\U2A30-\\U2A3D\\U2A40-\\U2A45\\U2A4A-\\U2A58\\U2A5A-\\U2A63\\U2A66\\U2A67\\U2A6A-\\U2AD9\\U2ADB\\U2AF7-\\U2AFA\\U2B30-\\U2B44\\U2B47-\\U2B4C\\UFFE9-\\UFFEC"
+" Operator characters (including '!' this time). When highlighting, we mostly
+" can just recognize one character at a time, since longer operators are
+" basically made up of characters from this list. An exception is the dot
+" character which must be treated a bit specially.
+let s:operators1 = '\.\?[!' . s:op_chars . s:op_chars_wc . ']'
+let s:operatorsd = '\.\.\.\?'
 
-" a Julia identifier, sort of
-let s:idregex = '\%([^' . s:nonidS_chars . '0-9!' . s:uniop_chars . s:binop_chars . '][^' . s:nonidS_chars . s:uniop_chars . s:binop_chars . s:binop_chars_extra . ']*\)'
-
-let s:operators = '\%(' . '\.\%([-+*/^÷%|&!]\|//\|\\\|<<\|>>>\?\)\?=' .
-      \           '\|'  . '[:$<>]=\|||\|&&\||>\|<|\|<:\|>:\|::\|<<\|>>>\?\|//\|[-=]>\|\.\{3\}' .
-      \           '\|'  . '\.\?[' . s:uniop_chars . '!]' .
-      \           '\|'  . '\.\?[' . s:binop_chars . s:binop_chars_extra . ']' .
+" Full operators regex, to be used when we actually need to recognize when an
+" operator has ended (e.g. in quoted symbols)
+let s:operators = '\%(' . '\.\%([-+*/^÷%|&⊻]\|//\|\\\|>>\|>>>\?\)\?=' .
+      \           '\|'  . '[:<>]=\|||\|&&\||>\|<|\|[<>:]:\|<<\|>>>\?\|//\|[-=]>\|\.\.\.\?' .
+      \           '\|'  . s:operators1 .
       \           '\)'
+
+
+" Characters that can be used to start an identifier. Above \UBF we don't
+" bother checking. (If a UTF8 operator is used, it will take precedence anyway.)
+let s:id_charsH = '\%([A-Za-z_\UA2-\UA6\UA9\UAA\UAE\UB0\UB5\UBA]\|[^\U00-\UBF]\)'
+" Characters that can appear in an identifier, starting in 2nd position. Above
+" \UBF we check for operators since we need to stop the identifier if one
+" appears. We don't check for invalid characters though.
+let s:id_charsW = '\%([0-9A-Za-z_!\UA2-\UA6\UA9\UAA\UAE-\UB0\UB2-\UB5\UB8-\UBA\UBC-\UBE]\|[^\U00-\UBF]\@=[^' . s:op_chars_wc . ']\)'
+
+" A valid julia identifier, more or less
+let s:idregex = '\%(' . s:id_charsH . s:id_charsW . '*\)'
+
+
 
 syn case match
 
@@ -208,7 +223,7 @@ syntax match   juliaConstNum		display "\%(\<\%(\%(NaN\|Inf\)\%(16\|32\|64\)\?\|p
 " (This also tries to detect preceding number constants; it does so in a crude
 " way.)
 syntax match   juliaPossibleEuler	"ℯ" contains=juliaEuler
-exec 'syntax match   juliaEuler		contained "\%(\%(^\|[' . s:nonidS_chars . ']\|' . s:operators . '\)\%([.0-9eEf_]*\d\)\?\)\@'.s:d(80).'<=ℯ\ze\%($\|[' . s:nonidS_chars . ']\|' . s:operators . '\)"'
+exec 'syntax match   juliaEuler		contained "\%(\%(^\|[' . s:nonidS_chars . s:op_chars_wc . ']\)\%(.\?[0-9][.0-9eEf_]*\d\)\?\)\@'.s:d(80).'<=ℯ\ze[' . s:nonidS_chars . s:op_chars_wc . ']"'
 syntax match   juliaConstBool		display "\<\%(true\|false\)\>"
 syntax match   juliaConstEnv		display "\<\%(ARGS\|ENV\|ENDIAN_BOM\|LOAD_PATH\|VERSION\|PROGRAM_FILE\|DEPOT_PATH\)\>"
 syntax match   juliaConstIO		display "\<\%(std\%(out\|in\|err\)\|devnull\)\>"
@@ -266,10 +281,12 @@ exec 'syntax match   juliaFloat		contained "' . s:float_regex . '" contains=juli
 syntax match   juliaComplexUnit		display	contained "\<im\>"
 
 syntax match   juliaRangeOperator	display ":"
-exec 'syntax match   juliaOperator	"' . s:operators . '"'
+exec 'syntax match   juliaOperator	display "' . s:operators1 . '"'
+exec 'syntax match   juliaOperator	"' . s:operatorsd . '"'
+
 exec 'syntax region  juliaTernaryRegion	matchgroup=juliaTernaryOperator start="\s\zs?\ze\s" skip="\%(:\(:\|[^:[:space:]'."'".'"({[]\+\s*\ze:\)\|\%(?\s*\)\@'.s:d(6).'<=:(\)" end=":" contains=@juliaExpressions,juliaErrorSemicol'
 
-let s:interp_dollar = '\([' . s:nonidS_chars . s:uniop_chars . s:binop_chars . '!]\|^\)\@'.s:d(1).'<=\$'
+let s:interp_dollar = '\([' . s:nonidS_chars . s:op_chars_wc . '!]\|^\)\@'.s:d(1).'<=\$'
 
 exec 'syntax match   juliaDollarVar	display contained "' . s:interp_dollar . s:idregex . '"'
 exec 'syntax region  juliaDollarPar	matchgroup=juliaDollarVar contained start="' .s:interp_dollar . '(" end=")" contains=@juliaExpressions'
@@ -281,7 +298,7 @@ syntax match   juliaChar		display "'\\x\x\{2\}'" contains=juliaHexEscapeChar
 syntax match   juliaChar		display "'\\u\x\{1,4\}'" contains=juliaUniCharSmall
 syntax match   juliaChar		display "'\\U\x\{1,8\}'" contains=juliaUniCharLarge
 
-exec 'syntax match   juliaCTransOperator	"[[:space:]}' . s:nonid_chars . s:uniop_chars . s:binop_chars . '!]\@'.s:d(1).'<!\.\?' . "'" . 'ᵀ\?"'
+exec 'syntax match   juliaCTransOperator	"[[:space:]}' . s:nonid_chars . s:op_chars_wc . '!]\@'.s:d(1).'<!\.\?' . "'" . 'ᵀ\?"'
 
 " TODO: some of these might be specialized; the rest could be just left to the
 "       generic juliaStringPrefixed fallback
@@ -332,8 +349,8 @@ syntax match   juliaPrintfFmt		display contained "\\%%"hs=s+1
 " (for performance reasons)
 syntax match   juliaPossibleSymbol	transparent ":\ze[^:]" contains=juliaSymbol,juliaQuotedParBlock,juliaQuotedQMarkPar,juliaColon
 
-let s:quotable = '\%(' . s:idregex . '\|?\|' . s:operators . '\|' . s:float_regex . '\|' . s:int_regex . '\)'
-let s:quoting_colon = '\%(\%(^\s*\|\s\{6,\}\|[' . s:nonid_chars . s:uniop_chars . s:binop_chars . ']\s*\)\@'.s:d(6).'<=\|\%(\<\%(return\|if\|else\%(if\)\?\|while\|try\|begin\)\s\+\)\@'.s:d(9).'<=\)\zs:'
+let s:quotable = '\%(' . s:idregex . '\|' . s:operators . '\|[?.]\|' . s:float_regex . '\|' . s:int_regex . '\)'
+let s:quoting_colon = '\%(\%(^\s*\|\s\{6,\}\|[' . s:nonid_chars . s:op_chars_wc . ']\s*\)\@'.s:d(6).'<=\|\%(\<\%(return\|if\|else\%(if\)\?\|while\|try\|begin\)\s\+\)\@'.s:d(9).'<=\)\zs:'
 let s:quoting_colonS = '\s\@'.s:d(1).'<=:'
 
 " note: juliaSymbolS only works within whitespace-sensitive contexts,
