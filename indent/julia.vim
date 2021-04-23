@@ -22,10 +22,10 @@ endif
 let s:skipPatternsBasic = '\<julia\%(Comment\%([LM]\|Delim\)\)\>'
 let s:skipPatterns = '\<julia\%(Comprehension\%(For\|If\)\|RangeKeyword\|Comment\%([LM]\|Delim\)\|\%([bs]\|Shell\|Printf\|Doc\)\?String\|RegEx\|SymbolS\?\|Macro\|Dotted\)\>'
 
-function JuliaMatch(lnum, str, regex, st, e = -1, ...)
+function JuliaMatch(lnum, str, regex, st, ...)
   let s = a:st
-  let e = a:e
-  let basic_skip = a:0 > 0 ? a:1 : 'all'
+  let e = a:0 > 0 ? a:1 : -1
+  let basic_skip = a:0 > 1 ? a:2 : 'all'
   let skip = basic_skip ==# 'basic' ? s:skipPatternsBasic : s:skipPatterns
   while 1
     let f = match(a:str, '\C' . a:regex, s)
