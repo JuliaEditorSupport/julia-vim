@@ -79,6 +79,7 @@ syn case match
 
 syntax cluster juliaExpressions		contains=@juliaParItems,@juliaStringItems,@juliaKeywordItems,@juliaBlocksItems,@juliaTypesItems,@juliaConstItems,@juliaMacroItems,@juliaSymbolItems,@juliaOperatorItems,@juliaNumberItems,@juliaCommentItems,@juliaErrorItems,@juliaSyntaxRegions
 syntax cluster juliaExprsPrintf		contains=@juliaExpressions,@juliaPrintfItems
+syntax cluster juliaExprsNodot		contains=@juliaParItems,@juliaStringItems,@juliaMacroItems,@juliaSymbolItems,@juliaOperatorItems,@juliaCommentItems,juliaIdSymbol
 
 syntax cluster juliaParItems		contains=juliaParBlock,juliaSqBraIdxBlock,juliaSqBraBlock,juliaCurBraBlock,juliaQuotedParBlock,juliaQuotedQMarkPar
 syntax cluster juliaKeywordItems	contains=juliaKeyword,juliaWhereKeyword,juliaImportLine,juliaInfixKeyword,juliaRepKeyword
@@ -96,7 +97,7 @@ syntax cluster juliaOperatorItems	contains=juliaOperator,juliaRangeOperator,juli
 syntax cluster juliaCommentItems	contains=juliaCommentL,juliaCommentM
 syntax cluster juliaErrorItems		contains=juliaErrorPar,juliaErrorEnd,juliaErrorElse,juliaErrorCatch,juliaErrorFinally
 
-syntax cluster juliaSyntaxRegions	contains=juliaIdSymbol,juliaTypeOperatorR2,juliaTypeOperatorR3,juliaWhereR
+syntax cluster juliaSyntaxRegions	contains=juliaIdSymbol,juliaTypeOperatorR2,juliaTypeOperatorR3,juliaWhereR,juliaDotted
 
 syntax cluster juliaSpellcheckStrings		contains=@spell
 syntax cluster juliaSpellcheckDocStrings	contains=@spell
@@ -116,22 +117,24 @@ syntax match   juliaSemicolon		display ";"
 syntax match   juliaComma		display ","
 syntax match   juliaColon		display ":"
 
-" This is really ugly. It would be better to mask most keywords when a dot is
-" found, introducing some kind of dot-environment
-let s:nodot = '\%(\.\)\@'.s:d(1).'<!'
+" A dot can introduce a sort of 'environment' such that words after it are not
+" recognized as keywords. This has low precedence so that it can be overridden
+" by operators
+syntax match   juliaDotted		transparent "\.\s*[^.]" contains=@juliaExprsNodot
+syntax match   juliaDottedT		contained transparent "\.\s*[^.]" contains=@juliaExprsNodot,juliaType
 
 syntax match   juliaErrorPar		display "[])}]"
-exec 'syntax match   juliaErrorEnd	display "'.s:nodot.'\<end\>"'
-exec 'syntax match   juliaErrorElse	display "'.s:nodot.'\<\%(else\|elseif\)\>"'
-exec 'syntax match   juliaErrorCatch	display "'.s:nodot.'\<catch\>"'
-exec 'syntax match   juliaErrorFinally	display "'.s:nodot.'\<finally\>"'
+syntax match   juliaErrorEnd		display "\<end\>"
+syntax match   juliaErrorElse		display "\<\%(else\|elseif\)\>"
+syntax match   juliaErrorCatch		display "\<catch\>"
+syntax match   juliaErrorFinally	display "\<finally\>"
 syntax match   juliaErrorSemicol	display contained ";"
 
 syntax region  juliaParBlock		matchgroup=juliaParDelim start="(" end=")" contains=@juliaExpressions,juliaComprehensionFor
 syntax region  juliaParBlockInRange	matchgroup=juliaParDelim contained start="(" end=")" contains=@juliaExpressions,juliaParBlockInRange,juliaRangeKeyword,juliaComprehensionFor
 syntax region  juliaSqBraIdxBlock	matchgroup=juliaParDelim start="\[" end="\]" contains=@juliaExpressions,juliaParBlockInRange,juliaRangeKeyword,juliaComprehensionFor,juliaSymbolS,juliaQuotedParBlockS,juliaQuotedQMarkParS
 exec 'syntax region  juliaSqBraBlock	matchgroup=juliaParDelim start="\%(^\|\s\|' . s:operators . '\)\@'.s:d(3).'<=\[" end="\]" contains=@juliaExpressions,juliaComprehensionFor,juliaSymbolS,juliaQuotedParBlockS,juliaQuotedQMarkParS'
-syntax region  juliaCurBraBlock		matchgroup=juliaParDelim start="{" end="}" contains=juliaType,@juliaExpressions
+syntax region  juliaCurBraBlock		matchgroup=juliaParDelim start="{" end="}" contains=juliaType,juliaDottedT,@juliaExpressions
 
 exec 'syntax match   juliaType		contained "\%(' . s:idregex . '\.\)*\zs' . s:idregex . '"'
 
@@ -144,43 +147,42 @@ exec 'syntax match   juliaIdSymbol	transparent "' . s:idregex . '\%(\s*[<>]:\|\.
 
 syntax match  juliaFunctionCall		contained "[^{([:space:]<>\"]\+(\@=" nextgroup=juliaParBlock
 
-" note: we would in principle add a "s:nodot" before function/macro/struct/... but it shouldn't come up in valid code
 exec 'syntax match   juliaFunctionDef	contained transparent "\%(\<\%(function\|macro\)\)\@'.s:d(8).'<=\s\+\zs' . s:idregex . '\%(\.' . s:idregex . '\)*\ze\s*\%((\|\send\>\|$\)" contains=juliaFunctionName'
 exec 'syntax match   juliaFunctionName	contained "\%(\<\%(function\|macro\)\s\+\)\@'.s:d(20).'<=\%(' . s:idregex . '\.\)*\zs' . s:idregex . '"'
 
 exec 'syntax match   juliaStructR	contained transparent "\%(\<\%(\%(mutable\s\+\)\?struct\|\%(abstract\|primitive\)\s\+type\)\s\+\)\@'.s:d(20).'<=\%(' . s:idregex . '\.\)*' . s:idregex . '\>\(\s*(\)\@!" contains=juliaType'
 
-exec 'syntax match   juliaKeyword		display "'.s:nodot.'\<\%(return\|local\|global\|const\)\>"'
+syntax match   juliaKeyword		display "\<\%(return\|local\|global\|const\)\>"
 syntax match   juliaInfixKeyword	display "\%(=\s*\)\@<!\<\%(in\|isa\)\>\S\@!\%(\s*=\)\@!"
 
 " The import/export/using keywords introduce a sort of special parsing
 " environment with its own rules
-exec 'syntax region  juliaImportLine		matchgroup=juliaKeyword excludenl start="'.s:nodot.'\<\%(import\|using\|export\)\>" skip="\%(\%(\<\%(import\|using\|export\)\>\)\|^\)\@'.s:d(6).'<=$" end="$" end="\%([])}]\)\@=" contains=@juliaExpressions,juliaAsKeyword,@juliaContinuationItems,juliaMacroName'
+exec 'syntax region  juliaImportLine		matchgroup=juliaKeyword excludenl start="\<\%(import\|using\|export\)\>" skip="\%(\%(\<\%(import\|using\|export\)\>\)\|^\)\@'.s:d(6).'<=$" end="$" end="\%([])}]\)\@=" contains=@juliaExpressions,juliaAsKeyword,@juliaContinuationItems,juliaMacroName'
 syntax match   juliaAsKeyword		display contained "\<as\>"
 
-exec 'syntax match   juliaRepKeyword		display "'.s:nodot.'\<\%(break\|continue\)\>"'
-exec 'syntax region  juliaConditionalBlock	matchgroup=juliaConditional start="'.s:nodot.'\<if\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions,juliaConditionalEIBlock,juliaConditionalEBlock fold'
-exec 'syntax region  juliaConditionalEIBlock	matchgroup=juliaConditional transparent contained start="'.s:nodot.'\<elseif\>" end="'.s:nodot.'\<\%(end\|else\|elseif\)\>"me=s-1 contains=@juliaExpressions,juliaConditionalEIBlock,juliaConditionalEBlock'
-exec 'syntax region  juliaConditionalEBlock	matchgroup=juliaConditional transparent contained start="'.s:nodot.'\<else\>" end="'.s:nodot.'\<end\>"me=s-1 contains=@juliaExpressions'
-exec 'syntax region  juliaWhileBlock		matchgroup=juliaRepeat start="'.s:nodot.'\<while\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions fold'
-exec 'syntax region  juliaForBlock		matchgroup=juliaRepeat start="'.s:nodot.'\<for\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions,juliaOuter fold'
-exec 'syntax region  juliaBeginBlock		matchgroup=juliaBlKeyword start="'.s:nodot.'\<begin\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions fold'
-exec 'syntax region  juliaFunctionBlock		matchgroup=juliaBlKeyword start="'.s:nodot.'\<function\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions,juliaFunctionDef fold'
-exec 'syntax region  juliaMacroBlock		matchgroup=juliaBlKeyword start="'.s:nodot.'\<macro\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions,juliaFunctionDef fold'
-exec 'syntax region  juliaQuoteBlock		matchgroup=juliaBlKeyword start="'.s:nodot.'\<quote\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions fold'
-exec 'syntax region  juliaStructBlock		matchgroup=juliaBlKeyword start="'.s:nodot.'\<struct\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions,juliaStructR fold'
-exec 'syntax region  juliaMutableStructBlock	matchgroup=juliaBlKeyword start="'.s:nodot.'\<mutable\s\+struct\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions,juliaStructR fold'
-exec 'syntax region  juliaLetBlock		matchgroup=juliaBlKeyword start="'.s:nodot.'\<let\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions fold'
-exec 'syntax region  juliaDoBlock		matchgroup=juliaBlKeyword start="'.s:nodot.'\<do\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions fold'
-exec 'syntax region  juliaModuleBlock		matchgroup=juliaBlKeyword start="\%(\%(\.\s*\)\@'.s:d(6).'<!\|\%(@\s*\.\s*\)\@'.s:d(6).'<=\)\<\%(bare\)\?module\>" end="\<end\>" contains=@juliaExpressions fold'
-exec 'syntax region  juliaExceptionBlock	matchgroup=juliaException start="'.s:nodot.'\<try\>" end="'.s:nodot.'\<end\>" contains=@juliaExpressions,juliaCatchBlock,juliaFinallyBlock fold'
-exec 'syntax region  juliaCatchBlock		matchgroup=juliaException transparent contained start="'.s:nodot.'\<catch\>" end="'.s:nodot.'\<end\>"me=s-1 contains=@juliaExpressions,juliaFinallyBlock'
-exec 'syntax region  juliaFinallyBlock		matchgroup=juliaException transparent contained start="'.s:nodot.'\<finally\>" end="'.s:nodot.'\<end\>"me=s-1 contains=@juliaExpressions'
-exec 'syntax region  juliaAbstractBlock		matchgroup=juliaBlKeyword start="'.s:nodot.'\<abstract\s\+type\>" end="'.s:nodot.'\<end\>" fold contains=@juliaExpressions,juliaStructR'
-exec 'syntax region  juliaPrimitiveBlock	matchgroup=juliaBlKeyword start="'.s:nodot.'\<primitive\s\+type\>" end="'.s:nodot.'\<end\>" fold contains=@juliaExpressions,juliaStructR'
+syntax match   juliaRepKeyword		display "\<\%(break\|continue\)\>"
+syntax region  juliaConditionalBlock	matchgroup=juliaConditional start="\<if\>" end="\<end\>" contains=@juliaExpressions,juliaConditionalEIBlock,juliaConditionalEBlock fold
+syntax region  juliaConditionalEIBlock	matchgroup=juliaConditional transparent contained start="\<elseif\>" end="\<\%(end\|else\|elseif\)\>"me=s-1 contains=@juliaExpressions,juliaConditionalEIBlock,juliaConditionalEBlock
+syntax region  juliaConditionalEBlock	matchgroup=juliaConditional transparent contained start="\<else\>" end="\<end\>"me=s-1 contains=@juliaExpressions
+syntax region  juliaWhileBlock		matchgroup=juliaRepeat start="\<while\>" end="\<end\>" contains=@juliaExpressions fold
+syntax region  juliaForBlock		matchgroup=juliaRepeat start="\<for\>" end="\<end\>" contains=@juliaExpressions,juliaOuter fold
+syntax region  juliaBeginBlock		matchgroup=juliaBlKeyword start="\<begin\>" end="\<end\>" contains=@juliaExpressions fold
+syntax region  juliaFunctionBlock	matchgroup=juliaBlKeyword start="\<function\>" end="\<end\>" contains=@juliaExpressions,juliaFunctionDef fold
+syntax region  juliaMacroBlock		matchgroup=juliaBlKeyword start="\<macro\>" end="\<end\>" contains=@juliaExpressions,juliaFunctionDef fold
+syntax region  juliaQuoteBlock		matchgroup=juliaBlKeyword start="\<quote\>" end="\<end\>" contains=@juliaExpressions fold
+syntax region  juliaStructBlock		matchgroup=juliaBlKeyword start="\<struct\>" end="\<end\>" contains=@juliaExpressions,juliaStructR fold
+syntax region  juliaMutableStructBlock	matchgroup=juliaBlKeyword start="\<mutable\s\+struct\>" end="\<end\>" contains=@juliaExpressions,juliaStructR fold
+syntax region  juliaLetBlock		matchgroup=juliaBlKeyword start="\<let\>" end="\<end\>" contains=@juliaExpressions fold
+syntax region  juliaDoBlock		matchgroup=juliaBlKeyword start="\<do\>" end="\<end\>" contains=@juliaExpressions fold
+syntax region  juliaModuleBlock		matchgroup=juliaBlKeyword start="\<\%(bare\)\?module\>" end="\<end\>" contains=@juliaExpressions fold
+syntax region  juliaExceptionBlock	matchgroup=juliaException start="\<try\>" end="\<end\>" contains=@juliaExpressions,juliaCatchBlock,juliaFinallyBlock fold
+syntax region  juliaCatchBlock		matchgroup=juliaException transparent contained start="\<catch\>" end="\<end\>"me=s-1 contains=@juliaExpressions,juliaFinallyBlock
+syntax region  juliaFinallyBlock	matchgroup=juliaException transparent contained start="\<finally\>" end="\<end\>"me=s-1 contains=@juliaExpressions
+syntax region  juliaAbstractBlock	matchgroup=juliaBlKeyword start="\<abstract\s\+type\>" end="\<end\>" fold contains=@juliaExpressions,juliaStructR
+syntax region  juliaPrimitiveBlock	matchgroup=juliaBlKeyword start="\<primitive\s\+type\>" end="\<end\>" fold contains=@juliaExpressions,juliaStructR
 
 exec 'syntax region  juliaComprehensionFor	matchgroup=juliaComprehensionFor transparent contained start="\%([^[:space:],;:({[]\_s*\)\@'.s:d(80).'<=\<for\>" end="\ze[]);]" contains=@juliaExpressions,juliaComprehensionIf,juliaComprehensionFor'
-exec 'syntax match   juliaComprehensionIf	contained "'.s:nodot.'\<if\>"'
+syntax match   juliaComprehensionIf	contained "\<if\>"
 
 exec 'syntax match   juliaOuter		contained "\<outer\ze\s\+' . s:idregex . '\>"'
 
@@ -222,7 +224,7 @@ syntax match   juliaConstIO		display "\<\%(std\%(out\|in\|err\)\|devnull\)\>"
 syntax match   juliaConstC		display "\<\%(C_NULL\)\>"
 syntax match   juliaConstGeneric	display "\<\%(nothing\|Main\|undef\|missing\)\>"
 
-syntax match  juliaParamType		contained "[^{([:space:]<>\"]\+\ze{" nextgroup=juliaCurBraBlock
+syntax match   juliaParamType		contained "[^{([:space:]<>\"]\+\ze{" nextgroup=juliaCurBraBlock
 
 syntax match   juliaPossibleMacro	transparent "@" contains=juliaMacroCall,juliaMacroCallP,juliaPrintfMacro,juliaDocMacro
 
@@ -364,12 +366,12 @@ syntax match   juliaTypeOperatorR1	contained "[^{([:space:]<>\"]\+\%(\s*[<>]:\)\
 
 " force precedence over Symbols
 syntax match   juliaTypeOperator	contained "[<>:]:"
-exec 'syntax match   juliaTypeOperatorR2	transparent "[<>:]:\s*\%(' . s:idregex . '\.\)*' . s:idregex . '" contains=juliaTypeOperator,juliaType,@juliaExpressions nextgroup=juliaTypeOperator'
+exec 'syntax match   juliaTypeOperatorR2	transparent "[<>:]:\s*\%(' . s:idregex . '\.\)*' . s:idregex . '" contains=juliaTypeOperator,juliaType,juliaDottedT,@juliaExpressions nextgroup=juliaTypeOperator'
 syntax match   juliaIsaKeyword		contained "\<isa\>"
-exec 'syntax match   juliaTypeOperatorR3	transparent "\<isa\s\+\%(' . s:idregex . '\.\)*' . s:idregex . '" contains=juliaIsaKeyword,juliaType,@juliaExpressions nextgroup=juliaIsaKeyword'
+exec 'syntax match   juliaTypeOperatorR3	transparent "\<isa\s\+\%(' . s:idregex . '\.\)*' . s:idregex . '" contains=juliaIsaKeyword,juliaType,juliaDottedT,@juliaExpressions nextgroup=juliaIsaKeyword'
 
 syntax match   juliaWhereKeyword       	"\<where\>"
-exec 'syntax match   juliaWhereR	transparent "\<where\s\+' . s:idregex . '" contains=juliaWhereKeyword,juliaType,juliaIdSymbol'
+exec 'syntax match   juliaWhereR	transparent "\<where\s\+' . s:idregex . '" contains=juliaWhereKeyword,juliaType,juliaDottedT,juliaIdSymbol'
 
 syntax region  juliaCommentL		matchgroup=juliaCommentDelim excludenl start="#\ze\%([^=]\|$\)" end="$" contains=juliaTodo,@juliaSpellcheckComments
 syntax region  juliaCommentM		matchgroup=juliaCommentDelim fold start="#=\ze\%([^#]\|$\)" end="=#" contains=juliaTodo,juliaCommentM,@juliaSpellcheckComments
