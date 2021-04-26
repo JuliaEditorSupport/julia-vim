@@ -627,7 +627,7 @@ function! LaTeXtoUnicode#AutoSub(...)
   let lnum = line('.')
   if col1 == 1
     if a:0 > 1
-      call feedkeys(a:2, 't')
+      call feedkeys(a:2, 'mi')
     endif
     let b:l2u_in_autosub = 0
     return ''
@@ -637,7 +637,7 @@ function! LaTeXtoUnicode#AutoSub(...)
   let col0 = match(l, '\\\%([_^]\?[A-Za-z]\+\%' . col1 . 'c\%([^A-Za-z]\|$\)\|[_^]\%([0-9()=+-]\)\%' . col1 .'c\%(.\|$\)\)')
   if col0 == -1
     if a:0 > 1
-      call feedkeys(a:2, 't')
+      call feedkeys(a:2, 'mi')
     endif
     let b:l2u_in_autosub = 0
     return ''
@@ -646,7 +646,7 @@ function! LaTeXtoUnicode#AutoSub(...)
   let unicode = get(g:l2u_symbols_dict, base, '')
   if empty(unicode)
     if a:0 > 1
-      call feedkeys(a:2, 't')
+      call feedkeys(a:2, 'mi')
     endif
     let b:l2u_in_autosub = 0
     return ''
