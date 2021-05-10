@@ -235,7 +235,7 @@ exec 'syntax region  juliaMacroCall	contained transparent start="\(@.\)\@=\1\%([
 exec 'syntax region  juliaMacroCallP	contained transparent start="@' . s:idregex . '\%(\.' . s:idregex . '\)*(" end=")\@'.s:d(1).'<=" contains=juliaMacro,juliaParBlock'
 exec 'syntax region  juliaMacroCallP	contained transparent start="@.(" end=")\@'.s:d(1).'<=" contains=juliaMacro,juliaParBlock'
 
-syntax match   juliaNumbers		transparent "\<\d\|\.\d\|\<im\>" contains=juliaNumber,juliaFloat,juliaComplexUnit
+exec 'syntax match   juliaNumbers	transparent "\%(^\|[' . s:nonidS_chars . s:op_chars_wc . ']\)\@'.s:d(1).'<=\d\|\.\d\|im\>" contains=juliaNumber,juliaFloat,juliaComplexUnit'
 
 "integer regexes
 let s:dec_regex = '\d\%(_\?\d\)*\%(\>\|im\>\|\ze\D\)'
