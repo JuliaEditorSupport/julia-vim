@@ -364,16 +364,14 @@ function! s:L2U_SetFallbackMapping(s, k)
     " parsing of the <C-R>=... expression, so we need to special-case it.
     " Also, if the original mapping was intended to be recursive, this
     " will break it.
-    if mmdict["expr"]
-      if a:s != "<CR>"
-        let rhs = substitute(rhs, '\c' . a:s, "\<C-R>=LaTeXtoUnicode#PutLiteral('" . a:s . "')\<CR>", 'g')
-      else
-        let rhs = substitute(rhs, '\c' . a:s, "\<C-R>=LaTeXtoUnicode#PutLiteralCR()\<CR>", 'g')
-      endif
-      " Make the mapping silent even if it wasn't originally
-      if !mmdict["silent"]
-        let pre = pre . '<silent>'
-      endif
+    if a:s != "<CR>"
+      let rhs = substitute(rhs, '\c' . a:s, "\<C-R>=LaTeXtoUnicode#PutLiteral('" . a:s . "')\<CR>", 'g')
+    else
+      let rhs = substitute(rhs, '\c' . a:s, "\<C-R>=LaTeXtoUnicode#PutLiteralCR()\<CR>", 'g')
+    endif
+    " Make the mapping silent even if it wasn't originally
+    if !mmdict["silent"]
+      let pre = pre . '<silent>'
     endif
   endif
   exe cmd . pre . ' ' . a:k . ' ' . rhs
