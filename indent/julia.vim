@@ -20,7 +20,7 @@ if exists("*GetJuliaIndent")
 endif
 
 let s:skipPatternsBasic = '\<julia\%(Comment\%([LM]\|Delim\)\)\>'
-let s:skipPatterns = '\<julia\%(Comprehension\%(For\|If\)\|RangeKeyword\|Comment\%([LM]\|Delim\)\|\%([bs]\|Shell\|Printf\|Doc\)\?String\|RegEx\|SymbolS\?\|Macro\|Dotted\)\>'
+let s:skipPatterns = '\<julia\%(Comprehension\%(For\|If\)\|RangeKeyword\|Comment\%([LM]\|Delim\)\|\%([bs]\|Shell\|Printf\|Doc\)\?String\|StringPrefixed\|DocStringM\(Raw\)\?\|RegEx\|SymbolS\?\|Macro\|Dotted\)\>'
 
 function JuliaMatch(lnum, str, regex, st, ...)
   let s = a:st
@@ -278,7 +278,7 @@ endfunction
 
 function IsInDocString(lnum)
   let stack = map(synstack(a:lnum, 1), 'synIDattr(v:val, "name")')
-  call filter(stack, 'v:val =~# "\\<juliaDocString\\(Delim\\|M\\)\\?\\>"')
+  call filter(stack, 'v:val =~# "\\<juliaDocString\\(Delim\\|M\\\(Raw\\)\\?\\)\\?\\>"')
   return len(stack) > 0
 endfunction
 

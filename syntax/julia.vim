@@ -226,7 +226,7 @@ syntax match   juliaConstGeneric	display "\<\%(nothing\|Main\|undef\|missing\)\>
 
 syntax match   juliaParamType		contained "[^{([:space:]<>\"]\+\ze{" nextgroup=juliaCurBraBlock
 
-syntax match   juliaPossibleMacro	transparent "@" contains=juliaMacroCall,juliaMacroCallP,juliaPrintfMacro,juliaDocMacro
+syntax match   juliaPossibleMacro	transparent "@" contains=juliaMacroCall,juliaMacroCallP,juliaPrintfMacro,juliaDocMacro,juliaDocMacroPre
 
 exec 'syntax match   juliaMacro		contained "@' . s:idregex . '\%(\.' . s:idregex . '\)*"'
 syntax match   juliaMacro		contained "@[!.~$%^*/\\|<>+-]\ze[^0-9]"
@@ -307,7 +307,9 @@ syntax region  juliaPrintfMacro		contained transparent start="@s\?printf\s\+" en
 syntax region  juliaPrintfParBlock	contained matchgroup=juliaParDelim start="(" end=")" contains=@juliaExprsPrintf
 syntax region  juliaPrintfString	contained matchgroup=juliaStringDelim start=+"+ skip=+\%(\\\\\)*\\"+ end=+"+ contains=@juliaSpecialChars,@juliaPrintfChars
 
-exec 'syntax region  juliaDocMacro	contained transparent start=+@doc\s\+\%(' . s:idregex . '\%(\.' . s:idregex . '\)*\)\?\z("\%(""\)\?\)+ skip=+\%(\\\\\)*\\"+ end=+\(\z1\)\@'.s:d(3).'<=+ contains=juliaMacro,juliaDocStringM'
+exec 'syntax region  juliaDocMacroPre	contained transparent start=+@doc\s\+\%(' . s:idregex . '\%(\.' . s:idregex . '\)*\)\z("\%(""\)\?\)+ skip=+\%(\\\\\)*\\"+ end=+\(\z1\)\@'.s:d(3).'<=+ contains=juliaMacro,juliaDocStringMRaw'
+exec 'syntax region  juliaDocMacro	contained transparent start=+@doc\s\+\z("\%(""\)\?\)+ skip=+\%(\\\\\)*\\"+ end=+\(\z1\)\@'.s:d(3).'<=+ contains=juliaMacro,juliaDocStringM'
+syntax region  juliaDocStringMRaw	contained fold matchgroup=juliaDocStringDelim fold start=+\z\("\(""\)\?\)+ skip=+\%(\\\\\)*\\"+ end=+\z1+ contains=@juliaSpellcheckDocStrings
 syntax region  juliaDocStringM		contained fold matchgroup=juliaDocStringDelim fold start=+\z\("\(""\)\?\)+ skip=+\%(\\\\\)*\\"+ end=+\z1+ contains=@juliaStringVars,@juliaSpecialChars,@juliaSpellcheckDocStrings
 
 syntax region  juliaShellString		matchgroup=juliaStringDelim start=+`+ skip=+\%(\\\\\)*\\`+ end=+`+ contains=@juliaStringVars,juliaSpecialChar
@@ -492,6 +494,7 @@ hi def link juliaPrintfString		juliaString
 hi def link juliaShellString		juliaString
 hi def link juliaDocString		juliaString
 hi def link juliaDocStringM		juliaDocString
+hi def link juliaDocStringMRaw		juliaDocString
 hi def link juliaStringDelim		juliaString
 hi def link juliaDocStringDelim		juliaDocString
 hi def link juliaStringVarsPla		Identifier
