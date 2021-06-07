@@ -63,9 +63,13 @@ also activated by <kbd>Tab</kbd>, but falls-back to the Vim built-in behavior if
 is found: if you had defined a mapping for <kbd>Tab</kbd> in command mode, it will be overridden. This
 can be prevented by choosing a different value for the mapping keys, see the full documentation.
 
-To disable this mapping, you can use the command `:let g:latex_to_unicode_tab = 0`, e.g. by putting
+To disable this mapping, you can use the command `:let g:latex_to_unicode_tab = "off"`, e.g. by putting
 it into your `.vimrc` file. You can also change this setting from the Vim command-line, but you will
 also need to give the command `:call LaTeXtoUnicode#Init()` for the change to take effect.
+
+You can further fine-tune the `g:latex_to_unicode_tab` option: to selectively enable the <kbd>Tab</kbd>
+mapping only in the command line set it to `"command"`, or set it to `"insert"` to get the mapping only
+in insert mode. (The default setting is `"on"`, which applies to both.)
 
 Even when the mapping is disabled, the feature is still available (in insert mode) via the
 completion mechanism, i.e. by pressing <kbd>CTRL-X</kbd> and then <kbd>CTRL-U</kbd>.
