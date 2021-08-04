@@ -9,6 +9,9 @@ elseif exists("b:current_syntax")
   finish
 endif
 
+let s:cpo_save = &cpo
+set cpo&vim
+
 if version < 704
   " this is used to disable regex syntax like `\@3<='
   " on older vim versions
@@ -541,3 +544,6 @@ hi def link juliaError			Error
 syntax sync fromstart
 
 let b:current_syntax = "julia"
+
+let &cpo = s:cpo_save
+unlet s:cpo_save
