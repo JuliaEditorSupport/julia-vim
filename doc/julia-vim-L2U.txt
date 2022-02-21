@@ -81,6 +81,9 @@ completion can still be made available on lower Vim versions, see
 |julia-vim-L2U-workaround|. The keymap mode might work but it hasn't been
 tested.
 
+Also, this functionality cannot be used if some plugin forces julia-vim to load
+lazily, such as filetype.nvim (https://github.com/nathom/filetype.nvim).
+
 See |julia-vim| for the general reference about the other features of the
 julia-vim plug-in.
 
