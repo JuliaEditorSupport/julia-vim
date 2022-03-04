@@ -113,8 +113,8 @@ function! s:unmap(function)
     return
   endif
   let mapids = a:function =~# "^move" ? ["n", "x", "o"] :
-	\      a:function =~# "^select" ? ["x", "o"] :
-	\      ["n"]
+        \      a:function =~# "^select" ? ["x", "o"] :
+        \      ["n"]
   let fn = "julia_blocks#" . a:function
   let cmd = "<buffer> " . chars
   for m in mapids
@@ -380,12 +380,12 @@ function! s:moveto_block_delim(toend, backwards, ...)
     while 1
       let searchret = search('\C' . pattern, flags)
       if !searchret
-	return ret
+        return ret
       endif
       exe "let skip = " . b:match_skip
       if !skip
-	let ret = 1
-	break
+        let ret = 1
+        break
       endif
     endwhile
   endfor
@@ -491,15 +491,15 @@ function! julia_blocks#moveblock_N()
       let start1_pos = ret_start ? getpos('.') : [0,0,0,0]
       call setpos('.', save_pos)
       if s:on_end()
-	normal! h
+        normal! h
       endif
       let ret_end = s:moveto_block_delim(1, 0, 1)
       let end1_pos = ret_end ? getpos('.')  : [0,0,0,0]
 
       if ret_start && (!ret_end || s:compare_pos(start1_pos, end1_pos) < 0)
-	call setpos('.', start1_pos)
+        call setpos('.', start1_pos)
       else
-	call setpos('.', save_pos)
+        call setpos('.', save_pos)
       endif
     endif
 
@@ -560,7 +560,7 @@ function! julia_blocks#moveblock_p()
     if s:on_begin()
       call s:move_before_begin()
       if s:on_end()
-	normal! l
+        normal! l
       endif
       let save_pos = getpos('.')
       let ret_start = s:moveto_block_delim(0, 1, 1)
@@ -570,9 +570,9 @@ function! julia_blocks#moveblock_p()
       let end1_pos = ret_end ? getpos('.') : [0,0,0,0]
 
       if ret_end && (!ret_start || s:compare_pos(start1_pos, end1_pos) < 0)
-	call setpos('.', end1_pos)
+        call setpos('.', end1_pos)
       else
-	call setpos('.', save_pos)
+        call setpos('.', save_pos)
       endif
     endif
 
@@ -730,8 +730,8 @@ function! julia_blocks#select_a(...)
 
   let b:jlblk_doing_select = 1
 
-  " CursorMove is only triggered if end_pos
-  " end_pos is different than the staring position;
+  " CursorMoved is only triggered if end_pos
+  " is different than the staring position;
   " so when starting from the 'd' in 'end' we need to
   " force it
   if current_pos == end_pos
@@ -812,8 +812,8 @@ function! julia_blocks#select_i()
   endif
   let end_pos = getpos('.')
 
-  " CursorMove is only triggered if end_pos
-  " end_pos is different than the staring position;
+  " CursorMoved is only triggered if end_pos
+  " is different than the staring position;
   " so when starting from the 'd' in 'end' we need to
   " force it
   if current_pos == end_pos
