@@ -351,10 +351,10 @@ function! s:move_before_begin()
 endfunction
 
 function! s:cycle_until_end()
-  let pos = getpos('.')
+  let c = 0
   while !s:on_end()
+    let pos = getpos('.')
     call s:matchit()
-    let c = 0
     if getpos('.') == pos || c > 1000
       " shouldn't happen, but let's avoid infinite loops anyway
       return 0
