@@ -696,7 +696,7 @@ function! s:find_block(current_mode)
 endfunction
 
 function! s:repeated_find(ai_mode)
-  let repeat = b:jlblk_count + (a:ai_mode == 'i' && v:count1 > 1 ? 1 : 0)
+  let repeat = b:jlblk_count + (a:ai_mode == 'i' && b:jlblk_count > 1 ? 1 : 0)
   for c in range(repeat)
     let current_mode = (c < repeat - 1 ? 'a' : a:ai_mode)
     let ret_find_block = s:find_block(current_mode)
