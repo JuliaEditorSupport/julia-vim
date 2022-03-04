@@ -742,6 +742,39 @@ function! julia_blocks#select_a(...)
   return [start_pos, end_pos]
 endfunction
 
+let s:bracketBlocks = '\<julia\%(\%(\%(Printf\)\?Par\|SqBra\%(Idx\)\?\|CurBra\)Block\|ParBlockInRange\|StringVars\%(Par\|SqBra\|CurBra\)\|Dollar\%(Par\|SqBra\)\|QuotedParBlockS\?\)\>'
+let s:codeBlocks = '\<julia\%(Conditional\|While\|For\|Begin\|Function\|Macro\|Quote\|\%(Mutable\)\?Struct\|Let\|Do\|Exception\|Abstract\|Primitive\)Block\>'
+
+function s:is_in_brackets(lnum, c)
+  let stack = map(synstack(a:lnum, a:c), 'synIDattr(v:val, "name")')
+  for i in range(len(stack)-1, 0, -1)
+    if stack[i] =~# s:bracketBlocks
+      return 1
+    elseif stack[i] =~# s:codeBlocks
+      return 0
+    endif
+  endfor
+  return 0
+endfunction
+
+function! s:seek_bracket_end()
+  let [lnum, c] = [line('.'), col('.')]
+  if !s:is_in_brackets(lnum, c)
+    return
+  endif
+  while c > 0 && s:is_in_brackets(lnum, c)
+    let c -= 1
+  endwhile
+  let c += 1
+  if !s:is_in_brackets(lnum, c)
+    echoerr "this is a bug, please report it"
+    return
+  end
+  call cursor(lnum, c)
+  call s:matchit()
+  return
+endfunction
+
 function! julia_blocks#select_i()
   call s:get_save_pos(!b:jlblk_did_select)
   let current_pos = getpos('.')
@@ -755,16 +788,29 @@ function! julia_blocks#select_i()
     return s:abort()
   endif
 
-  call setpos('.', end_pos)
-
   let b:jlblk_doing_select = 1
 
-  let start_pos[1] += 1
   call setpos('.', start_pos)
-  normal! ^
+  normal! $
+  call s:seek_bracket_end()
+  let l = getline('.')
+  while col('.') < len(l) && l[col('.'):] =~# '^\s*;'
+    normal! l
+  endwhile
+  if col('.') == len(l) || l[col('.')] =~# '\s'
+    normal! W
+  else
+    normal! l
+  endif
   let start_pos = getpos('.')
-  let end_pos[1] -= 1
-  let end_pos[2] = len(getline(end_pos[1]))
+
+  call setpos('.', end_pos)
+  if end_pos[2] > 1 && getline('.')[end_pos[2]-2] =~# '\S'
+    normal! h
+  else
+    normal! gE
+  endif
+  let end_pos = getpos('.')
 
   " CursorMove is only triggered if end_pos
   " end_pos is different than the staring position;
