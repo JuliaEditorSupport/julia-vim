@@ -42,7 +42,7 @@ pathogen)
 ```bash
 cd ~/.vim
 mkdir -p bundle && cd bundle
-git clone git@github.com:JuliaEditorSupport/julia-vim.git
+git clone https://github.com/JuliaEditorSupport/julia-vim.git
 ```
 
 [pathogen]: https://github.com/tpope/vim-pathogen
@@ -56,7 +56,7 @@ Load plugin on Vim startup (see `:help packages`):
 ```bash
 cd ~/.vim
 mkdir -p pack/plugins/start && cd pack/plugins/start
-git clone git@github.com:JuliaEditorSupport/julia-vim.git
+git clone https://github.com/JuliaEditorSupport/julia-vim.git
 ```
 
 ### Manually
