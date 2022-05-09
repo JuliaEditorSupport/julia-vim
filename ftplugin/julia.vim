@@ -26,7 +26,11 @@ let b:undo_ftplugin = "setlocal include< suffixesadd< comments< commentstring<"
       \ . " | unlet! b:commentary_format"
       \ . " | unlet! b:smartcomment_force_linemode"
       \ . " | unlet! b:julia_vim_loaded"
-
+      
+if !exists("g:julia_recommended_style") || g:julia_recommended_style != 0
+    " As suggested by Style Guide.
+    setlocal expandtab tabstop=4 softtabstop=4 shiftwidth=4
+endif
 " MatchIt plugin support
 if exists("loaded_matchit")
   let b:match_ignorecase = 0
