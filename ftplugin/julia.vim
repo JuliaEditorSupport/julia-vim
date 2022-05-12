@@ -22,6 +22,7 @@ setlocal fo-=t fo+=croql
 let b:julia_vim_loaded = 1
 
 let b:undo_ftplugin = "setlocal include< suffixesadd< comments< commentstring<"
+      \ . " |setlocal expandtab< shiftwidth<"
       \ . " define< fo< indentexpr< indentkeys< cinoptions< completefunc<"
       \ . " | unlet! b:commentary_format"
       \ . " | unlet! b:smartcomment_force_linemode"
@@ -29,8 +30,9 @@ let b:undo_ftplugin = "setlocal include< suffixesadd< comments< commentstring<"
       
 if !exists("g:julia_recommended_style") || g:julia_recommended_style != 0
     " As suggested by Style Guide.
-    setlocal expandtab tabstop=4 softtabstop=4 shiftwidth=4
+    setlocal expandtab shiftwidth=4
 endif
+
 " MatchIt plugin support
 if exists("loaded_matchit")
   let b:match_ignorecase = 0
