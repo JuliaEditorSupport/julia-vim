@@ -470,13 +470,13 @@ g:julia_indent_align_funcargs
                     # function body
                 end
 <
-                                                *g:julia_recommended_style*
-g:julia_recommended_style
+                                                  *g:julia_set_indentation*
+g:julia_set_indentation
 
                 In Julia manual, it is recommended to use 4 spaces to indent
                 Julia source files.
                 By default, the 4-space indentation style is applied.
-                Set `g:julia_recommended_style` to `0` to disable this feature.
+                Set `g:julia_set_indentation` to `0` to disable this feature.
 ==============================================================================
 EXTRA SYNTAX COLORS                                *julia-vim-extra-colors*
 
