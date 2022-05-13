@@ -28,7 +28,7 @@ let b:undo_ftplugin = "setlocal include< suffixesadd< comments< commentstring<"
       \ . " | unlet! b:smartcomment_force_linemode"
       \ . " | unlet! b:julia_vim_loaded"
       
-if !exists("g:julia_recommended_style") || g:julia_recommended_style != 0
+if !exists("g:julia_set_indentation") || g:julia_set_indentation != 0
     " As suggested by Style Guide.
     setlocal expandtab shiftwidth=4
 endif
