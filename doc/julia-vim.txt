@@ -193,7 +193,7 @@ counter, i.e. using `v2aj`. If the cursor were initially on line 2, the whole
 `while` block would have been selected with the first `vaj`. Using `daj` would
 delete a block, `caj` would delete it and leave ViM in insert mode, `=aj`
 would indent it, etc.
-Starting from line 2, pressing `vij` wuold only select the inner part of the
+Starting from line 2, pressing `vij` would only select the inner part of the
 `while` block (lines 2 to 5).
 
 The following mappings are provided:
