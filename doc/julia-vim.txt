@@ -388,9 +388,9 @@ g:julia_highlight_operators
                                               *g:julia_indent_align_import*
 g:julia_indent_align_import
 
-                In a multi-line import/using/export statment, the lines after
-                the first one use some special alignment rules by default,
-                e.g.:
+                In a multi-line import/using/export/public statment, the
+                lines after the first one use some special alignment rules
+                by default, e.g.:
 >
                 import X: one,
                           two,
