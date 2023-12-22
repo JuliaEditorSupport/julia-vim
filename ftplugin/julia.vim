@@ -103,8 +103,9 @@ endif
 let b:commentary_format = "# %s"           " for tpope/vim-commentary
 let b:smartcomment_force_linemode = 1      " for carlobaldassi/vim-smartcomment
 
-if has("gui_win32")
-  let b:browsefilter = "Julia Source Files (*.jl)\t*.jl\n"
+if (has("gui_win32") || has("gui_gtk")) && !exists("b:browsefilter")
+  let b:browsefilter = "Julia Source Files (*.jl)\t*.jl\n" .
+	\	       "All Files (*.*)\t*.*\n"
   let b:undo_ftplugin = b:undo_ftplugin . " | unlet! b:browsefilter"
 endif
 
