@@ -14,7 +14,7 @@ setlocal indentkeys-=0{
 setlocal indentkeys-=0}
 setlocal nosmartindent
 
-let b:undo_indent = "setl ai< inde< indk< si<"
+let b:undo_indent = "setlocal autoindent< indentexpr< indentkeys< smartindent<"
 
 " Only define the function once.
 if exists("*GetJuliaIndent")
