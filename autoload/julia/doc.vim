@@ -35,7 +35,7 @@ let s:NODOCPATTERN = '\C\VNo documentation found.'
 function! julia#doc#lookup(keyword, ...) abort
   let juliapath = get(a:000, 0, g:julia#doc#juliapath)
   let keyword = escape(a:keyword, '"\')
-  let cmd = printf('%s --compile=min --optimize=0 -E "@doc %s"', juliapath, keyword)
+  let cmd = printf('%s --compile=min --optimize=0 -E "import REPL;@doc %s"', juliapath, keyword)
   return systemlist(cmd)
 endfunction
 
